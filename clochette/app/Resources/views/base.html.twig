@@ -1,13 +1,56 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
-</html>
+<html class="fa-events-icons-ready"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/reset.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    {% block stylesheet %}{% endblock %}
+    <meta name="viewport" content="width=device-width, target-densitydpi=device-dpi">
+
+    <!-- <script src="{{ asset('js/7af49feb1a.js') }}"></script>
+    <link href="{{ asset('css/7af49feb1a.css') }}" media="all" rel="stylesheet">-->
+    <script type="text/javascript" src="{{ asset('js/jquery-3.js') }}"></script>
+
+
+
+</head>
+
+
+<body>
+    <header role="header">
+        <nav role="navigation" class="menu">
+            <div class="inner">
+
+                <div class="menu-left" onclick="test()">
+
+                    <img src="{{ asset('images/logo.png') }}"> <h1 class="logo">AbsINThe</h1>
+
+
+                </div>
+
+                <div class="menu-right">
+
+                    <a href="{{ path("homepage") }}" class="menu-link"><i class="fa fa-home" aria-hidden="true"></i> Accueil</a>
+                    <a href="{{ path("purchase") }}" class="menu-link"><i class="fa fa-money"></i> Caisse</a>
+                    <a href="{{ path("stock") }}" class="menu-link"><i class="fa fa-stack-overflow"></i> Stock</a>
+                    <a href="#1" class="menu-link"><i class="fa fa-calendar"></i> Planning</a>
+                    <a href="#1" class="menu-link"><i class="fa fa-envelope"></i> Contact</a>
+                    <a href="#1" id="header-user" class="menu-link"><i class="fa fa-user"></i></a>
+                    <a href="#signup" class="menu-link"><i class="fa fa-plus"></i></a>
+                    <a href="#logout" class="menu-link"><i class="fa fa-power-off"></i></a>
+
+                </div>
+
+                <div class="menu-resp">
+                    <span class="menu-resp-span"></span>
+                </div>
+        </div></nav>
+
+        <script type="text/javascript" src="{{ asset('js/menu.js') }}"></script>
+    </header>
+
+{% block body %}{% endblock %}
+{% block javascripts %}{% endblock %}
+
+    </body></html>

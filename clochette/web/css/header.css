@@ -1,0 +1,126 @@
+:root {
+    --bg-color: #01A867;
+}
+
+
+.menu {
+    width: 100%;
+    height: 70px;
+    background-color: var(--bg-color);
+    line-height: 66px;
+}
+
+.logo {
+    padding:0; margin: 0;
+}
+
+
+.menu-left {
+    float : left;
+    color:white;
+    font-family: 'Roboto';
+    font-weight: 900;
+    letter-spacing: 1px;
+
+}
+
+.menu-left img {
+    height: 140px;
+}
+
+.menu-left h1 {
+    float: right;
+}
+
+.menu-right {
+    float: right;
+}
+
+.menu-link {
+    text-decoration: none;
+    color : white;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 0;margin: 0 10px;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 3px;
+
+}
+
+.menu-link:hover {
+    border-bottom: 2px solid white;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.menu-right i {
+    margin-right: 5px;
+}
+
+.menu-resp {
+    width: 40px;
+    height: 70px;
+    display: none;
+    align-items: center;
+    float: right;
+    cursor: pointer;
+
+}
+
+span.menu-resp-span,span.menu-resp-span:before, span.menu-resp-span:after{
+    content: "";
+    display: block;
+    width: 100%;
+    height: 3px;
+    background: white;
+    position: relative;
+}
+
+
+span.menu-resp-span:after{top:10px;}
+span.menu-resp-span:before{top:-12px;}
+
+
+
+@media only screen and (max-width: 1200px ) {
+    .menu-right {
+        position : absolute;
+        top: 70px;
+        right: 0;
+        width: 200px;
+        height: 100%;
+        background: var(--bg-color);
+        display: none;
+        transition: all 0.3s ease-in-out;
+        z-index: 1;
+    }
+
+    .menu-right-open{
+        display: block;
+        transition: all 0.3s ease-in-out;
+
+    }
+
+    .menu-link {
+        display: block;
+        text-align: center;
+        padding :0; margin : 0 15px;
+        height: 60px;
+
+
+    }
+    .menu-resp {
+        display: flex;
+        margin-right: 15px;
+    }
+
+    .menu-left h1 {
+        display: none;
+    }
+
+    .menu-left img {
+        height: 90px;
+    }
+
+
+}

@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Achat{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/caisse.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://use.fontawesome.com/7af49feb1a.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="afficheArticle">
+        
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Heineken 25cl                </div>
+                <div class="box-article-prix">
+                    3€                </div>
+
+            </div>
+            
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Biere                </div>
+                <div class="box-article-prix">
+                    12€                </div>
+
+            </div>
+            
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Kro                </div>
+                <div class="box-article-prix">
+                    2€                </div>
+
+            </div>
+            
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Delirium Red                </div>
+                <div class="box-article-prix">
+                    8€                </div>
+
+            </div>
+            
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Shooter                </div>
+                <div class="box-article-prix">
+                    2€                </div>
+
+            </div>
+            
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Chouffe                </div>
+                <div class="box-article-prix">
+                    12€                </div>
+
+            </div>
+            
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Coca                </div>
+                <div class="box-article-prix">
+                    2€                </div>
+
+            </div>
+            
+            <div class="box-article">
+                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                    Voiture                </div>
+                <div class="box-article-prix">
+                    15€                </div>
+
+            </div>
+            
+    </div>
+
+    <div class="caisse">
+        <div class="prix">Prix : <input value="0">€</div>
+        <button>Valider</button>
+    </div>
+{% endblock %}
