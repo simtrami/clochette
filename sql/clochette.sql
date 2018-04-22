@@ -40,6 +40,30 @@ LOCK TABLES `articles` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `calendrier`
+--
+
+DROP TABLE IF EXISTS `calendrier`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `calendrier` (
+  `date` date NOT NULL,
+  `tenance` varchar(60) NOT NULL,
+  `event` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `calendrier`
+--
+
+LOCK TABLES `calendrier` WRITE;
+/*!40000 ALTER TABLE `calendrier` DISABLE KEYS */;
+/*!40000 ALTER TABLE `calendrier` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `commandes`
 --
 
@@ -132,4 +156,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-24 14:09:39
+-- Dump completed on 2018-04-22 11:54:45
