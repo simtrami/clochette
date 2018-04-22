@@ -1,103 +1,64 @@
-.afficheArticle {
-    width: 95%;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
+.affichage-articles {
+    padding-top: 80px;
+}
+.pad-b {
+    padding-bottom: 25px;
 }
 
-.box-article {
-    margin: 10px;
-    padding: 0 10px;
-    border: 2px solid black;
-    width: 240px;
-    height: 240px;
-    background: #02A667;
-    cursor : pointer;
+.article {
+    border: 3px solid #01A867;
+    width: 80%;
 }
 
-.box-article-nom {
-    margin-top: 20px;
+.center {
     text-align: center;
-    font-size: 25px;
 }
-.box-article-prix {
+
+.btn-danger {
+    background-color: red;
+}
+
+.btn-danger a{
+    text-decoration: none;
+    color: white;
+
+}
+
+.btn-success {
+    background-color:#01A867 ;
+}
+
+.btn-success a {
+    text-decoration: none;
+    color: white;
+}
+
+.input-group-text {
+    background-color: #01A867;
+    color: white;
+}
+
+.card-body{
+    margin: 0;
+}
+
+.card-body button a {
+    color: white;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.input-group {
+    width: 100%;
+}
+
+
+.add-delete-article a {
     text-align: center;
-    font-size: 25px;
-}
-
-.caisse {
-    display: flex;
-    float: right;
-    margin-right: 50px;
 
 }
-.prix {
-    font-size: 45px;
-    border: 3px solid black;
-    background: #ffc107;
-    margin: auto;padding: auto;
-}
 
-.prix input {
-    margin: auto;padding: auto;
-    width : 50px;
-    background: #ffc107;
-    height: 50px;
-    border: none;
-    margin-bottom: 3px;
-    font-size: 45px;
-    color: #02A667;
-}
-.caisse button {
-
-    color: black;
-    background: #02A667;
-    width: 180px;
-    height:70px;
-    margin : 0 10px;
-    font-size: 45px;
-    border: 3px solid black;
-    cursor: pointer;
-}
-@media only screen and (max-width: 1200px ) {
-    .caisse {
-        margin-right: auto;
-    }
-    .prix {
-        font-size: 25px;
-    }
-    .prix input {
-        height: 57px;
-        font-size: 25px;
-    }
-
-    .caisse button {
-        font-size: 25px;
-
-    }
-    .popup-addArticle {
-        width: 80%;
-    }
-
-    .afficheArticle {
-        margin: auto;padding: auto;
-        align-content: center;
-    }
-
-
-    .box-article {
-        width: 100px;
-        height: 100px;
-    }
-
-    .box-article-nom {
-        text-align: center;
-        font-size: 16px;
-    }
-    .box-article-prix {
-        text-align: center;
-        font-size: 17px;
-
-        }
-
+.test {
+    background-color: black;
+    display: inline;
 }

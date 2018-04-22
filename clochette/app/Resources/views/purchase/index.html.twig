@@ -11,6 +11,99 @@
 {% endblock %}
 
 {% block body %}
+<div class="container-fluid">
+
+    <div class="row affichage-articles">
+
+        {% for product in products %}
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3   pad-b">
+                <div class="card article" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title center">{{ product.name }}</h5>
+                        <p class="card-text center">{{ product.price }}€</p>
+
+                        <div class="row col-8 align-items-center add-delete-article ">
+                            <div class="pad-r">
+                                <a class="btn btn-danger"
+                                   href="controller/panier.ctrl.php?id={{ product.id }}&op=minus">-</a>
+                            </div>
+                            <div class="pad-r">
+                                <a class=" btn btn-success"
+                                   href="controller/panier.ctrl.php?id={{ product.id }}&op=plus">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="row ">
+
+        <div class="list-articles">
+            <p>
+                <a class="btn btn-success" data-toggle="collapse" href="#collapseExample" role="button"
+                   aria-expanded="false" aria-controls="collapseExample">
+                    Listes Articles
+                </a>
+            </p>
+
+
+            <div class="collapse" id="collapseExample">
+                <div class="card card-body">
+                    {% if articlesPanier is defined %}
+                        {% for articlePanier in articlesPanier %}
+                            {{ articlePanier.nom }} : {{ articlePanier.id }} </br>
+                        {% endfor %}
+                    {% else %}
+                        {% set articlesPanier = [] %}
+                    {% endif %}
+
+                    <!-- Script à refaire (EDIT: c fé fo testé)
+                    <?php
+                    if (!empty($articlesPanier)) {
+                        foreach ($articlesPanier as $articlePanier) {
+                            echo $articlePanier->nom . ' : ' . $_SESSION['panier'] [$articlePanier->id] . '<br>';
+                        }
+                    } else {
+                        $articlesPanier = array();
+                    }
+
+                    ?> -->
+                </div>
+            </div>
+        </div>
+
+
+        <div class="cancel-command">
+            <button type="button" class="btn btn-danger">
+                <a href="index.php?rooting=caisse&panier=reset">Annuler Commande</a></button>
+        </div>
+
+
+        <div class="input-group">
+
+            <div class="input-group-append">
+                <span class="input-group-text"><?= $_SESSION['prix']; ?></span>
+                <span class="input-group-text">€</span>
+
+            </div>
+        </div>
+
+        <div class="payer">
+            <form action="index.php?rooting=caisse&panier=reset" method="get">
+                <button type="button" class="btn btn-success">
+                    <a href="index.php?rooting=caisse&panier=reset">Payer</a>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
     <div class="afficheArticle">
         
             <div class="box-article">

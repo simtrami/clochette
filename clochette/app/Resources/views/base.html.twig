@@ -1,56 +1,74 @@
 <!DOCTYPE html>
-<html class="fa-events-icons-ready"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
+<html class="fa-events-icons-ready">
+<head>
+    <meta charset="utf-8"/>
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ asset('css/reset.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="{{ asset('lib/bootstrap.css') }}">
     {% block stylesheet %}{% endblock %}
-    <meta name="viewport" content="width=device-width, target-densitydpi=device-dpi">
 
-    <!-- <script src="{{ asset('js/7af49feb1a.js') }}"></script>
-    <link href="{{ asset('css/7af49feb1a.css') }}" media="all" rel="stylesheet">-->
-    <script type="text/javascript" src="{{ asset('js/jquery-3.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    <!--<link href=<?=$css?> rel="stylesheet"/>-->
 
+    <script src="{{ asset('lib/jquery.js') }}"></script>
+    <script src="{{ asset('js/nav.js') }}"></script>
 
-
+    <script src="https://use.fontawesome.com/7af49feb1a.js"></script>
 </head>
 
-
 <body>
-    <header role="header">
-        <nav role="navigation" class="menu">
-            <div class="inner">
+    <header>
+        <nav class="navbar navbar-expand-sm ">
+            <a class="navbar-brand" href="#">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width:110px;">
+            </a>
 
-                <div class="menu-left" onclick="test()">
+            <button id="header-toggler" class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="fa fa-reorder"></span>
+            </button>
 
-                    <img src="{{ asset('images/logo.png') }}"> <h1 class="logo">AbsINThe</h1>
-
-
-                </div>
-
-                <div class="menu-right">
-
-                    <a href="{{ path("homepage") }}" class="menu-link"><i class="fa fa-home" aria-hidden="true"></i> Accueil</a>
-                    <a href="{{ path("purchase") }}" class="menu-link"><i class="fa fa-money"></i> Caisse</a>
-                    <a href="{{ path("stock") }}" class="menu-link"><i class="fa fa-stack-overflow"></i> Stock</a>
-                    <a href="#1" class="menu-link"><i class="fa fa-calendar"></i> Planning</a>
-                    <a href="#1" class="menu-link"><i class="fa fa-envelope"></i> Contact</a>
-                    <a href="#1" id="header-user" class="menu-link"><i class="fa fa-user"></i></a>
-                    <a href="#signup" class="menu-link"><i class="fa fa-plus"></i></a>
-                    <a href="#logout" class="menu-link"><i class="fa fa-power-off"></i></a>
-
-                </div>
-
-                <div class="menu-resp">
-                    <span class="menu-resp-span"></span>
-                </div>
-        </div></nav>
-
-        <script type="text/javascript" src="{{ asset('js/menu.js') }}"></script>
+            <div class="collapse navbar-collapse menu" id="navbarSupportedContent">
+                <ul class="navbar-nav nav .justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path("homepage") }}><i class="fa fa-home" aria-hidden="true"></i>
+                            Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('purchase') }}"><i class="fa fa-money"></i> Caisse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('stock') }}"><i class="fa fa-stack-overflow"
+                                                                            aria-hidden="true"></i> Stock</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('calendar') }}"><i
+                                    class="fa fa-calendar"></i> Planning</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa fa-user" aria-hidden="true"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa fa-plus"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </header>
+    <script src="{{ asset('lib/jquery.js') }}"></script>
 
-{% block body %}{% endblock %}
-{% block javascripts %}{% endblock %}
+    {% block body %}{% endblock %}
 
-    </body></html>
+    <footer>
+        <script src="{{ asset('lib/bootstrap.js') }}"></script>
+        <script src="{{ asset('lib/jquery.js') }}"></script>
+
+        {% block javascripts %}{% endblock %}
+    </footer>
+
+</body></html>
