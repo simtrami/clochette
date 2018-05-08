@@ -1,6 +1,3 @@
 app:
     resource: '@AppBundle/Controller/'
     type: annotation
-app_scheduler:
-    resource: "@AppBundle/Resources/config/routing/scheduler.yml"
-    prefix:   /scheduler
