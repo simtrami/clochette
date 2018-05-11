@@ -62,10 +62,14 @@ class StockController extends Controller {
     **/
 
     public function showIndex(){
+        $stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks')->findAll();
+
         $data=[];
         $data['drafts'] = $this->draft_beer;
         $data['bottles'] = $this->bottled_beer;
         $data['food'] = $this->food;
+
+        $data['stocks'] = $stocks;
         return $this->render("stock/index.html.twig", $data);
     }
 

@@ -74,6 +74,13 @@
            <td id="afficheStock-quantiteAchat">{{ beer.nbSoldeCurrent }}</td>
        </tr>
     {% endfor %}
+    {% for beer in stocks %}
+        <td class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path('details', { 'id_article': beer.id }) }}">{{ beer.nom }}</a></td>
+           <td id="afficheStock-prix">{{ beer.type }}</td>
+           <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
+           <td id="afficheStock-quantiteAchat">{{ beer.idArticle }}</td>
+       </tr>
+    {% endfor %}
     
 </table>
 
