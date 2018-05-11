@@ -77,8 +77,8 @@ CREATE TABLE `commandes` (
   PRIMARY KEY (`dateCommande`),
   KEY `idCompte` (`idCompte`),
   KEY `idArticle` (`idArticle`),
-  CONSTRAINT `commandes_ibfk_1` FOREIGN KEY (`idCompte`) REFERENCES `comptes` (`idCompte`),
-  CONSTRAINT `commandes_ibfk_2` FOREIGN KEY (`idArticle`) REFERENCES `articles` (`idArticle`)
+  CONSTRAINT `compte_commande` FOREIGN KEY (`idCompte`) REFERENCES `comptes` (`idCompte`),
+  CONSTRAINT `article_commande` FOREIGN KEY (`idArticle`) REFERENCES `articles` (`idArticle`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -134,7 +134,7 @@ CREATE TABLE `stocks` (
   `type` varchar(15) NOT NULL,
   `quantite` int(10) unsigned NOT NULL,
   PRIMARY KEY (`idArticle`),
-  CONSTRAINT `stocks_ibfk_1` FOREIGN KEY (`idArticle`) REFERENCES `articles` (`idArticle`)
+  CONSTRAINT `article_stock` FOREIGN KEY (`idArticle`) REFERENCES `articles` (`idArticle`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
