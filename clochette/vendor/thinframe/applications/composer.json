@@ -1,0 +1,29 @@
+{
+    "name": "thinframe/applications",
+    "type": "library",
+    "homepage": "http://thinframe.net",
+    "description": "PHP applications ecosystem",
+    "keywords": ["thinframe", "applications", "ecosystem"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sorin Badea",
+            "email": "sorin.badea91@gmail.com",
+            "homepage": "http://sorinbadea.me",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.4.0",
+        "thinframe/foundation": "@stable",
+        "symfony/dependency-injection": "@stable",
+        "symfony/yaml": "@stable",
+        "symfony/config": "@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "ThinFrame\\Applications\\": "src/"
+        }
+    }
+}

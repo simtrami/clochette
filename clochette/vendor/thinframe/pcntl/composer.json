@@ -1,0 +1,31 @@
+{
+    "name": "thinframe/pcntl",
+    "type": "library",
+    "homepage": "http://thinframe.net",
+    "keywords": ["thinframe", "pcntl"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sorin Badea",
+            "email": "sorin.badea91@gmail.com",
+            "homepage": "http://sorinbadea.me",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.4.0",
+        "thinframe/foundation": "@stable",
+        "thinframe/events": "@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "ThinFrame\\Pcntl\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
+}
