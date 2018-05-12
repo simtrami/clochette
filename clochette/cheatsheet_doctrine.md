@@ -22,6 +22,11 @@ php bin/console doctrine:generate:entity
  - ...[ses paramètres]...
 
 ## Générer les tables et colonnes (dans la base) :
+### Afficher les commandes SQL avant d'exécuter :
+```bash
+php bin/console doctrine:schema:update --dump-sql
+```
+### Exécuter :
 ```bash
 php bin/console doctrine:schema:update --force
 ```
