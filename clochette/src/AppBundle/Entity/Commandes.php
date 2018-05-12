@@ -15,7 +15,7 @@ class Commandes
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateCommande", type="datetime")
+     * @ORM\Column(name="dateCommande", type="datetime", options={"default" : "1970-01-01"})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
