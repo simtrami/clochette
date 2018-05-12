@@ -1,11 +1,23 @@
 # To get started with security, check out the documentation:
 # https://symfony.com/doc/current/security.html
 security:
+    # https://symfony.com/doc/3.4/security/entity_provider.html#configure-security-to-load-from-your-entity
+    encoders:
+        AppBundle\Entity\Users:
+            algorithm: bcrypt
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
+        # https://symfony.com/doc/3.4/security/multiple_user_providers.html
+        chain_provider:
+            chain:
+                providers: [in_memory, user_db]
         in_memory:
-            memory: ~
+            memory:
+                users:
+                    toto: { password: tototo }
+        user_db:
+            entity: { class: AppBundle\Entity\Users, property: username }
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -15,10 +27,29 @@ security:
 
         main:
             anonymous: ~
-            # activate different ways to authenticate
+            pattern: ^/
+            provider: chain_provider
+            logout_on_user_change: true
 
+            # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
-            #http_basic: ~
+            http_basic: ~
 
             # https://symfony.com/doc/current/security/form_login_setup.html
-            #form_login: ~
+            form_login:
+                login_path: login
+                check_path: login
+                default_target_path: homepage
+                provider: user_db
+            
+        secured_area:
+            pattern: ^/
+            provider: chain_provider
+            logout_on_user_change: true
+            # https://symfony.com/doc/3.4/security/csrf_in_login_form.html
+            form_login:
+                csrf_token_generator: security.csrf.token_manager
+                provider: user_db
+    
+    access_control:
+    - { path: ^/register, roles: ROLE_ADMIN }

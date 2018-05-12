@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * @ORM\Table(name="app_users")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UsersRepository")
  * @UniqueEntity(fields="email", message="Email already taken")
  * @UniqueEntity(fields="username", message="Username already taken")
  */
@@ -50,7 +50,13 @@ class Users implements AdvancedUserInterface, \Serializable
     private $password;
 
     /**
+     * @ORM\Column(name="roles", length=30, options={"default" : "ROLE_INTRO"})
+     */
+    private $roles;
+
+    /**
      * @ORM\Column(name="is_active", type="boolean")
+     * @Assert\NotBlank()
      */
     private $isActive;
 
@@ -103,6 +109,11 @@ class Users implements AdvancedUserInterface, \Serializable
         $this->password = $password;
     }
 
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+    }
+
     public function getSalt()
     {
         // The bcrypt and argon2i algorithms don't require a separate salt.
@@ -114,9 +125,12 @@ class Users implements AdvancedUserInterface, \Serializable
 
     public function getRoles()
     {
-        return array('ROLE_USER');
+        return array(
+            'ROLE_USER',
+            $this->roles,
+        );
     }
-
+    
     public function eraseCredentials()
     {
     }
