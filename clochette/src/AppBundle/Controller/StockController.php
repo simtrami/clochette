@@ -6,9 +6,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Doctrine\ORM\EntityManagerInterface;
 
 class StockController extends Controller {
 
+/*
     private $draft_beer = [
             [  'id' => 1,
                 'name' => 'Kronembourg (50L)',
@@ -67,15 +69,25 @@ class StockController extends Controller {
                 'nbSoldeCurrent' => 2
             ]
         ];
+        */
     
     /**
     * @Route("/stock", name="stock")
     **/
-    public function showIndex(){
+    public function showIndex(){        
+        $em = $this->getDoctrine()->getManager();
+        $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
+
+        $drafts = $repo_stocks->findByType('draft');
+        $bottles = $repo_stocks->findByType('bottle');
+        $article = $repo_stocks->findByType('article');
+
         $data=[];
-        $data['drafts'] = $this->draft_beer;
-        $data['bottles'] = $this->bottled_beer;
-        $data['article'] = $this->article;
+        $data['drafts'] = $drafts;
+        $data['bottles'] = $bottles;
+        $data['article'] = $article;
+
+
         return $this->render("stock/index.html.twig", $data);
     }
 
