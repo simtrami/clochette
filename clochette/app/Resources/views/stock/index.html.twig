@@ -39,8 +39,8 @@
         
         {% for beer in drafts %}
             <td class="modifyArticle-link" id="afficheStock-nom"><a href="{# {{ path('details', { 'id_article': beer.id }) }} #}">{{ beer.nom }}</a></td>
-            {# <td id="afficheStock-cout">{{ beer.cost }} ({{ (beer.cost - 30) / beer.volume / 2 }})</td>
-            <td id="afficheStock-prix">{{ beer.price }}</td> #}
+            <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
+            <td id="afficheStock-prix">{{ beer.prixVente }}</td>
             <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
             {# <td id="afficheStock-quantiteAchat">{{ beer.nbSoldeCurrent }}</td> #}
         </tr>
@@ -53,16 +53,16 @@
     <table class="table table-stripped table-bordered">
         <tr>
             <th>Nom bouteille</th>
-            {# <th>Prix à l'achat</th> #}
-            {# <th>Prix de vente</th> #}
+            <th>Prix à l'achat</th>
+            <th>Prix de vente</th>
             <th>Bouteilles restantes</th>
-            {# <th>Bouteilles achetées</th> #}
+            <th>Bouteilles achetées</th>
         </tr>
         
         {% for bottle in bottles %}
             <td class="modifyArticle-link" id="afficheStock-nom"><a href="{# {{ path("details", { 'id_article': bottle.id }) }} #}">{{ bottle.nom }}</a></td>
-            {# <td id="afficheStock-cout">{{ bottle.cost }}</td> #}
-            {# <td id="afficheStock-prix">{{ bottle.price }}</td> #}
+            <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
+            <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
             <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
             {# <td id="afficheStock-quantiteAchat">{{ bottle.nbSoldeCurrent }}</td> #}
         </tr>
@@ -75,16 +75,16 @@
     <table class="table table-stripped table-bordered">
         <tr>
             <th>Nom article</th>
-            {# <th>Prix à l'achat</th>
-            <th>Prix de vente</th> #}
+            <th>Prix à l'achat</th>
+            <th>Prix de vente</th>
             <th>Articles restants</th>
-            {# <th>Articles achetés</th> #}
+            <th>Articles achetés</th>
         </tr>
         
         {% for item in article %}
             <td class="modifyArticle-link" id="afficheStock-nom"><a href="{# {{ path("details", { 'id_article': item.id }) }} #}">{{ item.nom }}</a></td>
-            {# <td id="afficheStock-cout">{{ item.cost }}</td>
-            <td id="afficheStock-prix">{{ item.price }}</td> #}
+            <td id="afficheStock-cout">{{ item.prixAchat }}</td>
+            <td id="afficheStock-prix">{{ item.prixVente }}</td>
             <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
             {# <td id="afficheStock-quantiteAchat">{{ item.nbSoldeCurrent }}</td> #}
         </tr>
