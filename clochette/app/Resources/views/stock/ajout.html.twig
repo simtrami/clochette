@@ -1,0 +1,70 @@
+{% extends base.html.twig %}
+{% block title %}Ajouter un article{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/stock.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://use.fontawesome.com/7af49feb1a.js"></script>
+<script src="{{ asset('js/addArticles.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="modal fade" id="add-article-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ajoutez un article</h5>
+                </div>
+
+                <div class="modal-body">
+                    <form action="" method="post">
+
+                        <input name="rooting" value="stock" style="display: none">
+                        <div class="form-group">
+                            <label for="inputArticleName">Nom (dont volume si boisson / marque si article)</label>
+                            <input type="text" class="form-control" name="nom" id="inputArticleName">
+                        </div>
+
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Type
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Fût</a></li>
+                                <li><a href="#">Bouteilles</a></li>
+                                <li><a href="#">Article (nourriture/soft)</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputCostArticle">Prix d'achat</label>
+                            <span class="input-group-addon">€</span>
+                            <input type="number" step="0.01" class="form-control" id="inputCostArticle" name="prixAchat">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputPriceArticle">Prix de vente</label>
+                            <span class="input-group-addon">€</span>
+                            <input type="number" step="0.01" class="form-control" id="inputPriceArticle" name="prixVente">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputQuatityDraft">Quantité</label>
+                            <input type="text" class="form-control" id="inputQuatityDraft" name="quantite">
+                        </div>
+                    </form>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endblock %}

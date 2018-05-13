@@ -15,11 +15,27 @@ use Doctrine\ORM\Mapping as ORM;
 class Stocks
 {
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="idarticle", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idarticle;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=60, nullable=false)
      */
     private $nom;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="prix", type="decimal", precision=8, scale=2, nullable=false)
+     */
+    private $prix;
 
     /**
      * @var string
@@ -55,21 +71,20 @@ class Stocks
      * @ORM\Column(name="volume", type="decimal", precision=8, scale = 2, nullable=false)
      */
     private $volume;
-
-    /**
-     * @var \AppBundle\Entity\Articles
-     *
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Articles")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idarticle", referencedColumnName="idarticle")
-     * })
-     */
-    private $idarticle;
-
     
 
+## Fonctions
+
+
+    /**
+     * Get idarticle
+     *
+     * @return integer
+     */
+    public function getIdarticle()
+    {
+        return $this->idarticle;
+    }
 
     /**
      * Set nom
@@ -93,6 +108,30 @@ class Stocks
     public function getNom()
     {
         return $this->nom;
+    }
+
+    /**
+     * Set prix
+     *
+     * @param string $prix
+     *
+     * @return Articles
+     */
+    public function setPrix($prix)
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
+    /**
+     * Get prix
+     *
+     * @return string
+     */
+    public function getPrix()
+    {
+        return $this->prix;
     }
 
     /**
@@ -141,30 +180,6 @@ class Stocks
     public function getQuantite()
     {
         return $this->quantite;
-    }
-
-    /**
-     * Set idarticle
-     *
-     * @param \AppBundle\Entity\Articles $idarticle
-     *
-     * @return Stocks
-     */
-    public function setIdarticle(\AppBundle\Entity\Articles $idarticle)
-    {
-        $this->idarticle = $idarticle;
-
-        return $this;
-    }
-
-    /**
-     * Get idarticle
-     *
-     * @return \AppBundle\Entity\Articles
-     */
-    public function getIdarticle()
-    {
-        return $this->idarticle;
     }
 
     /**

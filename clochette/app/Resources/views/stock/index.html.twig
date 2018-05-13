@@ -8,196 +8,141 @@
 
 {% block javascripts %}
 <script src="https://use.fontawesome.com/7af49feb1a.js"></script>
-<script src="{{ asset('js/addArticles.js') }}"></script>
 {% endblock %}
 
 {% block body %}
 <div class="container-fluid">
-<!-- Refaire ce script avec Symfony
-    <?php if (!empty($errors)): ?>
-        <div class="alert alert-danger pad-t">
-            <p>Vous n'avez pas rempli le formulaire correctement</p>
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?= $error; ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
--->
-</div>
-
-<div class="table-responsive pad-t tableau-article">
-    <table class="table table-stripped table-bordered">
-        <tr>
-            <th>Nom pression</th>
-            <th>Prix à l'achat (pinte)</th>
-            <th>Prix à la vente</th>
-            <th>Fûts restants</th>
-            <th>Pintes achetées</th>
-        </tr>
-        
-        {% for beer in drafts %}
-            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path('details', { 'id_article': beer.idarticle.idarticle }) }}">{{ beer.nom }}</a></td>
-            <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
-            <td id="afficheStock-prix">{{ beer.prixVente }}</td>
-            <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
-            {# <td id="afficheStock-quantiteAchat">{{ beer.nbSoldeCurrent }}</td> #}
-        </tr>
-        {% endfor %}
-
-    </table>
-</div>
-
-<div class="table-responsive pad-t tableau-article">
-    <table class="table table-stripped table-bordered">
-        <tr>
-            <th>Nom bouteille</th>
-            <th>Prix à l'achat</th>
-            <th>Prix de vente</th>
-            <th>Bouteilles restantes</th>
-            <th>Bouteilles achetées</th>
-        </tr>
-        
-        {% for bottle in bottles %}
-            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': bottle.idarticle.idarticle }) }}">{{ bottle.nom }}</a></td>
-            <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
-            <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
-            <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
-            {# <td id="afficheStock-quantiteAchat">{{ bottle.nbSoldeCurrent }}</td> #}
-        </tr>
-        {% endfor %}
-
-    </table>
-</div>
-
-<div class="table-responsive pad-t tableau-article">
-    <table class="table table-stripped table-bordered">
-        <tr>
-            <th>Nom article</th>
-            <th>Prix à l'achat</th>
-            <th>Prix de vente</th>
-            <th>Articles restants</th>
-            <th>Articles achetés</th>
-        </tr>
-        
-        {% for item in article %}
-            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': item.idarticle.idarticle }) }}">{{ item.nom }}</a></td>
-            <td id="afficheStock-cout">{{ item.prixAchat }}</td>
-            <td id="afficheStock-prix">{{ item.prixVente }}</td>
-            <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
-            {# <td id="afficheStock-quantiteAchat">{{ item.nbSoldeCurrent }}</td> #}
-        </tr>
-        {% endfor %}
-
-    </table>
-</div>
-
-<div class="pull-right pad-t">
-    <a class="btn btn-danger">Supprimer Article</a>
-    <a class="btn btn-orange">Modifier Article</a>
-    <a class="btn btn-success" data-toggle="modal" data-target="#add-article-popup">Ajouter Article</a>
-</div>
-
-<div class="modal fade" id="add-article-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ajoutez un article</h5>
+    {# Refaire ce script avec Symfony
+        <?php if (!empty($errors)): ?>
+            <div class="alert alert-danger pad-t">
+                <p>Vous n'avez pas rempli le formulaire correctement</p>
+                <ul>
+                    <?php foreach ($errors as $error): ?>
+                        <li><?= $error; ?></li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
+        <?php endif; ?> #}
 
-            <div class="modal-body">
-                <form action="" method="post">
+    <div class="table-responsive pad-t tableau-article">
+        <table class="table table-stripped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Nom pression</th>
+                    <th scope="col">Prix à l'achat (pinte)</th>
+                    <th scope="col">Prix à la vente</th>
+                    <th scope="col">Fûts restants</th>
+                    <th scope="col">Pintes achetées</th>
+                </tr>
+            </thead>
 
-                    <input name="rooting" value="stock" style="display: none">
-                    <div class="form-group">
-                        <label for="inputArticleName">Nom (dont volume si boisson / marque si article)</label>
-                        <input type="text" class="form-control" name="nom" id="inputArticleName">
-                    </div>
-
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Type
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Fût</a></li>
-                            <li><a href="#">Bouteilles</a></li>
-                            <li><a href="#">Article (nourriture/soft)</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inputCostArticle">Prix d'achat</label>
-                        <span class="input-group-addon">€</span>
-                        <input type="number" step="0.01" class="form-control" id="inputCostArticle" name="prixAchat">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inputPriceArticle">Prix de vente</label>
-                        <span class="input-group-addon">€</span>
-                        <input type="number" step="0.01" class="form-control" id="inputPriceArticle" name="prixVente">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="inputQuatityDraft">Quantité</label>
-                        <input type="text" class="form-control" id="inputQuatityDraft" name="quantite">
-                    </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-primary">Ajouter</button>
-            </div>
-            </form>
-
-        </div>
+            <tbody>
+                {% for beer in drafts %}
+                <tr>
+                    <th scope="row" class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path('details', { 'id_article': beer.idarticle }) }}">{{ beer.nom }}</a></th>
+                    <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
+                    <td id="afficheStock-prix">{{ beer.prixVente }}</td>
+                    <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
+                    {# <td id="afficheStock-quantiteAchat">{{ beer.nbSoldeCurrent }}</td> #}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
+    <div class="table-responsive pad-t tableau-article">
+        <table class="table table-stripped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Nom bouteille</th>
+                    <th scope="col">Prix à l'achat</th>
+                    <th scope="col">Prix de vente</th>
+                    <th scope="col">Bouteilles restantes</th>
+                    <th scope="col">Bouteilles achetées</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for bottle in bottles %}
+                <tr>
+                    <th scope="row" class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': bottle.idarticle }) }}">{{ bottle.nom }}</a></th>
+                    <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
+                    <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
+                    <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
+                    {# <td id="afficheStock-quantiteAchat">{{ bottle.nbSoldeCurrent }}</td> #}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-responsive pad-t tableau-article">
+        <table class="table table-stripped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Nom article</th>
+                    <th scope="col">Prix à l'achat</th>
+                    <th scope="col">Prix de vente</th>
+                    <th scope="col">Articles restants</th>
+                    <th scope="col">Articles achetés</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for item in article %}
+                <tr>
+                    <th scope="row" class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': item.idarticle }) }}">{{ item.nom }}</a></th>
+                    <td id="afficheStock-cout">{{ item.prixAchat }}</td>
+                    <td id="afficheStock-prix">{{ item.prixVente }}</td>
+                    <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
+                    {# <td id="afficheStock-quantiteAchat">{{ item.nbSoldeCurrent }}</td> #}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pull-right pad-t">
+        <button type="button" class="btn btn-danger"><a>Supprimer Article</a></button>
+        <button type="button" class="btn btn-light"><a>Modifier Article</a></button>
+        <button type="button" class="btn btn-success"><a {# data-toggle="modal" data-target="#add-article-popup" #}>Ajouter Article</a></button>
+    </div>
+
+    {# Refaire cette méthode avec Doctrine -->
+    <div class="popup-addArticle" >
+        <i id="addArticle-close" class="fa fa-close"></i>
+        <h1>Nouvel article</h1>
+
+        <form class=popup-addArticle-form method="POST" action="php/addArticles-post.php">
+            <i class="fa fa-beer"></i>
+            <input type="text" placeholder="Nom" name="nom"> <br>
+            <i class="fa fa-money"></i>
+            <input type="number" placeholder="Prix d'achat" name="prixAchat"><br>
+            <input type="number" placeholder="Prix de vente" name="prixVente"><br>
+            <input type="number" placeholder="Quantité" name="quantite">
+            <button type="submit" name="submit">Ajouter</button>
+        </form>
+
+    </div>
+
+
+
+    <div class="popup-modifyArticle" >
+        <i id="modifyArticle-close" class="fa fa-close"></i>
+        <h1>Modifier Article</h1>
+
+
+        <form class="popup-modifyArticle-form" method="POST">
+            <i class="fa fa-beer"></i>
+            <input type="text" name="nom"> <br>
+            <i class="fa fa-money"></i>
+            <input type="number" name="prix"><br>
+            <input type="number"name="quantite">
+            <button type="submit" name="submit">Modifier</button>
+
+        </form>
+
+    </div> #}
+
 </div>
-
-<div class="options-right">
-    <a href="#" id="addArticle" class="enable"> Ajouter un article</a>
-</div>
-
-
-<!-- Refaire cette méthode avec Doctrine -->
-<div class="popup-addArticle" >
-    <i id="addArticle-close" class="fa fa-close"></i>
-    <h1>Nouvel article</h1>
-
-    <form class=popup-addArticle-form method="POST" action="php/addArticles-post.php">
-        <i class="fa fa-beer"></i>
-        <input type="text" placeholder="Nom" name="nom"> <br>
-        <i class="fa fa-money"></i>
-        <input type="number" placeholder="Prix d'achat" name="prixAchat"><br>
-        <input type="number" placeholder="Prix de vente" name="prixVente"><br>
-        <input type="number" placeholder="Quantité" name="quantite">
-        <button type="submit" name="submit">Ajouter</button>
-    </form>
-
-</div>
-
-
-
-<div class="popup-modifyArticle" >
-    <i id="modifyArticle-close" class="fa fa-close"></i>
-    <h1>Modifier Article</h1>
-
-
-    <form class="popup-modifyArticle-form" method="POST">
-        <i class="fa fa-beer"></i>
-        <input type="text" name="nom"> <br>
-        <i class="fa fa-money"></i>
-        <input type="number" name="prix"><br>
-        <input type="number"name="quantite">
-        <button type="submit" name="submit">Modifier</button>
-
-    </form>
-
-</div>
-
 {% endblock %}

@@ -22,9 +22,9 @@ class Commandes
     private $datecommande;
 
     /**
-     * @var \AppBundle\Entity\Articles
+     * @var \AppBundle\Entity\Stocks
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Articles")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Stocks")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="idarticle", referencedColumnName="idarticle")
      * })
@@ -55,11 +55,11 @@ class Commandes
     /**
      * Set idarticle
      *
-     * @param \AppBundle\Entity\Articles $idarticle
+     * @param \AppBundle\Entity\Stocks $idarticle
      *
      * @return Commandes
      */
-    public function setIdarticle(\AppBundle\Entity\Articles $idarticle = null)
+    public function setIdarticle(\AppBundle\Entity\Stocks $idarticle = null)
     {
         $this->idarticle = $idarticle;
 
@@ -69,7 +69,7 @@ class Commandes
     /**
      * Get idarticle
      *
-     * @return \AppBundle\Entity\Articles
+     * @return \AppBundle\Entity\Stocks
      */
     public function getIdarticle()
     {

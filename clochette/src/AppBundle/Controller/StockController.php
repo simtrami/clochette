@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\ORM\EntityManagerInterface;
+use AppBundle\Entity\Stocks;
 
 class StockController extends Controller {
     
@@ -36,6 +37,14 @@ class StockController extends Controller {
     public function showDetails(Request $request, $id_article){
 
         $data['id_article'] = $id_article;
-        return $this->render("stock/detail.html.twig", $data);
+        return $this->render("stock/details.html.twig", $data);
+    }
+    
+    /**
+     * @Route("/stock/ajout", name="ajout")
+     */
+    public function showAjout(Request $request){
+
+        return $this->render("stock/ajout.html.twig");
     }
 }
