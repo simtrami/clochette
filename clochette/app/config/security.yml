@@ -39,12 +39,16 @@ security:
             form_login:
                 login_path: login
                 check_path: login
-                default_target_path: homepage
+                use_referer: true
                 provider: user_db
             # https://symfony.com/doc/3.4/security.html#logging-out
             logout:
                 path:   /logout
                 target: /
+            remember_me:
+                secret:     '%secret%'
+                lifetime:   604800
+                path:       /
             
         secured_area:
             pattern: ^/
