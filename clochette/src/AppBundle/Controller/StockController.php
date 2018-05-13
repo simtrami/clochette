@@ -9,72 +9,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 
 class StockController extends Controller {
-
-/*
-    private $draft_beer = [
-            [  'id' => 1,
-                'name' => 'Kronembourg (50L)',
-                'volume' => 50,
-                'cost' => 120,
-                'price' => 3,
-                'nbBarrels' => 4,
-                'nbSoldeCurrent' => 21
-            ],
-            [  'id' => 2 , 
-                'name' => 'Cidre (30L)', 
-                'volume' => 30,
-                'cost' => 90,
-                'price' => 2.5,
-                'nbBarrels' => 5,
-                'nbSoldeCurrent' => 12
-            ],
-            [  'id' => 3 , 
-                'name' => 'Grimbergen Rouge (30L)',
-                'volume' => 30,
-                'cost' => 150,
-                'price' => 4,
-                'nbBarrels' => 7,
-                'nbSoldeCurrent' => 32
-            ]
-        ];
-    private $bottled_beer = [
-            [  'id' => 17 , 
-                'name' => 'Leffe Blonde (33cL)',
-                'cost' => 1.2,
-                'price' => 2,
-                'nbBottles' => 44,
-                'nbSoldeCurrent' => 12
-            ],
-            [  'id' => 19 , 
-                'name' => 'Skoll (33cL)', 
-                'cost' => 1.8,
-                'price' => 2,
-                'nbBottles' => 134,
-                'nbSoldeCurrent' => 22
-            ]
-        ];
-    private $article = [
-            [  'id' => 15 , 
-                'name' => 'Saucisson', 
-                'cost' => 1.1,
-                'price' => 2,
-                'nbArticles' => 4,
-                'nbSoldeCurrent' => 1
-            ],
-            [  'id' => 25 , 
-                'name' => 'Pizza', 
-                'cost' => 1.3,
-                'price' => 3,
-                'nbArticles' => 11,
-                'nbSoldeCurrent' => 2
-            ]
-        ];
-        */
     
     /**
     * @Route("/stock", name="stock")
     **/
-    public function showIndex(){        
+    public function showIndex(){
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 

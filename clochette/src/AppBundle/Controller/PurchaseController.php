@@ -14,6 +14,9 @@ class PurchaseController extends Controller
      **/
     public function showIndex()
     {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
         
         return $this->render('purchase/index.html.twig');
                                 
