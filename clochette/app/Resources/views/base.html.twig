@@ -19,19 +19,18 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm ">
-            <a class="navbar-brand" href="#">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="{{ path('homepage') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width:110px;">
             </a>
 
-            <button id="header-toggler" class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="fa fa-reorder"></span>
+            <button {# id="header-toggler" #} class="navbar-toggler" type="button" data-toggle="collapse"
+                     data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse menu" id="navbarSupportedContent">
-                <ul class="navbar-nav nav .justify-content-center">
+            <div class="collapse navbar-collapse {# menu #}" id="navbarAltMarkup">
+                <ul class="navbar-nav nav {# .justify-content-center #}">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('homepage') }}"><i class="fa fa-home" aria-hidden="true"></i>
                             Accueil</a>
@@ -47,9 +46,22 @@
                         <a class="nav-link" href="#"><i
                                     class="fa fa-calendar"></i> Calendrier</a>
                     </li> #}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('login') }}"><i class="fa fa-user" aria-hidden="true"></i></a>
+                    <li class="nav-item" dropdown>
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i></a>
+                        <div class="dropdown-menu">
+                            {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
+                                <a class="dropdown-item" href="#">{{ app.user.username }} <i class="fa fa-cog"></i></a>
+                                <a class="dropdown-item" href="#">Autre action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ path('logout') }}">Se déconnecter</a>
+                            {% else %}
+                                <a class="dropdown-item" href="{{ path('login') }}">Se connecter</a>
+                            {% endif %}
+                        </div>
                     </li>
+                    {# <li class="nav-item">
+                        <a class="nav-link" href="{{ path('login') }}"><i class="fa fa-user" aria-hidden="true"></i></a>
+                    </li> #}
                     <li class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-plus"></i></a>
                     </li>
