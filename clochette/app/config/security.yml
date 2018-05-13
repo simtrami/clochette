@@ -41,6 +41,10 @@ security:
                 check_path: login
                 default_target_path: homepage
                 provider: user_db
+            # https://symfony.com/doc/3.4/security.html#logging-out
+            logout:
+                path:   /logout
+                target: /
             
         secured_area:
             pattern: ^/
@@ -50,6 +54,19 @@ security:
             form_login:
                 csrf_token_generator: security.csrf.token_manager
                 provider: user_db
+            # https://symfony.com/doc/3.4/security.html#logging-out
+            logout:
+                path:   /logout
+                target: /
     
     access_control:
     - { path: ^/register, roles: ROLE_ADMIN }
+    - { path: ^/stock, roles: ROLE_STOCK }
+
+    role_hierarchy:
+        ROLE_STOCK:     ROLE_INTRO
+        ROLE_COM:       ROLE_INTRO
+        ROLE_TRESO:     ROLE_INTRO
+        ROLE_SECRET:    ROLE_INTRO
+        ROLE_ALL:       [ROLE_STOCK, ROLE_TRESO, ROLE_SECRET, ROLE_COM]
+        ROLE_ADMIN:     ROLE_ALL

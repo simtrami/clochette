@@ -2,6 +2,7 @@
 <html class="fa-events-icons-ready">
 <head>
     <meta charset="utf-8"/>
+    <link rel='shortcut icon' type='image/x-icon' href='{{ asset('images/logo.ico') }}' />
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -47,13 +48,13 @@
                                     class="fa fa-calendar"></i> Calendrier</a>
                     </li> #}
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fa fa-user" aria-hidden="true"></i></a>
+                        <a class="nav-link" href="{{ path('login') }}"><i class="fa fa-user" aria-hidden="true"></i></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#"><i class="fa fa-plus"></i></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('homepage') }}"><i class="fa fa-power-off" aria-hidden="true"></i></a>
+                        <a class="nav-link" href="{{ path('logout') }}"><i class="fa fa-power-off" aria-hidden="true"></i></a>
                     </li>
                 </ul>
             </div>
