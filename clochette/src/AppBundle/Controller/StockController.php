@@ -9,14 +9,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 
 class StockController extends Controller {
-
-
-
     
     /**
     * @Route("/stock", name="stock")
     **/
-    public function showIndex(){        
+    public function showIndex(){
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
