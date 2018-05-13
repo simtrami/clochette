@@ -63,7 +63,7 @@ class Stocks
      * @ORM\GeneratedValue(strategy="NONE")
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\Articles")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idArticle", referencedColumnName="idArticle")
+     *   @ORM\JoinColumn(name="idarticle", referencedColumnName="idarticle")
      * })
      */
     private $idarticle;

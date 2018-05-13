@@ -38,7 +38,7 @@
         </tr>
         
         {% for beer in drafts %}
-            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{# {{ path('details', { 'id_article': beer.id }) }} #}">{{ beer.nom }}</a></td>
+            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path('details', { 'id_article': beer.idarticle.idarticle }) }}">{{ beer.nom }}</a></td>
             <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
             <td id="afficheStock-prix">{{ beer.prixVente }}</td>
             <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
@@ -60,7 +60,7 @@
         </tr>
         
         {% for bottle in bottles %}
-            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{# {{ path("details", { 'id_article': bottle.id }) }} #}">{{ bottle.nom }}</a></td>
+            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': bottle.idarticle.idarticle }) }}">{{ bottle.nom }}</a></td>
             <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
             <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
             <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
@@ -82,7 +82,7 @@
         </tr>
         
         {% for item in article %}
-            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{# {{ path("details", { 'id_article': item.id }) }} #}">{{ item.nom }}</a></td>
+            <td class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': item.idarticle.idarticle }) }}">{{ item.nom }}</a></td>
             <td id="afficheStock-cout">{{ item.prixAchat }}</td>
             <td id="afficheStock-prix">{{ item.prixVente }}</td>
             <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>

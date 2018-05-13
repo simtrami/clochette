@@ -26,7 +26,7 @@ class Commandes
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Articles")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idArticle", referencedColumnName="idArticle")
+     *   @ORM\JoinColumn(name="idarticle", referencedColumnName="idarticle")
      * })
      */
     private $idarticle;

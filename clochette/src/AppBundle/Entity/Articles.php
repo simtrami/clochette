@@ -15,7 +15,7 @@ class Articles
     /**
      * @var integer
      *
-     * @ORM\Column(name="idArticle", type="integer")
+     * @ORM\Column(name="idarticle", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
