@@ -94,3 +94,9 @@ $em->flush();
 return $this->redirectToRoute('index_clients');
 ```
 _On récupère les données entrées dans le formulaire qu'on insère avec `flush()` puis on redirige vers la page nommée (dans le controller) `index_clients`._
+
+# Commandes utiles
+## Pour encoder un password à insérer dans la base directement en SQL (créer l'utilisateur _admin_ par exemple)
+```bash
+php bin/console security:encode-password
+```
