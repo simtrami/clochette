@@ -4,12 +4,14 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Stocks
- *
- * @ORM\Table(name="stocks")
+
+ /**
+  * 
+  * Stocks
  * @ORM\Entity
+ * @ORM\Table(name="stocks")
  */
+
 class Stocks
 {
     /**
@@ -27,11 +29,32 @@ class Stocks
     private $type;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="prixVente", type="decimal", precision=8, scale=2, nullable=false)
+     */
+    private $prixVente;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="prixAchat", type="decimal", precision=8, scale=2, nullable=false)
+     */
+    private $prixAchat;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="quantite", type="integer", nullable=false)
      */
     private $quantite;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="volume", type="decimal", precision=8, scale = 2, nullable=false)
+     */
+    private $volume;
 
     /**
      * @var \AppBundle\Entity\Articles
@@ -44,6 +67,8 @@ class Stocks
      * })
      */
     private $idarticle;
+
+    
 
 
     /**
@@ -141,4 +166,79 @@ class Stocks
     {
         return $this->idarticle;
     }
+
+    /**
+     * Set prixAchat
+     *
+     * @param string $prixAchat
+     *
+     * @return Stocks
+     */
+    public function setPrixAchat($prixAchat)
+    {
+        $this->prixAchat = $prixAchat;
+
+        return $this;
+    }
+
+    /**
+     * Get prixAchat
+     *
+     * @return string
+     */
+    public function getPrixAchat()
+    {
+        return $this->prixAchat;
+    }
+
+
+    /**
+     * Set prixVente
+     *
+     * @param string $prixVente
+     *
+     * @return Stocks
+     */
+    public function setPrixVente($prixVente)
+    {
+        $this->prixVente = $prixVente;
+
+        return $this;
+    }
+
+    /**
+     * Get prixVente
+     *
+     * @return string
+     */
+    public function getprixVente()
+    {
+        return $this->prixVente;
+    }
+
+    /**
+     * Set volume
+     *
+     * @param string $volume
+     *
+     * @return Stocks
+     */
+    public function setVolume($volume)
+    {
+        $this->volume = $volume;
+
+        return $this;
+    }
+
+    /**
+     * Get volume
+     *
+     * @return string
+     */
+    public function getVolume()
+    {
+        return $this->volume;
+    }
 }
+
+    
