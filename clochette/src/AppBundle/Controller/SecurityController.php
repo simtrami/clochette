@@ -25,4 +25,16 @@ class SecurityController extends Controller
             'error'         => $error,
         ));
     }
+
+    /**
+     * @Route("/{usr}/settings", name="settings")
+     */
+    public function ShowSettings(Request $request, $usr)
+    {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $this->render('security/settings.html.twig');
+    }
 }
