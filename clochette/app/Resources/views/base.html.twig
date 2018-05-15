@@ -29,9 +29,9 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse {# menu #}" id="navbarAltMarkup">
-                <ul class="navbar-nav nav {# .justify-content-center #}">
-                    <li class="nav-item">
+            <div class="collapse navbar-collapse {# menu #}" id="navbarNavDropdown">
+                <ul class="navbar-nav {# .justify-content-center #}">
+                    <li class="nav-item active">
                         <a class="nav-link" href="{{ url('homepage') }}"><i class="fa fa-home" aria-hidden="true"></i>
                             Accueil</a>
                     </li>
@@ -40,17 +40,15 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('stock') }}"><i class="fa fa-stack-overflow"
-                                                                            aria-hidden="true"></i> Stock</a>
+                            aria-hidden="true"></i> Stock</a>
                     </li>
-                    {# <li class="nav-item">
-                        <a class="nav-link" href="#"><i
-                                    class="fa fa-calendar"></i> Calendrier</a>
-                    </li> #}
-                    <li class="nav-item" dropdown>
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i></a>
-                        <div class="dropdown-menu">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
-                                <a class="dropdown-item" href="#">{{ app.user.username }} <i class="fa fa-cog"></i></a>
+                                <a class="dropdown-item" href="#"><i class="fa fa-cog"></i> {{ app.user.username }}</a>
                                 <a class="dropdown-item" href="#">Autre action</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ path('logout') }}">Se déconnecter</a>
@@ -69,7 +67,7 @@
                         <a class="nav-link" href="{{ path('logout') }}"><i class="fa fa-power-off" aria-hidden="true"></i></a>
                     </li>
                 </ul>
-            </div>
+            </div>  
         </nav>
     </header>
 
