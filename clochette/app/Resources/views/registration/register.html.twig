@@ -1,3 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel utilisateur{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://use.fontawesome.com/7af49feb1a.js"></script>
+{% endblock %}
+
+{% block body %}
 {{ form_start(form) }}
     {{ form_row(form.username) }}
     {{ form_row(form.email) }}
@@ -7,3 +19,4 @@
 
     <button type="submit">Register!</button>
 {{ form_end(form) }}
+{% endblock %}

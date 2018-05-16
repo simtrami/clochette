@@ -56,7 +56,7 @@ security:
             logout_on_user_change: true
             # https://symfony.com/doc/3.4/security/csrf_in_login_form.html
             form_login:
-                csrf_token_generator: security.csrf.token_manager
+                #csrf_token_generator: security.csrf.token_manager
                 provider: user_db
             # https://symfony.com/doc/3.4/security.html#logging-out
             logout:

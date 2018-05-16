@@ -31,7 +31,7 @@ class UserType extends AbstractType
                     'Trésorier·ère' => 'ROLE_TRESO',
                     'Secrétaire' => 'ROLE_SECRET',
                     'Respo Com' => 'ROLE_COM',
-                    'Respo Log' => 'ROLE_STOCKS',
+                    'Respo Log' => 'ROLE_STOCK',
                     'Respo Tech' => 'ROLE_ADMIN',
                 ),
             ))
