@@ -24,78 +24,99 @@
             </div>
         <?php endif; ?> #}
 
-    <div class="table-responsive pad-t tableau-article">
-        <table class="table table-stripped table-bordered">
-            <thead>
+    <div class="table-responsive pad-t">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
                 <tr>
+                    <th scope="col">#</th>
                     <th scope="col">Nom pression</th>
                     <th scope="col">Prix à l'achat (pinte)</th>
                     <th scope="col">Prix à la vente</th>
                     <th scope="col">Fûts restants</th>
-                    <th scope="col">Pintes achetées</th>
+                    {# <th scope="col">Pintes achetées</th> #}
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for beer in drafts %}
                 <tr>
-                    <th scope="row" class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path('details', { 'id_article': beer.idarticle }) }}">{{ beer.nom }}</a></th>
+                    <th scope="row">{{ beer.idarticle }}</th>
+                    <th scope="row">{{ beer.nom }}</th>
                     <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
                     <td id="afficheStock-prix">{{ beer.prixVente }}</td>
                     <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
                     {# <td id="afficheStock-quantiteAchat">{{ beer.nbSoldeCurrent }}</td> #}
+                    <td>
+                        <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': beer.idarticle }) }}">MODIFIER</a>
+                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.idarticle}) }}">SUPPRIMER</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div class="table-responsive pad-t tableau-article">
-        <table class="table table-stripped table-bordered">
-            <thead>
+    <div class="table-responsive pad-t">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
                 <tr>
+                    <th scope="col">#</th>
                     <th scope="col">Nom bouteille</th>
                     <th scope="col">Prix à l'achat</th>
                     <th scope="col">Prix de vente</th>
                     <th scope="col">Bouteilles restantes</th>
-                    <th scope="col">Bouteilles achetées</th>
+                    {# <th scope="col">Bouteilles achetées</th> #}
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             
             <tbody>
                 {% for bottle in bottles %}
                 <tr>
-                    <th scope="row" class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': bottle.idarticle }) }}">{{ bottle.nom }}</a></th>
+                    <th scope="row">{{ bottle.idarticle }}</th>
+                    <th scope="row">{{ bottle.nom }}</th>
                     <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
                     <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
                     <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
                     {# <td id="afficheStock-quantiteAchat">{{ bottle.nbSoldeCurrent }}</td> #}
+                    <td>
+                        <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': bottle.idarticle }) }}">MODIFIER</a>
+                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.idarticle}) }}">SUPPRIMER</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div class="table-responsive pad-t tableau-article">
-        <table class="table table-stripped table-bordered">
-            <thead>
+    <div class="table-responsive pad-t">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
                 <tr>
+                    <th scope="col">#</th>
                     <th scope="col">Nom article</th>
                     <th scope="col">Prix à l'achat</th>
                     <th scope="col">Prix de vente</th>
                     <th scope="col">Articles restants</th>
-                    <th scope="col">Articles achetés</th>
+                    {# <th scope="col">Articles achetés</th> #}
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             
             <tbody>
                 {% for item in article %}
                 <tr>
-                    <th scope="row" class="modifyArticle-link" id="afficheStock-nom"><a href="{{ path("details", { 'id_article': item.idarticle }) }}">{{ item.nom }}</a></th>
+                    <th scope="row">{{ item.idarticle }}</th>
+                    <th scope="row">{{ item.nom }}</th>
                     <td id="afficheStock-cout">{{ item.prixAchat }}</td>
                     <td id="afficheStock-prix">{{ item.prixVente }}</td>
                     <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
                     {# <td id="afficheStock-quantiteAchat">{{ item.nbSoldeCurrent }}</td> #}
+                    <td>
+                        <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': item.idarticle }) }}">MODIFIER</a>
+                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.idarticle}) }}">SUPPRIMER</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -103,9 +124,7 @@
     </div>
 
     <div class="pull-right pad-t">
-        <button type="button" class="btn btn-danger"><a>Supprimer Article</a></button>
-        <button type="button" class="btn btn-light"><a>Modifier Article</a></button>
-        <button type="button" class="btn btn-success"><a {# data-toggle="modal" data-target="#add-article-popup" #}>Ajouter Article</a></button>
+        <a class="btn btn-success" href="{{ url('ajout_article') }}">Ajouter un article</a>
     </div>
 
     {# Refaire cette méthode avec Doctrine -->

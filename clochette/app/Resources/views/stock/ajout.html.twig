@@ -1,18 +1,92 @@
-{% extends base.html.twig %}
-{% block title %}Ajouter un article{% endblock %}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ mode == 'new_article' ? 'Ajouter un article' : 'Modifier un article' }}{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/stock.css') }}">
 {% endblock %}
 
 {% block javascripts %}
-<script src="https://use.fontawesome.com/7af49feb1a.js"></script>
-<script src="{{ asset('js/addArticles.js') }}"></script>
+<script>
+    document.getElementById("selectType").onchange = function() {
+        if (this.value == "article") {
+        document.getElementById("validationVolume").value = "0";
+        }
+        document.getElementById("validationVolume").disabled = (this.value == "article");
+    }
+    document.getElementById("selectType").change();
+</script>
 {% endblock %}
 
 {% block body %}
-<div class="modal fade" id="add-article-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+<div class="container-fluid">
+    <h4>{{ mode == 'new_article' ? 'Ajouter un article' : 'Modifier un article' }}</h4>
+    <form action="" method="post">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputNom">Nom de l'article</label>
+                <input name="form[nom]" value="{{ form.nom is defined ? form.nom : '' }}" type="text" class="form-control" id="inputNom" placeholder="Article" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="selectType">Type d'article</label>
+                <select name="form[type]" class="form-control" id="selectType" required>
+                    {% for type in types %}
+                        <option value="{{type.type}}" {{ type.type == form.type ? 'selected' : '' }} id="valueType">{{ type.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-6 mb-3">
+                <label for="inputPrixAchat">Prix à l'achat</label>
+                <div class="input-group">
+                    <input name="form[prixAchat]" value="{{ form.prixAchat is defined ? form.prixAchat : '' }}" type="text" class="form-control" id="validationPrixAchat" placeholder="0.00" aria-describedby="inputGroupAppend" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="inputPrixAchat">Prix à la vente</label>
+                <div class="input-group">
+                    <input name="form[prixVente]" value="{{ form.prixVente is defined ? form.prixVente : '' }}" type="text" class="form-control" id="validationPrixVente" placeholder="0.00" aria-describedby="inputGroupAppend" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-6 mb-3">
+                <label for="inputQuantite">Quantité</label>
+                <div class="input-group">
+                    <input name="form[quantite]" value="{{ form.quantite is defined ? form.quantite : '' }}" type="text" class="form-control" id="validationQuantite" placeholder="0" aria-describedby="inputGroupAppend" required>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-box"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="inputQuantite">Volume à l'unité</label>
+                <div class="input-group">
+                    <input name="form[volume]" value="{{ form.volume is defined ? form.volume : '0' }}" type="text" class="form-control" id="validationVolume" placeholder="0.00" aria-describedby="inputGroupAppend">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="inputGroupAppend">L</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {# https://symfony.com/doc/current/security/csrf.html#csrf-protection-in-html-forms
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />#}
+        
+        <div class="pull-right pad-t">
+            <button type="submit" class="btn btn-primary">{{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
+        </div>
+    </form>
+</div>
+
+{#         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Ajoutez un article</h5>
@@ -65,6 +139,5 @@
                 </div>
 
             </div>
-        </div>
-    </div>
-    {% endblock %}
+        </div> #}
+{% endblock %}

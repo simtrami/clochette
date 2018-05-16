@@ -33,13 +33,6 @@ class Stocks
     /**
      * @var string
      *
-     * @ORM\Column(name="prix", type="decimal", precision=8, scale=2, nullable=false)
-     */
-    private $prix;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="type", type="string", length=15, nullable=false)
      */
     private $type;
@@ -68,7 +61,7 @@ class Stocks
     /**
      * @var integer
      *
-     * @ORM\Column(name="volume", type="decimal", precision=8, scale = 2, nullable=false)
+     * @ORM\Column(name="volume", type="decimal", precision=8, scale = 2, nullable=true)
      */
     private $volume;
     
@@ -108,30 +101,6 @@ class Stocks
     public function getNom()
     {
         return $this->nom;
-    }
-
-    /**
-     * Set prix
-     *
-     * @param string $prix
-     *
-     * @return Articles
-     */
-    public function setPrix($prix)
-    {
-        $this->prix = $prix;
-
-        return $this;
-    }
-
-    /**
-     * Get prix
-     *
-     * @return string
-     */
-    public function getPrix()
-    {
-        return $this->prix;
     }
 
     /**
