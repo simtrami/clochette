@@ -47,7 +47,7 @@ use AppBundle\Entity\Table
 ```
 ### Définir le Doctrine Manager :
 ```php
-$em = $this->getDoctrine()->getMmanager();
+$em = $this->getDoctrine()->getManager();
 ```
 ### Définir une instance client et récupérer les données de la variable d'un formulaire:
 ```php
