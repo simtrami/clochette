@@ -7,22 +7,10 @@
 {% endblock %}
 
 {% block javascripts %}
-<script src="https://use.fontawesome.com/7af49feb1a.js"></script>
 {% endblock %}
 
 {% block body %}
 <div class="container-fluid">
-    {# Refaire ce script avec Symfony
-        <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger pad-t">
-                <p>Vous n'avez pas rempli le formulaire correctement</p>
-                <ul>
-                    <?php foreach ($errors as $error): ?>
-                        <li><?= $error; ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?> #}
 
     <div class="table-responsive pad-t">
         <table class="table table-striped table-bordered">
@@ -49,7 +37,8 @@
                     {# <td id="afficheStock-quantiteAchat">{{ beer.nbSoldeCurrent }}</td> #}
                     <td>
                         <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': beer.idarticle }) }}">MODIFIER</a>
-                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.idarticle}) }}">SUPPRIMER</a>
+                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.idarticle}) }}"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">SUPPRIMER</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -82,7 +71,8 @@
                     {# <td id="afficheStock-quantiteAchat">{{ bottle.nbSoldeCurrent }}</td> #}
                     <td>
                         <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': bottle.idarticle }) }}">MODIFIER</a>
-                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.idarticle}) }}">SUPPRIMER</a>
+                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.idarticle}) }}"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">SUPPRIMER</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -115,7 +105,8 @@
                     {# <td id="afficheStock-quantiteAchat">{{ item.nbSoldeCurrent }}</td> #}
                     <td>
                         <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': item.idarticle }) }}">MODIFIER</a>
-                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.idarticle}) }}">SUPPRIMER</a>
+                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.idarticle}) }}"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">SUPPRIMER</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -123,45 +114,9 @@
         </table>
     </div>
 
-    <div class="pull-right pad-t">
-        <a class="btn btn-success" href="{{ url('ajout_article') }}">Ajouter un article</a>
+    <div class="fa-pull-right pad-t">
+        <a class="btn btn-success" href="{{ path('ajout_article') }}">Ajouter un article</a>
     </div>
-
-    {# Refaire cette méthode avec Doctrine -->
-    <div class="popup-addArticle" >
-        <i id="addArticle-close" class="fa fa-close"></i>
-        <h1>Nouvel article</h1>
-
-        <form class=popup-addArticle-form method="POST" action="php/addArticles-post.php">
-            <i class="fa fa-beer"></i>
-            <input type="text" placeholder="Nom" name="nom"> <br>
-            <i class="fa fa-money"></i>
-            <input type="number" placeholder="Prix d'achat" name="prixAchat"><br>
-            <input type="number" placeholder="Prix de vente" name="prixVente"><br>
-            <input type="number" placeholder="Quantité" name="quantite">
-            <button type="submit" name="submit">Ajouter</button>
-        </form>
-
-    </div>
-
-
-
-    <div class="popup-modifyArticle" >
-        <i id="modifyArticle-close" class="fa fa-close"></i>
-        <h1>Modifier Article</h1>
-
-
-        <form class="popup-modifyArticle-form" method="POST">
-            <i class="fa fa-beer"></i>
-            <input type="text" name="nom"> <br>
-            <i class="fa fa-money"></i>
-            <input type="number" name="prix"><br>
-            <input type="number"name="quantite">
-            <button type="submit" name="submit">Modifier</button>
-
-        </form>
-
-    </div> #}
 
 </div>
 {% endblock %}
