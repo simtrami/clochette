@@ -33,14 +33,6 @@ class PreparationController extends Controller
 
         
 
-        $bottles_notnull = $repo_stocks->findBy(
-            array('type' => 'bottle', 'quantite' => 15)
-        );
-
-        $article_notnull = $repo_stocks->findBy(
-            array('type' => 'article', 'quantite' => 25)
-        );
-
         /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.quantite > :quantite ';
         
         $drafts_notnull = $conn->prepare($sql);

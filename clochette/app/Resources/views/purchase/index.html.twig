@@ -7,6 +7,49 @@
 {% endblock %}
 
 {% block javascripts %}
+<Script>
+$(".btn-value").on("click", function() {
+
+    var button = $(this);
+    var qte = button.parent().parent().find(".qte");
+    var oldValue = button.parent().parent().find("input").val();
+
+    if (button.text() == "+") {
+        var newVal = parseFloat(oldValue) + 1;
+        console.log(newVal);
+    } else {
+    // Don't allow decrementing below zero
+        if (oldValue > 0) {
+            var newVal = parseFloat(oldValue) - 1;
+            console.log(newVal);
+        } else {
+            newVal = 0;
+        }
+    }
+
+    button.parent().parent().find(".qte").attr("value", newVal);
+    button.parent().parent().find(".qte").val(newVal);
+    console.log(button.parent().parent().find(".qte").val());
+
+    var tot = 0;
+    $(".qte").each(function() {
+        var prix = $(this).parent().parent().find("#prix").val();
+        tot = tot + parseFloat($(this).val()) * parseFloat(prix);
+    });
+    $("#total").attr("value", tot);
+});
+
+$(".qte").on("input", function() {
+
+    var tot = 0;
+    $(".qte").each(function() {
+        var prix = $(this).parent().parent().find("#prix").val();
+        tot = tot + parseFloat($(this).val()) * parseFloat(prix);
+    });
+    $("#total").attr("value", tot);
+});
+
+</script>
 {% endblock %}
 
 {% block body %}
@@ -17,17 +60,26 @@
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 pad-b">
                 <div class="card article" style="width: 18rem;">
                     <div class="card-body">
+                        <label for="inputPrixAchat"></label>
                         <h5 class="card-title center">{{ article.nom }}</h5>
-                        <p class="card-text center">{{ article.prixVente }}€</p>
+                        <div class="input-group">
+                            <input value="{{ article.prixVente }}" type="text"
+                                class="form-control" id="prix" disabled>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                            </div>
+                        </div>{# 
+                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <p class="card-text center">{{ article.prixVente }}€</p> #}
 
                         <div class="row col-8 align-items-center add-delete-article ">
+                            <label for="exampleFormControlInput1">Quantité</label>
+                            <input type="text"class="qte" autocomplete="" value="0">
                             <div class="pad-r">
-                                <a class="btn btn-danger"
-                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=minus">-</a>
+                                <a class="btn btn-outline-danger btn-value" id="moins">-</a>
                             </div>
                             <div class="pad-r">
-                                <a class=" btn btn-success"
-                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=plus">+</a>
+                                <a class=" btn btn-outline-success btn-value" id="plus">+</a>
                             </div>
                         </div>
                     </div>
@@ -43,16 +95,22 @@
                 <div class="card article" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title center">{{ article.nom }}</h5>
-                        <p class="card-text center">{{ article.prixVente }}€</p>
+                        <div class="input-group">
+                            <input value="{{ article.prixVente }}" type="text"
+                                class="form-control" id="prix" disabled>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                            </div>
+                        </div>
 
                         <div class="row col-8 align-items-center add-delete-article ">
+                            <label for="exampleFormControlInput1">Quantité</label>
+                            <input type="text"class="qte" autocomplete="" value="0">
                             <div class="pad-r">
-                                <a class="btn btn-danger"
-                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=minus">-</a>
+                                <a class="btn btn-outline-danger btn-value" id="moins">-</a>
                             </div>
                             <div class="pad-r">
-                                <a class=" btn btn-success"
-                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=plus">+</a>
+                                <a class=" btn btn-outline-success btn-value" id="plus">+</a>
                             </div>
                         </div>
                     </div>
@@ -68,16 +126,22 @@
                 <div class="card article" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title center">{{ article.nom }}</h5>
-                        <p class="card-text center">{{ article.prixVente }}€</p>
+                        <div class="input-group">
+                            <input value="{{ article.prixVente }}" type="text"
+                                class="form-control" id="prix" disabled>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                            </div>
+                        </div>
 
                         <div class="row col-8 align-items-center add-delete-article ">
+                            <label for="exampleFormControlInput1" >Quantité</label>
+                            <input type="text"class="qte" autocomplete="" value="0">
                             <div class="pad-r">
-                                <a class="btn btn-danger"
-                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=minus">-</a>
+                                <a class="btn btn-outline-danger btn-value" id="moins">-</a>
                             </div>
                             <div class="pad-r">
-                                <a class=" btn btn-success"
-                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=plus">+</a>
+                                <a class=" btn btn-outline-success btn-value" id="plus">+</a>
                             </div>
                         </div>
                     </div>
@@ -133,7 +197,7 @@
         <div class="input-group">
 
             <div class="input-group-append">
-                <span class="input-group-text"><?= $_SESSION['prix']; ?></span>
+                <input type="text" id="total" value="0">
                 <span class="input-group-text">€</span>
 
             </div>
