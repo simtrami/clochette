@@ -4,12 +4,11 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
- /**
-  * 
-  * Stocks
- * @ORM\Entity
+/**
+ * Stocks
+ *
  * @ORM\Table(name="stocks")
+ * @ORM\Entity
  */
 
 class Stocks
@@ -64,6 +63,13 @@ class Stocks
      * @ORM\Column(name="volume", type="decimal", precision=8, scale = 2, nullable=true)
      */
     private $volume;
+
+    /**
+     * @var boolean
+     * 
+     * @ORM\Column(name="is_forSale", type="boolean", nullable=false)
+     */
+    private $isForSale = '0';
     
 
 ## Fonctions
@@ -222,6 +228,30 @@ class Stocks
     public function getVolume()
     {
         return $this->volume;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isForSale
+     *
+     * @return Stocks
+     */
+    public function setIsForSale($isForSale)
+    {
+        $this->setIsForSale = $isForSale;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean
+     */
+    public function getIsForSale()
+    {
+        return $this->isForSale;
     }
 }
 
