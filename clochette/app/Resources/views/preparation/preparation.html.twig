@@ -27,7 +27,7 @@
             <tbody>
                 {% for beer in drafts_notnull %}
                 <tr>
-                    <th scope="row">{{ beer.idArticle }}</th>
+                    <th scope="row">{{ beer.idarticle }}</th>
                     <th scope="row">{{ beer.nom }}</th>
                     <td id="afficheStock-prix">{{ beer.prixVente }} ( {{beer.prixVente / 2 + 0.5}} )</td>
                     <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
