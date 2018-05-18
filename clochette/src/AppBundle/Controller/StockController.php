@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class StockController extends Controller {
 
@@ -51,14 +52,14 @@ class StockController extends Controller {
      */
     public function showDetails(Request $request, $id_article){
 
-        $data = [];
-
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         
-        $data['mode'] = 'modify';
+        $data = [];
+        $data['mode'] = 'modifyArticle';
         $data['types'] = $this->types;
         $data['form'] = [];
+        $data['_token'] = $this->get('securoty.csrf.token_manager')->getToken('form');
 
         $form = $this->createFormBuilder()
             ->add('nom', TextType::class)
@@ -110,7 +111,7 @@ class StockController extends Controller {
             $data['form'] = $article_data;
         }
 
-        return $this->render("stock/ajout.html.twig", $data);
+        return $this->render("stock/article.html.twig", $data);
     }
     
     /**
@@ -123,6 +124,7 @@ class StockController extends Controller {
         $data['types'] = $this->types;
         $data['form'] = [];
         $data['form']['type'] = '';
+        $data['_token'] = $this->get('security.csrf.token_manager')->getToken('form');
 
         $form = $this->createFormBuilder()
             ->add('nom', TextType::class)
@@ -137,7 +139,7 @@ class StockController extends Controller {
         ;
 
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid())
         {
             $form_data = $form->getData();
@@ -159,8 +161,7 @@ class StockController extends Controller {
             return $this->redirectToRoute('ajout_article');
         }
 
-
-        return $this->render('stock/ajout.html.twig', $data);
+        return $this->render('stock/article.html.twig', $data);
     }
 
     /**
@@ -181,5 +182,4 @@ class StockController extends Controller {
     
         return $this->redirectToRoute('stock');
     }
-
 }

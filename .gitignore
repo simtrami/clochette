@@ -1,3 +1,7 @@
 .htaccess
 Rapport.md
-.vscode/
+.vscode/.DS_Store
+.DS_Store
+clochette/.DS_Store
+clochette/app/.DS_Store
+clochette/app/Resources/.DS_Store

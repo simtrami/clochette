@@ -33,6 +33,7 @@ class UserType extends AbstractType
                     'Respo Com' => 'ROLE_COM',
                     'Respo Log' => 'ROLE_STOCK',
                     'Respo Tech' => 'ROLE_ADMIN',
+                    'PC' => 'ROLE_INTRO',
                 ),
             ))
             /*

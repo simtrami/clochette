@@ -11,33 +11,81 @@
 
 {% block body %}
 <div class="container-fluid">
-
+    <h5>Pressions:</h5>
     <div class="row affichage-articles">
-
-        {% for product in products %}
+        {% for article in drafts_notnull %}
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 pad-b">
                 <div class="card article" style="width: 18rem;">
                     <div class="card-body">
-                        <h5 class="card-title center">{{ product.name }}</h5>
-                        <p class="card-text center">{{ product.price }}€</p>
+                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <p class="card-text center">{{ article.prixVente }}€</p>
 
                         <div class="row col-8 align-items-center add-delete-article ">
                             <div class="pad-r">
                                 <a class="btn btn-danger"
-                                   href="controller/panier.ctrl.php?id={{ product.id }}&op=minus">-</a>
+                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=minus">-</a>
                             </div>
                             <div class="pad-r">
                                 <a class=" btn btn-success"
-                                   href="controller/panier.ctrl.php?id={{ product.id }}&op=plus">+</a>
+                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=plus">+</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         {% endfor %}
-
     </div>
+
+    <h5>Bouteilles:</h5>
+    <div class="row affichage-articles">
+        {% for article in bottles_notnull %}
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 pad-b">
+                <div class="card article" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <p class="card-text center">{{ article.prixVente }}€</p>
+
+                        <div class="row col-8 align-items-center add-delete-article ">
+                            <div class="pad-r">
+                                <a class="btn btn-danger"
+                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=minus">-</a>
+                            </div>
+                            <div class="pad-r">
+                                <a class=" btn btn-success"
+                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=plus">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h5>Autres:</h5>
+    <div class="row affichage-articles">
+        {% for article in article_notnull %}
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 pad-b">
+                <div class="card article" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <p class="card-text center">{{ article.prixVente }}€</p>
+
+                        <div class="row col-8 align-items-center add-delete-article ">
+                            <div class="pad-r">
+                                <a class="btn btn-danger"
+                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=minus">-</a>
+                            </div>
+                            <div class="pad-r">
+                                <a class=" btn btn-success"
+                                   href="controller/panier.ctrl.php?id={{ article.idarticle }}&op=plus">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
 
     <div class="row ">
 

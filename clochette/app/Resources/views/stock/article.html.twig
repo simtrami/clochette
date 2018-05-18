@@ -77,8 +77,8 @@
             </div>
         </div>
         
-        {# https://symfony.com/doc/current/security/csrf.html#csrf-protection-in-html-forms
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />#}
+        {# https://symfony.com/doc/current/security/csrf.html#csrf-protection-in-html-forms #}
+        <input type="hidden" name="form[_token]" value="{{ _token }}" />
         
         <div class="pad-t">
             <button type="submit" class="btn btn-primary btn-lg btn-block">{{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>

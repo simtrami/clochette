@@ -40,6 +40,7 @@ security:
                 login_path: login
                 check_path: login
                 use_referer: true
+                csrf_token_generator: security.csrf.token_manager
                 provider: user_db
             # https://symfony.com/doc/3.4/security.html#logging-out
             logout:
@@ -56,7 +57,6 @@ security:
             logout_on_user_change: true
             # https://symfony.com/doc/3.4/security/csrf_in_login_form.html
             form_login:
-                #csrf_token_generator: security.csrf.token_manager
                 provider: user_db
             # https://symfony.com/doc/3.4/security.html#logging-out
             logout:
@@ -65,12 +65,14 @@ security:
     
     access_control:
     - { path: ^/register, roles: ROLE_ADMIN }
-    - { path: ^/stock, roles: ROLE_STOCK }
+    - { path: ^/stock/details, roles: ROLE_STOCK }
+    - { path: ^/stock/ajout, roles: ROLE_STOCK }
 
     role_hierarchy:
-        ROLE_STOCK:     ROLE_INTRO
-        ROLE_COM:       ROLE_INTRO
-        ROLE_TRESO:     ROLE_INTRO
-        ROLE_SECRET:    ROLE_INTRO
+        ROLE_BUREAU:    ROLE_INTRO
+        ROLE_STOCK:     ROLE_BUREAU
+        ROLE_COM:       ROLE_BUREAU
+        ROLE_TRESO:     ROLE_BUREAU
+        ROLE_SECRET:    ROLE_BUREAU
         ROLE_ALL:       [ROLE_STOCK, ROLE_TRESO, ROLE_SECRET, ROLE_COM]
         ROLE_ADMIN:     ROLE_ALL
