@@ -59,7 +59,7 @@ class StockController extends Controller {
         $data['mode'] = 'modifyArticle';
         $data['types'] = $this->types;
         $data['form'] = [];
-        $data['_token'] = $this->get('securoty.csrf.token_manager')->getToken('form');
+        $data['_token'] = $this->get('security.csrf.token_manager')->getToken('form');
 
         $form = $this->createFormBuilder()
             ->add('nom', TextType::class)

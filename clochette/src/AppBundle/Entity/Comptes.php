@@ -38,13 +38,6 @@ class Comptes
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string", length=60, nullable=false, unique=true)
-     */
-    private $username;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="login", type="string", length=10, nullable=false, unique=true)
      */
     private $login;
