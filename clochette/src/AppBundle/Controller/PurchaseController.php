@@ -23,33 +23,25 @@ class PurchaseController extends Controller
         $conn = $this->getDoctrine()->getManager()->getConnection();
 
 
-        $bottles_notnull = $repo_stocks->findBy(
-            array('type' => 'bottle', 'quantite' => 15)
-        );
+        /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.is_forSale = :x';
 
-        $article_notnull = $repo_stocks->findBy(
-            array('type' => 'article', 'quantite' => 25)
-        );
+        $selected_drafts = $conn->prepare($sql);
+        $selected_drafts -> execute(['x' => 1]);
 
-        /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.quantite > :quantite ';
+        /* bouteilles */ $sql = ' SELECT * FROM stocks S WHERE S.type="bottle" AND S.is_forSale = :x';
 
-        $drafts_notnull = $conn->prepare($sql);
-        $drafts_notnull->execute(['quantite' => 0]);
+        $selected_bottles = $conn->prepare($sql);
+        $selected_bottles -> execute(['x' => 1]);
 
-        /* bouteilles */ $sql = ' SELECT * FROM stocks S WHERE S.type="bottle" AND S.quantite > :quantite ';
+        /* articles */ $sql = ' SELECT * FROM stocks S WHERE S.type="article" AND S.is_forSale = :x';
 
-        $bottles_notnull = $conn->prepare($sql);
-        $bottles_notnull->execute(['quantite' => 0]);
-
-        /* articles */ $sql = ' SELECT * FROM stocks S WHERE S.type="article" AND S.quantite > :quantite ';
-
-        $article_notnull = $conn->prepare($sql);
-        $article_notnull->execute(['quantite' => 0]);
+        $selected_articles = $conn->prepare($sql);
+        $selected_articles -> execute(['x' => 1]);
 
         $data=[];
-        $data['drafts_notnull'] = $drafts_notnull;
-        $data['bottles_notnull'] = $bottles_notnull;
-        $data['article_notnull'] = $article_notnull;
+        $data['selected_drafts'] = $selected_drafts;
+        $data['selected_bottles'] = $selected_bottles;
+        $data['selected_articles'] = $selected_articles;
 
         return $this->render("purchase/index.html.twig", $data);
                                 

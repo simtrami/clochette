@@ -56,7 +56,7 @@ $(".qte").on("input", function() {
 <div class="container-fluid">
     <h5>Pressions:</h5>
     <div class="row affichage-articles">
-        {% for article in drafts_notnull %}
+        {% for article in selected_drafts %}
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 pad-b">
                 <div class="card article" style="width: 18rem;">
                     <div class="card-body">
@@ -90,7 +90,7 @@ $(".qte").on("input", function() {
 
     <h5>Bouteilles:</h5>
     <div class="row affichage-articles">
-        {% for article in bottles_notnull %}
+        {% for article in selected_bottles %}
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 pad-b">
                 <div class="card article" style="width: 18rem;">
                     <div class="card-body">
@@ -121,7 +121,7 @@ $(".qte").on("input", function() {
 
     <h5>Autres:</h5>
     <div class="row affichage-articles">
-        {% for article in article_notnull %}
+        {% for article in selected_articles %}
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 pad-b">
                 <div class="card article" style="width: 18rem;">
                     <div class="card-body">
@@ -151,7 +151,7 @@ $(".qte").on("input", function() {
     </div>
 
 
-    <div class="row ">
+    <div class="btn-toolbar">
 
         <div class="list-articles">
             <p>
@@ -190,10 +190,12 @@ $(".qte").on("input", function() {
 
         <div class="cancel-command">
             <button type="button" class="btn btn-danger">
-                <a href="index.php?rooting=caisse&panier=reset">Annuler Commande</a></button>
+                <a href="index.php?rooting=caisse&panier=reset">Annuler La Commande</a></button>
         </div>
+    </div>
 
 
+    <div class="btn-toolbar">
         <div class="input-group">
 
             <div class="input-group-append">
@@ -202,6 +204,36 @@ $(".qte").on("input", function() {
 
             </div>
         </div>
+    </div>
+
+    <div class="btn-toolbar">
+
+        
+
+        <div class="btn-group btn-group-toggle moyen_paiement" data-toggle="buttons">
+
+            <label class="btn btn-success">
+                <input type="radio" name="options" id="option1" ><i class="fa fa-credit-card"></i> Carte Bleue
+            </label>
+
+            <label class="btn btn-success">
+                <input type="radio" name="options" id="option2" > <i class="fa fa-id-badge"></i> Compte
+            </label>
+
+            <label class="btn btn-success">
+                <input type="radio" name="options" id="option3" > <i class="fa fa-money-bill-alt"></i> Liquide
+            </label>
+
+            <label class="btn btn-success">
+                <input type="radio" name="options" id="option4" > <i class="fa fa-mobile-alt"></i> Pumpkin
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <div class="btn-toolbar">
 
         <div class="payer">
             <form action="index.php?rooting=caisse&panier=reset" method="get">
@@ -210,81 +242,83 @@ $(".qte").on("input", function() {
                 </button>
             </form>
         </div>
+
     </div>
+
 </div>
 
 
 
-    <div class="afficheArticle">
+{# <div class="afficheArticle">
+    
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Heineken 25cl                </div>
+            <div class="box-article-prix">
+                3€                </div>
+
+        </div>
         
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Heineken 25cl                </div>
-                <div class="box-article-prix">
-                    3€                </div>
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Biere                </div>
+            <div class="box-article-prix">
+                12€                </div>
 
-            </div>
-            
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Biere                </div>
-                <div class="box-article-prix">
-                    12€                </div>
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Kro                </div>
+            <div class="box-article-prix">
+                2€                </div>
 
-            </div>
-            
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Kro                </div>
-                <div class="box-article-prix">
-                    2€                </div>
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Delirium Red                </div>
+            <div class="box-article-prix">
+                8€                </div>
 
-            </div>
-            
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Delirium Red                </div>
-                <div class="box-article-prix">
-                    8€                </div>
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Shooter                </div>
+            <div class="box-article-prix">
+                2€                </div>
 
-            </div>
-            
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Shooter                </div>
-                <div class="box-article-prix">
-                    2€                </div>
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Chouffe                </div>
+            <div class="box-article-prix">
+                12€                </div>
 
-            </div>
-            
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Chouffe                </div>
-                <div class="box-article-prix">
-                    12€                </div>
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Coca                </div>
+            <div class="box-article-prix">
+                2€                </div>
 
-            </div>
-            
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Coca                </div>
-                <div class="box-article-prix">
-                    2€                </div>
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Voiture                </div>
+            <div class="box-article-prix">
+                15€                </div>
 
-            </div>
-            
-            <div class="box-article">
-                <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
-                    Voiture                </div>
-                <div class="box-article-prix">
-                    15€                </div>
+        </div>
+        
+</div>
 
-            </div>
-            
-    </div>
-
-    <div class="caisse">
-        <div class="prix">Prix : <input value="0">€</div>
-        <button>Valider</button>
-    </div>
+<div class="caisse">
+    <div class="prix">Prix : <input value="0">€</div>
+    <button>Valider</button>
+</div> #}
 {% endblock %}
