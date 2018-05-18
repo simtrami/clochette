@@ -51,7 +51,7 @@
             <tbody>
                 {% for bottle in bottles_notnull %}
                 <tr>
-                    <th scope="row">{{ bottle.idArticle }}</th>
+                    <th scope="row">{{ bottle.idarticle }}</th>
                     <th scope="row">{{ bottle.nom }}</th>
                     <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
                     <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
@@ -75,7 +75,7 @@
             <tbody>
                 {% for item in article_notnull %}
                 <tr>
-                    <th scope="row">{{ item.idArticle }}</th>
+                    <th scope="row">{{ item.idarticle }}</th>
                     <th scope="row">{{ item.nom }}</th>
                     <td id="afficheStock-prix">{{ item.prixVente }}</td>
                     <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
