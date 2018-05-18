@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\Stocks;
@@ -26,20 +27,10 @@ class PreparationController extends Controller
     /**
     * @Route("/preparation", name="preparation")
     **/
-    public function getData(){
+    public function getData(Request $request){
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $conn = $this->getDoctrine()->getManager()->getConnection();
-
-        
-
-        $bottles_notnull = $repo_stocks->findBy(
-            array('type' => 'bottle', 'quantite' => 15)
-        );
-
-        $article_notnull = $repo_stocks->findBy(
-            array('type' => 'article', 'quantite' => 25)
-        );
 
         /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.quantite > :quantite ';
         
@@ -61,6 +52,10 @@ class PreparationController extends Controller
         $data['bottles_notnull'] = $bottles_notnull;
         $data['article_notnull'] = $article_notnull;
 
+        $idForSale=$request->request->get(articlesForSale);
+        foreach ($idForSale as $cur_id){
+            $repo_stocks->findOneBy(array('idarticle' => $cur_id))->setIsForSale(1);
+        }
 
         return $this->render("preparation/preparation.html.twig", $data);
     }
