@@ -10,6 +10,7 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Comptes;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,6 +25,7 @@ class ClientType extends AbstractType
             ->add('prenom',TextType::class)
             ->add('login',TextType::class)
             ->add('nomstaff',TextType::class)
+            ->add('annee',IntegerType::class)
             ;
     }
 
