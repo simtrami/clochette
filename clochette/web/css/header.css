@@ -3,12 +3,13 @@
     color: white;
     font-size: 20px;
     text-decoration: none;
+    margin-bottom: 1%;
 }
 
-#header-toggler {
+/* #header-toggler {
     background-color: white;
     border : #01A867;
-}
+} */
 .nav-item a {
     color: white;
     text-decoration: none;
