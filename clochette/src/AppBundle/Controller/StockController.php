@@ -2,6 +2,7 @@
 // src/AppBundle/Controller/StockController.php
 namespace AppBundle\Controller;
 
+use AppBundle\Form\ArticleType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -14,18 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class StockController extends Controller {
-
-    private $types = [
-        [   'type'  => 'draft',
-            'nom'   => 'Fût'
-        ],
-        [   'type'  => 'bottle',
-            'nom'   => 'Bouteille'
-        ],
-        [   'type'  => 'article',
-            'nom'   => 'Nourriture ou autre'
-        ]
-    ];
 
     /**
     * @Route("/stock", name="stock")
@@ -48,120 +37,87 @@ class StockController extends Controller {
     }
 
     /**
-     * @Route("/stock/details/{id_article}", name="details_article")
+     * @Route("/stock/modifier/{id_article}", name="modif_article")
      */
-    public function showDetails(Request $request, $id_article){
+    public function modifArticleAction(Request $request, $id_article){
 
+        // 1) Récupérer l'Article et construire le form
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
+        $article = $repo_stocks->find($id_article);
+        // Récupération du type d'article et traduction pour l'affichage
+        switch($article->getType()) {
+            case "draft":
+                $type = "Fût";
+                break;
+            case "bottle":
+                $type = "Bouteille";
+                break;
+            case "article":
+                $type = "Nourriture ou autre";
+                break;
+            default:
+                $type = "Type non défini";
+        }
         
-        $data = [];
-        $data['mode'] = 'modifyArticle';
-        $data['types'] = $this->types;
-        $data['form'] = [];
-        $data['_token'] = $this->get('security.csrf.token_manager')->getToken('form');
+        $form = $this->createForm(ArticleType::class, $article);
 
-        $form = $this->createFormBuilder()
-            ->add('nom', TextType::class)
-            ->add('type', TextType::class)
-            ->add('prixAchat', MoneyType::class)
-            ->add('prixVente', MoneyType::class)
-            ->add('quantite', IntegerType::class)
-            ->add('volume', NumberType::class, array(
-                'required'      => false,
-            ))
-            ->getForm()
-        ;
-
+        // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            $form_data = $form->getData();
-            $data['form'] = [];
-            $data['form'] = $form_data;
-            $article = $repo_stocks->find($id_article);
+        if ($form->isSubmitted() && $form->isValid()) {
 
-            $article->setNom($form_data['nom']);
-            $article->setType($form_data['type']);
-            $article->setPrixAchat($form_data['prixAchat']);
-            $article->setPrixVente($form_data['prixVente']);
-            $article->setQuantite($form_data['quantite']);
-            $article->setVolume($form_data['volume']);
-            
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            // 3) Enregistrer l'Article!
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($article);
+            $entityManager->flush();
+
+            // ... autres actions
 
             return $this->redirectToRoute('stock');
-            
-        } else
-        {
-            $article = $repo_stocks->find($id_article);
-
-            $article_data['idarticle'] = $article->getIdarticle();
-            $article_data['nom'] = $article->getNom();
-            $article_data['type'] = $article->getType();
-            $article_data['prixAchat'] = $article->getPrixAchat();
-            $article_data['prixVente'] = $article->getPrixVente();
-            $article_data['quantite'] = $article->getQuantite();
-            $article_data['volume'] = $article->getVolume();
-
-            $article_data['types'] = $this->types;
-
-            $data['form'] = $article_data;
         }
 
-        return $this->render("stock/article.html.twig", $data);
+        return $this->render(
+            'stock/article.html.twig',
+                array(
+                    'form' => $form->createView(),
+                    'mode' => 'modify_article',
+                    'nom' => $article->getNom(),
+                    'type' => $type,
+                )
+        );
     }
     
     /**
      * @Route("/stock/ajout", name="ajout_article")
      */
+
     public function ajoutArticleAction(Request $request){
 
-        $data = [];
-        $data['mode'] = 'new_article';
-        $data['types'] = $this->types;
-        $data['form'] = [];
-        $data['form']['type'] = '';
-        $data['_token'] = $this->get('security.csrf.token_manager')->getToken('form');
+        // 1) Construire le form
+        $article = new Stocks();
+        $form = $this->createForm(ArticleType::class, $article);
 
-        $form = $this->createFormBuilder()
-            ->add('nom', TextType::class)
-            ->add('type', TextType::class)
-            ->add('prixAchat', MoneyType::class)
-            ->add('prixVente', MoneyType::class)
-            ->add('quantite', IntegerType::class)
-            ->add('volume', NumberType::class, array(
-                'required'      => false,
-            ))
-            ->getForm()
-        ;
-
+        // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            $form_data = $form->getData();
-            $data['form'] = [];
-            $data['form'] = $form_data;
+            // 3) Enregistrer l'Article!
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($article);
+            $entityManager->flush();
 
-            $em = $this->getDoctrine()->getManager();
-            $article = new Stocks();
-            $article->setNom($form_data['nom']);
-            $article->setType($form_data['type']);
-            $article->setPrixAchat($form_data['prixAchat']);
-            $article->setPrixVente($form_data['prixVente']);
-            $article->setQuantite($form_data['quantite']);
-            $article->setVolume($form_data['volume']);
-            
-            $em->persist($article);
-            $em->flush();
+            // ... autres actions
 
-            return $this->redirectToRoute('ajout_article');
+            return $this->redirectToRoute('stock');
         }
 
-        return $this->render('stock/article.html.twig', $data);
+        return $this->render(
+            'stock/article.html.twig',
+                array(
+                    'form' => $form->createView(),
+                    'mode' => 'new_article',
+                )
+        );
     }
 
     /**

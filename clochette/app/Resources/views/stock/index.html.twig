@@ -36,7 +36,7 @@
                     <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
                     {# <td id="afficheStock-quantiteAchat">{{ beer.nbSoldeCurrent }}</td> #}
                     <td>
-                        <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': beer.idarticle }) }}">MODIFIER</a>
+                        <a class="btn btn-outline-info" href="{{ path("modif_article", { 'id_article': beer.idarticle }) }}">MODIFIER</a>
                         <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.idarticle}) }}"
                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">SUPPRIMER</a>
                     </td>
@@ -70,7 +70,7 @@
                     <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
                     {# <td id="afficheStock-quantiteAchat">{{ bottle.nbSoldeCurrent }}</td> #}
                     <td>
-                        <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': bottle.idarticle }) }}">MODIFIER</a>
+                        <a class="btn btn-outline-info" href="{{ path("modif_article", { 'id_article': bottle.idarticle }) }}">MODIFIER</a>
                         <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.idarticle}) }}"
                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">SUPPRIMER</a>
                     </td>
@@ -104,7 +104,7 @@
                     <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
                     {# <td id="afficheStock-quantiteAchat">{{ item.nbSoldeCurrent }}</td> #}
                     <td>
-                        <a class="btn btn-outline-info" href="{{ path("details_article", { 'id_article': item.idarticle }) }}">MODIFIER</a>
+                        <a class="btn btn-outline-info" href="{{ path("modif_article", { 'id_article': item.idarticle }) }}">MODIFIER</a>
                         <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.idarticle}) }}"
                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">SUPPRIMER</a>
                     </td>

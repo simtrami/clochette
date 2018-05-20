@@ -20,26 +20,8 @@
 
 {% block body %}
 <div class="container-fluid">
-    <h4>{{ mode == 'new_article' ? 'Ajouter un article' : "Modifier l'article : " ~ nom ~ " (" ~ type ~ ")" }}</h4>
-    {{ form_start(form) }}
-        {{ form_errors(form) }}
-
-        {% if mode == 'new_article' %}
-            {{ form_row(form.nom) }}
-            {{ form_row(form.type) }}
-        {% endif %}
-        {{ form_row(form.prixAchat) }}
-        {{ form_row(form.prixVente) }}
-        {{ form_row(form.quantite) }}
-        {{ form_row(form.volume) }}
-    
-        
-        <button type="submit" class="btn btn-primary btn-lg btn-block">{{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
-    {{ form_end(form) }}
-</div>
-
-{% endblock %}
-    {# <form action="" method="post">
+    <h4>{{ mode == 'new_article' ? 'Ajouter un article' : 'Modifier un article' }}</h4>
+    <form action="" method="post">
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="inputNom">Nom de l'article</label>
@@ -96,4 +78,12 @@
         </div>
         
         {# https://symfony.com/doc/current/security/csrf.html#csrf-protection-in-html-forms #}
-        {# <input type="hidden" name="form[_token]" value="{{ _token }}" /> #}
+        <input type="hidden" name="form[_token]" value="{{ _token }}" />
+        
+        <div class="pad-t">
+            <button type="submit" class="btn btn-primary btn-lg btn-block">{{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
