@@ -2,11 +2,7 @@
 // src/AppBundle/Controller/StockController.php
 namespace AppBundle\Controller;
 
-use AppBundle\Form\ArticleType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use AppBundle\Form\StocksType;
 use AppBundle\Entity\Stocks;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -42,7 +38,6 @@ class StockController extends Controller {
     public function modifArticleAction(Request $request, $id_article){
 
         // 1) Récupérer l'Article et construire le form
-        $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $article = $repo_stocks->find($id_article);
         // Récupération du type d'article et traduction pour l'affichage
@@ -60,7 +55,7 @@ class StockController extends Controller {
                 $type = "Type non défini";
         }
         
-        $form = $this->createForm(ArticleType::class, $article);
+        $form = $this->createForm(StocksType::class, $article);
 
         // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
@@ -95,7 +90,7 @@ class StockController extends Controller {
 
         // 1) Construire le form
         $article = new Stocks();
-        $form = $this->createForm(ArticleType::class, $article);
+        $form = $this->createForm(StocksType::class, $article);
 
         // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);

@@ -8,13 +8,15 @@
 
 {% block javascripts %}
 <script>
-    document.getElementById("selectType").onchange = function() {
-        if (this.value == "article") {
-        document.getElementById("validationVolume").value = "0";
-        }
-        document.getElementById("validationVolume").disabled = (this.value == "article");
+    if (document.getElementById("appbundle_stocks_type") == null && document.getElementById("appbundle_stocks_volume").value == "0"){
+        document.getElementById("appbundle_stocks_volume").disabled = true;
     }
-    document.getElementById("selectType").change();
+    document.getElementById("appbundle_stocks_type").onchange = function() {
+        if (this.value == "article") {
+            document.getElementById("appbundle_stocks_volume").value = "0";
+        }
+        document.getElementById("appbundle_stocks_volume").disabled = (this.value == "article");
+    }
 </script>
 {% endblock %}
 
@@ -28,13 +30,11 @@
             {{ form_row(form.nom) }}
             {{ form_row(form.type) }}
         {% endif %}
-        {{ form_row(form.prixAchat) }}
-        {{ form_row(form.prixVente) }}
-        {{ form_row(form.quantite) }}
-        {{ form_row(form.volume) }}
+        {{ form_rest(form) }}
     
         
-        <button type="submit" class="btn btn-primary btn-lg btn-block">{{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
+        <button type="submit" class="btn btn-primary btn-lg btn-block">
+            {{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
     {{ form_end(form) }}
 </div>
 
