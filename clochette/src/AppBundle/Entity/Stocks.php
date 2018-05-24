@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Stocks
@@ -58,18 +59,18 @@ class Stocks
     private $quantite;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="volume", type="decimal", precision=8, scale = 2, nullable=true)
+     * @ORM\Column(name="volume", type="decimal", precision=8, scale=2, nullable=true)
      */
     private $volume;
 
     /**
      * @var boolean
      * 
-     * @ORM\Column(name="is_forSale", type="boolean", nullable=false)
+     * @ORM\Column(name="isForSale", type="boolean", nullable=false, options={"default" : 0})
      */
-    private $isForSale = '0';
+    private $isForSale;
     
 
 ## Fonctions
@@ -231,7 +232,7 @@ class Stocks
     }
 
     /**
-     * Set isActive
+     * Set isForSale
      *
      * @param boolean $isForSale
      *
@@ -239,13 +240,13 @@ class Stocks
      */
     public function setIsForSale($isForSale)
     {
-        $this->setIsForSale = $isForSale;
+        $this->isForSale = $isForSale;
 
         return $this;
     }
 
     /**
-     * Get isActive
+     * Get isForSale
      *
      * @return boolean
      */
