@@ -68,7 +68,7 @@ class Stocks
     /**
      * @var boolean
      * 
-     * @ORM\Column(name="isForSale", type="boolean", nullable=false, options={"default" : 0})
+     * @ORM\Column(name="isForSale", type="boolean", nullable=true, options={"default" : false})
      */
     private $isForSale;
     
