@@ -23,17 +23,17 @@ class PurchaseController extends Controller
         $conn = $this->getDoctrine()->getManager()->getConnection();
 
 
-        /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.is_forSale = :x';
+        /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.isForSale = :x';
 
         $selected_drafts = $conn->prepare($sql);
         $selected_drafts -> execute(['x' => 1]);
 
-        /* bouteilles */ $sql = ' SELECT * FROM stocks S WHERE S.type="bottle" AND S.is_forSale = :x';
+        /* bouteilles */ $sql = ' SELECT * FROM stocks S WHERE S.type="bottle" AND S.isForSale = :x';
 
         $selected_bottles = $conn->prepare($sql);
         $selected_bottles -> execute(['x' => 1]);
 
-        /* articles */ $sql = ' SELECT * FROM stocks S WHERE S.type="article" AND S.is_forSale = :x';
+        /* articles */ $sql = ' SELECT * FROM stocks S WHERE S.type="article" AND S.isForSale = :x';
 
         $selected_articles = $conn->prepare($sql);
         $selected_articles -> execute(['x' => 1]);
