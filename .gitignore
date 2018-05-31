@@ -1,9 +1,5 @@
-.htaccess
-Rapport.md
-.vscode/.DS_Store
+.vscode/
 .DS_Store
-clochette/.DS_Store
-clochette/app/.DS_Store
-clochette/app/Resources/.DS_Store
-.vscode
-clochette/var
+*/.DS_Store
+var/
+app/config/parameters.yml
