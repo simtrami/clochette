@@ -1,0 +1,305 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Achat{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/caisse.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+<Script>
+$(".btn-value").on("click", function() {
+
+    var button = $(this);
+    var qte = button.parent().parent().find(".qte");
+    var oldValue = button.parent().parent().find("input").val();
+
+    if (button.text() == "+") {
+        var newVal = parseFloat(oldValue) + 1;
+        console.log(newVal);
+    } else {
+    // Don't allow decrementing below zero
+        if (oldValue > 0) {
+            var newVal = parseFloat(oldValue) - 1;
+            console.log(newVal);
+        } else {
+            newVal = 0;
+        }
+    }
+
+    button.parent().parent().find(".qte").attr("value", newVal);
+    button.parent().parent().find(".qte").val(newVal);
+    console.log(button.parent().parent().find(".qte").val());
+
+    var tot = 0;
+    $(".qte").each(function() {
+        var prix = $(this).parent().parent().find("#prix").val();
+        tot = tot + parseFloat($(this).val()) * parseFloat(prix);
+    });
+    $("#total").attr("value", tot);
+});
+
+$(".qte").on("input", function() {
+
+    var tot = 0;
+    $(".qte").each(function() {
+        var prix = $(this).parent().parent().find("#prix").val();
+        tot = tot + parseFloat($(this).val()) * parseFloat(prix);
+    });
+    $("#total").attr("value", tot);
+});
+
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="alert alert-secondary">
+        <h4>Pressions</h4>
+    </div>
+    <div class="card-deck affichage-articles">
+        {% for article in selected_drafts %}
+                <div class="card pad-b">
+                    <div class="card-body">
+                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <div class="input-group">
+                            <input value="{{ article.prixVente }}" type="text"
+                                class="form-control" id="prix" disabled>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                            </div>
+                        </div>
+                        <label for="qte">Quantité</label>
+                        <div class="input-group add-delete-article">
+                            <input type="text" class="qte form-control" autocomplete="" value="0">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-danger btn-value" id="moins">-</button>
+                                <button class=" btn btn-outline-success btn-value" id="plus">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        {% endfor %}
+    </div>
+
+    <div class="alert alert-secondary">
+        <h4>Bouteilles</h4>
+    </div>
+    <div class="row justify-content-md-center affichage-articles">
+        {% for article in selected_bottles %}
+            <div class="col-md-auto">
+                <div class="card pad-b">
+                    <div class="card-body">
+                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <div class="input-group">
+                            <input value="{{ article.prixVente }}" type="text"
+                                class="form-control" id="prix" disabled>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                            </div>
+                        </div>
+
+                        <label for="qte">Quantité</label>
+                        <div class="input-group add-delete-article">
+                            <input type="text" class="qte form-control" autocomplete="" value="0">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-danger btn-value" id="moins">-</button>
+                                <button class=" btn btn-outline-success btn-value" id="plus">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="alert alert-secondary">
+        <h4>Nourriture et autres</h4>
+    </div>
+    <div class="row justify-content-md-center affichage-articles">
+        {% for article in selected_articles %}
+            <div class="col-md-auto">
+                <div class="card pad-b">
+                    <div class="card-body">
+                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <div class="input-group">
+                            <input value="{{ article.prixVente }}" type="text"
+                                class="form-control" id="prix" disabled>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="inputGroupAppend"><i class="fa fa-euro-sign"></i></span>
+                            </div>
+                        </div>
+                        <label for="qte">Quantité</label>
+                        <div class="input-group add-delete-article">
+                            <input type="text" class="qte form-control" autocomplete="" value="0">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-danger btn-value" id="moins">-</button>
+                                <button class=" btn btn-outline-success btn-value" id="plus">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="alert alert-success">
+        <h4>Paiement</h4>
+    </div>
+    {# <div class="btn-toolbar">
+
+        <div class="list-articles">
+            <p>
+                <a class="btn btn-success" data-toggle="collapse" href="#collapseExample" role="button"
+                   aria-expanded="false" aria-controls="collapseExample">
+                    Listes Articles
+                </a>
+            </p>
+
+
+            <div class="collapse" id="collapseExample">
+                <div class="card card-body">
+                    {% if articlesPanier is defined %}
+                        {% for articlePanier in articlesPanier %}
+                            {{ articlePanier.nom }} : {{ articlePanier.id }} </br>
+                        {% endfor %}
+                    {% else %}
+                        {% set articlesPanier = [] %}
+                    {% endif %}
+
+                    <!-- Script à refaire (EDIT: c fé fo testé)
+                    <?php
+                    if (!empty($articlesPanier)) {
+                        foreach ($articlesPanier as $articlePanier) {
+                            echo $articlePanier->nom . ' : ' . $_SESSION['panier'] [$articlePanier->id] . '<br>';
+                        }
+                    } else {
+                        $articlesPanier = array();
+                    }
+
+                    ?> -->
+                </div>
+            </div>
+        </div>
+
+
+        <div class="cancel-command">
+            <button type="button" class="btn btn-danger">
+                <a href="index.php?rooting=caisse&panier=reset">Annuler La Commande</a></button>
+        </div>
+    </div> #}
+
+
+    <div class="col-md-3">
+        <label for="total">Total</label>
+        <div class="input-group mb-3">
+            <input class="form-control" type="text" id="total" value="0" placeholder="Total">
+            <div class="input-group-append">
+                <span class="input-group-text">€</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="input-group mb-3">
+            <div class="btn-group btn-group-toggle moyen_paiement" data-toggle="buttons">
+
+                <label class="btn btn-success">
+                    <input type="radio" name="options" id="option1" ><i class="fa fa-credit-card"></i> Carte Bleue
+                </label>
+
+                <label class="btn btn-success">
+                    <input type="radio" name="options" id="option2" > <i class="fa fa-id-badge"></i> Compte
+                </label>
+
+                <label class="btn btn-success">
+                    <input type="radio" name="options" id="option3" > <i class="fa fa-money-bill-alt"></i> Liquide
+                </label>
+
+                <label class="btn btn-success">
+                    <input type="radio" name="options" id="option4" > <i class="fa fa-mobile-alt"></i> Pumpkin
+                </label>
+
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
+
+</div>
+
+
+
+{# <div class="afficheArticle">
+    
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Heineken 25cl                </div>
+            <div class="box-article-prix">
+                3€                </div>
+
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Biere                </div>
+            <div class="box-article-prix">
+                12€                </div>
+
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Kro                </div>
+            <div class="box-article-prix">
+                2€                </div>
+
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Delirium Red                </div>
+            <div class="box-article-prix">
+                8€                </div>
+
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Shooter                </div>
+            <div class="box-article-prix">
+                2€                </div>
+
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Chouffe                </div>
+            <div class="box-article-prix">
+                12€                </div>
+
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Coca                </div>
+            <div class="box-article-prix">
+                2€                </div>
+
+        </div>
+        
+        <div class="box-article">
+            <div class="box-article-nom" id="<? php echo $donnees['id'];?>">
+                Voiture                </div>
+            <div class="box-article-prix">
+                15€                </div>
+
+        </div>
+        
+</div>
+
+<div class="caisse">
+    <div class="prix">Prix : <input value="0">€</div>
+    <button>Valider</button>
+</div> #}
+{% endblock %}

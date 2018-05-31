@@ -1,0 +1,23 @@
+.container-fluid {
+    padding-bottom: 16px;
+}
+.affichage-articles {
+    margin-bottom: 16px;
+}
+.pad-b {
+    margin-bottom: 16px;
+}
+
+.card {
+    border: 1px solid #01A867;
+    width: 80%;
+}
+
+.center {
+    text-align: center;
+}
+
+.btn-success {
+    background-color: #01A867;
+    border-color: #01A867;
+}

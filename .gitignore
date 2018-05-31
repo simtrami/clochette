@@ -3,3 +3,4 @@
 */.DS_Store
 var/
 app/config/parameters.yml
+.web-server-pid

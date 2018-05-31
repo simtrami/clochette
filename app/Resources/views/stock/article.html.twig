@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ mode == 'new_article' ? 'Ajouter un article' : 'Modifier un article' }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/stock.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    if (document.getElementById("appbundle_stocks_type") == null && document.getElementById("appbundle_stocks_volume").value == "0"){
+        document.getElementById("appbundle_stocks_volume").disabled = true;
+    }
+    document.getElementById("appbundle_stocks_type").onchange = function() {
+        if (this.value == "article") {
+            document.getElementById("appbundle_stocks_volume").value = "0";
+        }
+        document.getElementById("appbundle_stocks_volume").disabled = (this.value == "article");
+    }
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="alert alert-light center">
+        <h4>{{ mode == 'new_article' ? 'Ajouter un article' : "Modifier l'article : " ~ nom ~ " (" ~ type ~ ")" }}</h4>
+    </div>
+    
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+
+        {% if mode == 'new_article' %}
+            {{ form_row(form.nom) }}
+            {{ form_row(form.type) }}
+        {% endif %}
+        {{ form_rest(form) }}
+    
+        
+        <button type="submit" class="btn btn-primary btn-lg btn-block">
+            {{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

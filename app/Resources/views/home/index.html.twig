@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block body %}
+
+<div class="alert alert-secondary">
+
+    {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
+    <h1>Salut {{ app.user.username }}</h1>
+    {% else %}
+    <h1>Connectez-vous</h1>
+    {% endif %}
+</div>
+
+{% endblock %}

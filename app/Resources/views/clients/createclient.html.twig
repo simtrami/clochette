@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Client{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block body %}
+{{ form_start(form) }}
+    {{ form_row(form.nom) }}
+    {{ form_row(form.prenom) }}
+    {{ form_row(form.login) }}
+    {{ form_row(form.nomstaff) }}
+    {{ form_row(form.annee) }}
+
+    <button type="submit">Register!</button>
+{{ form_end(form) }}
+{% endblock %}
