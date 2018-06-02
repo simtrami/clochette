@@ -1,6 +1,8 @@
 .vscode/
 .DS_Store
 */.DS_Store
-var/
+var/sessions
+var/logs
+var/cache
 app/config/parameters.yml
 .web-server-pid
