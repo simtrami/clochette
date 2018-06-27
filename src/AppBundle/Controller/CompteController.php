@@ -10,6 +10,16 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CompteController extends Controller {
 
-    
+    /**
+     * @Route("/clients/display", name="comptes")
+     */
+    public function showIndex(){
+        $em = $this->getDoctrine()->getManager();
+        $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes')->findAll();
+        $data['comptes']=$repo_comptes;
+
+        return $this->render("comptes/comptes.html.twig", $data);
+        
+    }
 
 }

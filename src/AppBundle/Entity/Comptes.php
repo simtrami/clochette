@@ -38,9 +38,9 @@ class Comptes
     /**
      * @var string
      *
-     * @ORM\Column(name="login", type="string", length=10, nullable=false, unique=true)
+     * @ORM\Column(name="pseudo", type="string", length=60, nullable=false, unique=true)
      */
-    private $login;
+    private $pseudo;
 
     /**
      * @var string
@@ -154,27 +154,27 @@ class Comptes
     }
 
     /**
-     * Set login
+     * Set pseudo
      *
-     * @param string $login
+     * @param string $pseudo
      *
      * @return Comptes
      */
-    public function setLogin($login)
+    public function setPseudo($pseudo)
     {
-        $this->login = $login;
+        $this->pseudo = $pseudo;
 
         return $this;
     }
 
     /**
-     * Get login
+     * Get pseudo
      *
      * @return string
      */
-    public function getLogin()
+    public function getPseudo()
     {
-        return $this->login;
+        return $this->pseudo;
     }
 
     /**

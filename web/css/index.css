@@ -1,15 +1,31 @@
-.modal {
-    color: #01A867;
-    font-weight: 600;
-}
-
-.btn-primary{
-    background-color: #01A867;
-}
-
-form input:-webkit-autofill {
-    -webkit-text-fill-color: black !important;
-    background-color: white !important;
-    -webkit-box-shadow: 0 0 0px 10px $c-blue inset;
-    transition: background-color 5000s ease-in-out 0s;
+.modal {
+
+    color: #01A867;
+
+    font-weight: 600;
+
 }
+
+
+
+.btn-primary{
+
+    background-color: #01A867;
+
+}
+
+
+
+form input:-webkit-autofill {
+
+    -webkit-text-fill-color: black !important;
+
+    background-color: white !important;
+
+    -webkit-box-shadow: 0 0 0px 10px $c-blue inset;
+
+    transition: background-color 5000s ease-in-out 0s;
+
+}
+
+

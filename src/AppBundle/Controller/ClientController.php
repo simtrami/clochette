@@ -33,6 +33,7 @@ class ClientController extends Controller
         }
         return $this->render('clients/createclient.html.twig',array('form' => $form->createView()));
     }
+
     /**
      * @Route("/clients/modify/{id_client}", name="modify_client")
      */
@@ -47,7 +48,7 @@ class ClientController extends Controller
         $form=$this->createFormBuilder()
             ->add('nom',TextType::class)
             ->add('prenom',TextType::class)
-            ->add('login',TextType::class)
+            ->add('pseudo',TextType::class)
             ->add('nomstaff',TextType::class)
             ->add('annee',IntegerType::class)
             ->add('solde',MoneyType::class)
@@ -61,7 +62,7 @@ class ClientController extends Controller
             $data['form'] = $form_data;
             $client->setNom($form_data['nom']);
             $client->setPrenom($form_data['prenom']);
-            $client->setLogin($form_data['login']);
+            $client->setPseudo($form_data['pseudo']);
             $client->setNomstaff($form_data['nomstaff']);
             $client->setAnnee($form_data['annee']);
             $client->setSolde($form_data['solde']);
@@ -71,7 +72,7 @@ class ClientController extends Controller
         } else{
             $client_data['nom']=$client->getNom();
             $client_data['prenom']=$client->getPrenom();
-            $client_data['login']=$client->getLogin();
+            $client_data['pseudo']=$client->getPseudo();
             $client_data['nomstaff']=$client->getNomstaff();
             $client_data['annee']=$client->getAnnee();
             $client_data['solde']=$client->getSolde();
@@ -80,7 +81,10 @@ class ClientController extends Controller
             $data['form']=$client_data;
         }
 
-        return $this->render("clients/modify.html.twig",$data);
+        return $this->render("clients/modifyclient.html.twig",$data);
     }
 
+
+
+    
 }
