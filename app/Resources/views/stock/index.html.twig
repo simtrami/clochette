@@ -34,7 +34,7 @@
                                 <td id="afficheStock-prix">{{ beer.prixVente }}</td>
                                 <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
                                 <td>
-                                    <a class="btn btn-outline-info" href="{{ path(" modif_article ", { 'id_article': beer.id }) }}">MODIFIER</a>
+                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': beer.id }) }}">MODIFIER</a>
                                     <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">SUPPRIMER</a>
                                 </td>
                         </tr>
@@ -65,7 +65,7 @@
                                 <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
                                 <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
                                 <td>
-                                    <a class="btn btn-outline-info" href="{{ path(" modif_article ", { 'id_article': bottle.id }) }}">MODIFIER</a>
+                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': bottle.id }) }}">MODIFIER</a>
                                     <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">SUPPRIMER</a>
                                 </td>
                         </tr>
@@ -96,7 +96,7 @@
                                 <td id="afficheStock-prix">{{ item.prixVente }}</td>
                                 <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
                                 <td>
-                                    <a class="btn btn-outline-info" href="{{ path(" modif_article ", { 'id_article': item.id }) }}">MODIFIER</a>
+                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': item.id }) }}">MODIFIER</a>
                                     <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">SUPPRIMER</a>
                                 </td>
                         </tr>

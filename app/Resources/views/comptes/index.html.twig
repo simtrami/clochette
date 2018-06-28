@@ -31,7 +31,7 @@
                     {% for compte in comptes %}
                     <tr>
                         <th id="afficheComptes-id">
-                            <a href="{{ path(" modify_compte ", { 'idcompte':compte.idcompte }) }}">{{ compte.idcompte }}</a>
+                            <a href="{{ path('modify_compte', { 'idcompte':compte.idcompte }) }}">{{ compte.idcompte }}</a>
                         </th>
                         <td id="afficheComptes-nom">{{ compte.nom }}</td>
                         <td id="afficheComptes-prenom">{{ compte.prenom }}</td>
