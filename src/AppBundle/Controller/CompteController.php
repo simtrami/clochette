@@ -14,6 +14,9 @@ class CompteController extends Controller {
      * @Route("/clients/display", name="comptes")
      */
     public function showIndex(){
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
         $em = $this->getDoctrine()->getManager();
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes')->findAll();
         $data['comptes']=$repo_comptes;

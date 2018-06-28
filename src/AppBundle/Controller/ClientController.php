@@ -21,6 +21,10 @@ class ClientController extends Controller
      * @Route("/clients/create", name="create_client")
      */
     public function createClientAction(Request $request){
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+      
         $compte=new Comptes();
         $form=$this->createForm(ClientType::class,$compte);
 
