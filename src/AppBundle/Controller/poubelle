@@ -1,0 +1,47 @@
+public function modifyClientAction(Request $request, $idcompte){
+        $em=$this->getDoctrine()->getManager();
+        $repo_clients=$this->getDoctrine()->getRepository('AppBundle:Comptes');
+        $client=$repo_clients->find($idcompte);
+        $data=[];
+        $data['form']=[];
+        $data['_token']=$this->get('security.csrf.token_manager')->getToken('form');
+
+        $form=$this->createFormBuilder()
+            ->add('nom',TextType::class, array('label' => 'Nom'))
+            ->add('prenom',TextType::class, array('label' => 'Prénom'))
+            ->add('pseudo',TextType::class, array('label' => 'Pseudo'))
+            ->add('nomstaff',TextType::class, array('label' => 'Nom de Staff'))
+            ->add('annee',IntegerType::class, array('label' => 'Année'))
+            ->add('solde',MoneyType::class, array('label' => 'Solde'))
+            ->add('isintro',IntegerType::class, array('label' => 'Intronisé'))
+            ->getForm()
+            ;
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $form_data = $form->getData();
+            $data['form'] = [];
+            $data['form'] = $form_data;
+            $client->setNom($form_data['nom']);
+            $client->setPrenom($form_data['prenom']);
+            $client->setPseudo($form_data['pseudo']);
+            $client->setNomstaff($form_data['nomstaff']);
+            $client->setAnnee($form_data['annee']);
+            $client->setSolde($form_data['solde']);
+            $client->setIsIntro($form_data['isintro']);
+            $em->flush();
+            return $this->redirectToRoute('comptes');
+        }
+        else{
+            $client_data['nom']=$client->getNom();
+            $client_data['prenom']=$client->getPrenom();
+            $client_data['pseudo']=$client->getPseudo();
+            $client_data['nomstaff']=$client->getNomstaff();
+            $client_data['annee']=$client->getAnnee();
+            $client_data['solde']=$client->getSolde();
+            $client_data['isintro']=$client->getIsIntro();
+
+            $data['form']=$client_data;
+        }
+
+        return $this->render("comptes/createcompte.html.twig",$data);
+    }

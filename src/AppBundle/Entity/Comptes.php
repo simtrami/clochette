@@ -19,7 +19,7 @@ class Comptes
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private $idcompte;
 
     /**
      * @var string
