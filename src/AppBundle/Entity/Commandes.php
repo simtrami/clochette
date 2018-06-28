@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Commandes
@@ -44,9 +45,18 @@ class Commandes
      * @ORM\Column(name="montant", type="decimal", precision=8, scale=2, nullable=false)
      */
     private $montant;
+  
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DetailsCommandes", mappedBy="idCommande")
+     */
+    private $details;
 
     ## Fonctions
 
+    public function __construct()
+    {
+      $this->details = new ArrayCollection();
+    }
     
     /**
      * Get id

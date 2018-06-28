@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="details_commandes",
  *  indexes={
- *      @ORM\Index(name="idCommande", columns{"idCommande"}),
+ *      @ORM\Index(name="idCommande", columns={"idCommande"}),
  *      @ORM\Index(name="idArticle", columns={"idArticle"})
  *  }
  * )
@@ -21,10 +21,8 @@ class DetailsCommandes
      * @var \AppBundle\Entity\Commandes
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Commandes")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idCommande", referencedColumnName="id")
-     * })
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Commandes", inversedBy="details")
+     * @ORM\JoinColumn(name="idCommande", referencedColumnName="id")
      */
     private $idCommande;
 
