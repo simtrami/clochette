@@ -69,42 +69,6 @@ $(".qte").on("input", function () {
 });
 
 </script>
-
-<script>
-$(document).on("focus keyup", "input.autocomplete", function() {
-    // Cache useful selectors
-    var $input = $(this);
-    var $dropdown = $input.next("ul.dropdown-menu");
-    
-    // Create the no matches entry if it does not exists yet
-    if (!$dropdown.data("containsNoMatchesEntry")) {
-        $("input.autocomplete + ul.dropdown-menu").append('<li class="dropdown-item no-matches hidden"><a>No matches</a></li>');
-        $dropdown.data("containsNoMatchesEntry", true);
-    }
-    
-    // Show only matching values
-    $dropdown.find("li:not(.no-matches)").each(function(key, li) {
-        var $li = $(li);
-        $li[new RegExp($input.val(), "i").exec($li.text()) ? "removeClass" : "addClass"]("hidden");
-    });
-    
-    // Show a specific entry if we have no matches
-    $dropdown.find("li.no-matches")[$dropdown.find("li:not(.no-matches):not(.hidden)").length > 0 ? "addClass" : "removeClass"]("hidden");
-});
-$(document).on("click", "input.autocomplete + ul.dropdown-menu li", function(e) {
-    // Prevent any action on the window location
-    e.preventDefault();
-    
-    // Cache useful selectors
-    $li = $(this);
-    $input = $li.parent("ul").prev("input");
-    
-    // Update input text with selected entry
-    if (!$li.is(".no-matches")) {
-        $input.val($li.text());
-    }
-});
-</script>
 {% endblock %}
 
 {% block body %}
@@ -207,46 +171,6 @@ $(document).on("click", "input.autocomplete + ul.dropdown-menu li", function(e) 
         <div class="alert alert-success">
             <h4>Paiement</h4>
         </div>
-        {#
-        <div class="btn-toolbar">
-
-            <div class="list-articles">
-                <p>
-                    <a class="btn btn-success" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                        Listes Articles
-                    </a>
-                </p>
-
-
-                <div class="collapse" id="collapseExample">
-                    <div class="card card-body">
-                        {% if articlesPanier is defined %} {% for articlePanier in articlesPanier %} {{ articlePanier.nom }} : {{ articlePanier.id
-                        }} </br>
-                        {% endfor %} {% else %} {% set articlesPanier = [] %} {% endif %}
-
-                        <!-- Script à refaire (EDIT: c fé fo testé)
-                        <?php
-                        if (!empty($articlesPanier)) {
-                            foreach ($articlesPanier as $articlePanier) {
-                                echo $articlePanier->nom . ' : ' . $_SESSION['panier'] [$articlePanier->id] . '<br>';
-                            }
-                        } else {
-                            $articlesPanier = array();
-                        }
-
-                        ?> -->
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="cancel-command">
-                <button type="button" class="btn btn-danger">
-                    <a href="index.php?rooting=caisse&panier=reset">Annuler La Commande</a>
-                </button>
-            </div>
-        </div> #}
-
 
         <div class="col-md-3">
             <label for="total">Total</label>
