@@ -13,15 +13,21 @@ $(".btn-value").on("click", function () {
     var button = $(this);
     var qte = button.parent().parent().find(".qte");
     var oldValue = button.parent().parent().find("input").val();
+    var qteMax = button.parent().find(".qteStock").val();
 
     if (button.text() == "+") {
-        var newVal = parseFloat(oldValue) + 1;
-        console.log(newVal);
+        if (parseFloat(oldValue) < parseFloat(qteMax)){
+            var newVal = parseFloat(oldValue) + 1;
+            //console.log(qteMax);
+        } else {
+            var newVal = parseFloat(qteMax);
+            //console.log(qteMax);
+        }
     } else {
         // Don't allow decrementing below zero
         if (oldValue > 0) {
             var newVal = parseFloat(oldValue) - 1;
-            console.log(newVal);
+            //console.log(newVal);
         } else {
             newVal = 0;
         }
@@ -29,7 +35,7 @@ $(".btn-value").on("click", function () {
 
     button.parent().parent().find(".qte").attr("value", newVal);
     button.parent().parent().find(".qte").val(newVal);
-    console.log(button.parent().parent().find(".qte").val());
+    //console.log(button.parent().parent().find(".qte").val());
 
     var tot = 0;
     $(".qte").each(function () {
@@ -42,26 +48,75 @@ $(".btn-value").on("click", function () {
 $(".qte").on("input", function () {
 
     var tot = 0;
+    
     $(".qte").each(function () {
-        var prix = $(this).parent().parent().find("#prix").val();
-        tot = tot + parseFloat($(this).val()) * parseFloat(prix);
+        var qte = parseFloat($(this).val());
+        var qteMax = parseFloat($(this).parent().find(".qteStock").val());
+        var prix = parseFloat($(this).parent().parent().find("#prix").val());
+
+        if (qte < 0) {
+            $(this).attr("value", 0);
+            $(this).val(0);
+            qte = 0;
+        } else if (qte > qteMax) {
+            $(this).attr("value", qteMax);
+            $(this).val(qteMax);
+            qte = qteMax;
+        }
+        tot = tot + qte * prix;
     });
     $("#total").attr("value", tot);
 });
 
+</script>
+
+<script>
+$(document).on("focus keyup", "input.autocomplete", function() {
+    // Cache useful selectors
+    var $input = $(this);
+    var $dropdown = $input.next("ul.dropdown-menu");
+    
+    // Create the no matches entry if it does not exists yet
+    if (!$dropdown.data("containsNoMatchesEntry")) {
+        $("input.autocomplete + ul.dropdown-menu").append('<li class="dropdown-item no-matches hidden"><a>No matches</a></li>');
+        $dropdown.data("containsNoMatchesEntry", true);
+    }
+    
+    // Show only matching values
+    $dropdown.find("li:not(.no-matches)").each(function(key, li) {
+        var $li = $(li);
+        $li[new RegExp($input.val(), "i").exec($li.text()) ? "removeClass" : "addClass"]("hidden");
+    });
+    
+    // Show a specific entry if we have no matches
+    $dropdown.find("li.no-matches")[$dropdown.find("li:not(.no-matches):not(.hidden)").length > 0 ? "addClass" : "removeClass"]("hidden");
+});
+$(document).on("click", "input.autocomplete + ul.dropdown-menu li", function(e) {
+    // Prevent any action on the window location
+    e.preventDefault();
+    
+    // Cache useful selectors
+    $li = $(this);
+    $input = $li.parent("ul").prev("input");
+    
+    // Update input text with selected entry
+    if (!$li.is(".no-matches")) {
+        $input.val($li.text());
+    }
+});
 </script>
 {% endblock %}
 
 {% block body %}
     <div class="container-fluid">
         <div class="alert alert-secondary">
-            <h4>Pressions</h4>
+            <h4><i class="fas fa-beer"></i> Pressions</h4>
         </div>
         <div class="card-deck affichage-articles">
             {% for article in selected_drafts %}
                 <div class="card pad-b">
                     <div class="card-body">
-                        <h5 class="card-title center">{{ article.nom }}</h5>
+                        <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
                         <div class="input-group">
                             <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                             <div class="input-group-append">
@@ -72,8 +127,9 @@ $(".qte").on("input", function () {
                         </div>
                         <label for="qte">Quantité</label>
                         <div class="input-group add-delete-article">
-                            <input type="text" class="qte form-control" autocomplete="" value="0">
+                            <input type="number" min="0" step="1" class="qte form-control" autocomplete="" value="0">
                             <div class="input-group-append">
+                                <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
                                 <button class="btn btn-outline-danger btn-value" id="moins">-</button>
                                 <button class=" btn btn-outline-success btn-value" id="plus">+</button>
                             </div>
@@ -84,14 +140,14 @@ $(".qte").on("input", function () {
         </div>
 
         <div class="alert alert-secondary">
-            <h4>Bouteilles</h4>
+            <h4><img src="{{ asset('svg/si-glyph-fridge.svg') }}" style="height: 1.8rem;vertical-align: bottom;margin-left: -5px;"/>Bouteilles</h4>
         </div>
         <div class="row justify-content-md-center affichage-articles">
             {% for article in selected_bottles %}
                 <div class="col-md-auto">
                     <div class="card pad-b">
                         <div class="card-body">
-                            <h5 class="card-title center">{{ article.nom }}</h5>
+                            <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
                             <div class="input-group">
                                 <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                                 <div class="input-group-append">
@@ -103,8 +159,9 @@ $(".qte").on("input", function () {
 
                             <label for="qte">Quantité</label>
                             <div class="input-group add-delete-article">
-                                <input type="text" class="qte form-control" autocomplete="" value="0">
+                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" value="0">
                                 <div class="input-group-append">
+                                    <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
                                     <button class="btn btn-outline-danger btn-value" id="moins">-</button>
                                     <button class=" btn btn-outline-success btn-value" id="plus">+</button>
                                 </div>
@@ -116,14 +173,14 @@ $(".qte").on("input", function () {
         </div>
 
         <div class="alert alert-secondary">
-            <h4>Nourriture et autres</h4>
+            <h4><i class="fas fa-cookie-bite"></i> Nourriture et autres</h4>
         </div>
         <div class="row justify-content-md-center affichage-articles">
             {% for article in selected_articles %}
                 <div class="col-md-auto">
                     <div class="card pad-b">
                         <div class="card-body">
-                            <h5 class="card-title center">{{ article.nom }}</h5>
+                            <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
                             <div class="input-group">
                                 <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                                 <div class="input-group-append">
@@ -134,8 +191,9 @@ $(".qte").on("input", function () {
                             </div>
                             <label for="qte">Quantité</label>
                             <div class="input-group add-delete-article">
-                                <input type="text" class="qte form-control" autocomplete="" value="0">
+                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" value="0">
                                 <div class="input-group-append">
+                                    <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
                                     <button class="btn btn-outline-danger btn-value" id="moins">-</button>
                                     <button class=" btn btn-outline-success btn-value" id="plus">+</button>
                                 </div>
@@ -209,7 +267,7 @@ $(".qte").on("input", function () {
                         <i class="fa fa-credit-card"></i> Carte Bleue
                     </label>
 
-                    <label class="btn btn-success">
+                    <label class="btn btn-success" id="showAccount" type="button" data-toggle="collapse" data-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
                         <input type="radio" name="options" id="option2">
                         <i class="fa fa-id-badge"></i> Compte
                     </label>
@@ -226,6 +284,18 @@ $(".qte").on("input", function () {
 
                 </div>
             </div>
+        </div>
+
+        {# Pour collapse le champ lors de la sélection d'une autre méthode sans recliquer sur le bouton Compte
+        il faut faut un script js qui supprime l'attribut "show" de #collapseAccount lorsque #showAccount n'est
+        n'a ni l'attribut "focus" ni "active" #}
+        <div class="collapse" id="collapseAccount">
+            <form>
+                <div class="form-group">
+                    <label class="form-control-label" for="paying-account">Compte à débiter</label>
+                    <input type="text" class="form-control" id="paying-account"/>
+                </div>
+            </form>
         </div>
 
         <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
