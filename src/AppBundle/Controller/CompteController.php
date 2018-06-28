@@ -70,21 +70,6 @@ class CompteController extends Controller {
         // 1) Récupérer le compte et construire le form
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
         $compte = $repo_comptes->find($idcompte);
-        // Récupération du statut d'intronisation et traduction
-        if($compte->getIsIntro() == "1") {
-          $is_intro = "OUI";
-        }
-        else {
-          $is_intro = "NON";
-        }
-        /*switch($compte->getIsIntro()) {
-            case "1":
-                $is_intro = "OUI";
-                break;
-            case "0":
-                $is_intro = "NON";
-                break;
-        }*/
         
         $form = $this->createForm(CompteType::class, $compte);
 
@@ -103,13 +88,13 @@ class CompteController extends Controller {
         }
 
         return $this->render(
-          'comptes/create.html.twig',
-          array(
-            'form' => $form->createView(),
-            'mode' => 'modify_account',
-            'prenom' => $compte->getPrenom(),
-            'nom' => $compte->getNom()
-          )
+            'comptes/create.html.twig',
+            array(
+                'form' => $form->createView(),
+                'mode' => 'modify_account',
+                'prenom' => $compte->getPrenom(),
+                'nom' => $compte->getNom()
+            )
         );
     }    
     

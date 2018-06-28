@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de : " ~ prenom ~ " " ~ nom ~ " }}{% endblock %}
+{% block title %}{{ mode == 'new_account' ? 'Créer un compte' : "Modifier " ~ prenom ~ " " ~ nom }}{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/index.css') }}">
@@ -10,21 +10,21 @@
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <div class="alert alert-light center">
-        <h4>{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de : " ~ prenom ~ " " ~ nom ~ " }}</h4>
-    </div>
-    {{ form_start(form) }}
-        {{ form_row(form.nom) }}
-        {{ form_row(form.prenom) }}
-        {{ form_row(form.pseudo) }}
-        {{ form_row(form.solde) }}
-        {{ form_row(form.annee) }}
-        {{ form_row(form.is_intro) }}
+    <div class="container-fluid">
+        <div class="alert alert-light center">
+            <h4>{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ prenom ~ " " ~ nom }}</h4>
+        </div>
+            {{ form_start(form) }}
+                {{ form_row(form.nom) }}
+                {{ form_row(form.prenom) }}
+                {{ form_row(form.pseudo) }}
+                {{ form_row(form.solde) }}
+                {{ form_row(form.annee) }}
+                {{ form_row(form.is_intro) }}
 
-        <button type="submit" class="btn btn-primary btn-lg btn-block">
-                {{ mode == 'new_account' ? 'Créer' : 'Modifier' }}</button>
-    {{ form_end(form) }}
-</div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    {{ mode == 'new_account' ? 'Créer' : 'Modifier' }}</button>
+            {{ form_end(form) }}
+    </div>
 
 {% endblock %}
