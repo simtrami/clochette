@@ -24,37 +24,37 @@ class Comptes
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=60, nullable=false)
+     * @ORM\Column(name="nom", type="string", length=60)
      */
     private $nom;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="prenom", type="string", length=60, nullable=false)
+     * @ORM\Column(name="prenom", type="string", length=60)
      */
     private $prenom;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="pseudo", type="string", length=60, nullable=false, unique=true)
+     * @ORM\Column(name="pseudo", type="string", length=60, unique=true)
      */
     private $pseudo;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="solde", type="decimal", precision=8, scale=2, nullable=false)
+     * @ORM\Column(name="solde", type="decimal", precision=8, scale=2, options={"default" : "0.00"})
      */
-    private $solde = '0.00';
+    private $solde;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="annee", type="integer", nullable=false)
+     * @ORM\Column(name="annee", type="integer", options={"default" : 1})
      */
-    private $annee = '1';
+    private $annee;
 
     /**
      * @var string
@@ -66,9 +66,9 @@ class Comptes
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_intro", type="boolean", nullable=false)
+     * @ORM\Column(name="is_intro", type="boolean", options={"default" : false})
      */
-    private $isIntro = '0';
+    private $isIntro;
 
 
     /**
