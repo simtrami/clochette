@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ mode == 'new_article' ? 'Ajouter un article' : 'Modifier un article' }}{% endblock %}
+{% block title %}{{ mode == 'new_article' ? 'Ajouter un article' : "Modifier l'article : " ~ nom ~ " (" ~ type ~ ")" }}{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/stock.css') }}">

@@ -16,6 +16,10 @@ class StockController extends Controller {
     * @Route("/stock", name="stock")
     **/
     public function showIndex(){
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+      
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
@@ -36,6 +40,9 @@ class StockController extends Controller {
      * @Route("/stock/modifier/{id_article}", name="modif_article")
      */
     public function modifArticleAction(Request $request, $id_article){
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
 
         // 1) Récupérer l'Article et construire le form
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
@@ -62,9 +69,9 @@ class StockController extends Controller {
         if ($form->isSubmitted() && $form->isValid()) {
 
             // 3) Enregistrer l'Article!
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($article);
-            $entityManager->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($article);
+            $em->flush();
 
             // ... autres actions
 
@@ -73,20 +80,22 @@ class StockController extends Controller {
 
         return $this->render(
             'stock/article.html.twig',
-                array(
-                    'form' => $form->createView(),
-                    'mode' => 'modify_article',
-                    'nom' => $article->getNom(),
-                    'type' => $type,
-                )
+             array(
+                 'form' => $form->createView(),
+                 'mode' => 'modify_article',
+                 'nom' => $article->getNom(),
+                 'type' => $type,
+             )
         );
     }
     
     /**
      * @Route("/stock/ajout", name="ajout_article")
      */
-
     public function ajoutArticleAction(Request $request){
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
 
         // 1) Construire le form
         $article = new Stocks();
@@ -97,9 +106,9 @@ class StockController extends Controller {
         if ($form->isSubmitted() && $form->isValid()) {
 
             // 3) Enregistrer l'Article!
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($article);
-            $entityManager->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($article);
+            $em->flush();
 
             // ... autres actions
 
@@ -108,10 +117,10 @@ class StockController extends Controller {
 
         return $this->render(
             'stock/article.html.twig',
-                array(
-                    'form' => $form->createView(),
-                    'mode' => 'new_article',
-                )
+             array(
+                 'form' => $form->createView(),
+                 'mode' => 'new_article',
+             )
         );
     }
 
@@ -119,6 +128,10 @@ class StockController extends Controller {
     * @Route("/stock/supprimer", name="suppr_article")
     **/
     public function supprArticleAction(Request $request){
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+      
         $idarticle = $request->query->get('idarticle');
 
         $em = $this->getDoctrine()->getEntityManager();
