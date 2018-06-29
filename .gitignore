@@ -5,4 +5,4 @@ var/
 app/config/parameters.yml
 .web-server-pid
 vendor/
-app/bootstrap.cache.php
+app/bootstrap.php.cache

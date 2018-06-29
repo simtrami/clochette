@@ -10,104 +10,101 @@
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid">
+    <div class="container-fluid">
 
-    <div class="table-responsive pad-t">
-        <table class="table table-striped table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col-lg-1">#</th>
-                    <th scope="col-lg-2">Nom pression</th>
-                    <th scope="col-lg-2">Prix à l'achat (pinte)</th>
-                    <th scope="col-lg-2">Prix à la vente</th>
-                    <th scope="col-lg-2">Fûts restants</th>
-                    <th scope="col-lg-3">Action</th>
-                </tr>
-            </thead>
+        <div class="table-responsive pad-t">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col-lg-1">#</th>
+                        <th scope="col-lg-2">Nom pression</th>
+                        <th scope="col-lg-2">Prix à l'achat (pinte)</th>
+                        <th scope="col-lg-2">Prix à la vente</th>
+                        <th scope="col-lg-2">Fûts restants</th>
+                        <th scope="col-lg-3">Action</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-                {% for beer in drafts %}
-                <tr>
-                    <th scope="row">{{ beer.id }}</th>
-                    <td>{{ beer.nom }}</th>
-                    <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
-                    <td id="afficheStock-prix">{{ beer.prixVente }}</td>
-                    <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
-                    <td>
-                        <a class="btn btn-outline-info" href="{{ path("modif_article", { 'id_article': beer.id }) }}">MODIFIER</a>
-                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.id}) }}"
-                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">SUPPRIMER</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <tbody>
+                    {% for beer in drafts %}
+                        <tr>
+                            <th scope="row">{{ beer.id }}</th>
+                            <td>{{ beer.nom }}</th>
+                                <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
+                                <td id="afficheStock-prix">{{ beer.prixVente }}</td>
+                                <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
+                                <td>
+                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': beer.id }) }}">MODIFIER</a>
+                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">SUPPRIMER</a>
+                                </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-responsive pad-t">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col-lg-1">#</th>
+                        <th scope="col-lg-2">Nom bouteille</th>
+                        <th scope="col-lg-2">Prix à l'achat</th>
+                        <th scope="col-lg-2">Prix de vente</th>
+                        <th scope="col-lg-2">Bouteilles restantes</th>
+                        <th scope="col-lg-3">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for bottle in bottles %}
+                        <tr>
+                            <th scope="row">{{ bottle.id }}</th>
+                            <td>{{ bottle.nom }}</th>
+                                <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
+                                <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
+                                <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
+                                <td>
+                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': bottle.id }) }}">MODIFIER</a>
+                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">SUPPRIMER</a>
+                                </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-responsive pad-t">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col-lg-1">#</th>
+                        <th scope="col-lg-2">Nom article</th>
+                        <th scope="col-lg-2">Prix à l'achat</th>
+                        <th scope="col-lg-2">Prix de vente</th>
+                        <th scope="col-lg-2">Articles restants</th>
+                        <th scope="col-lg-3">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in article %}
+                        <tr>
+                            <th scope="row">{{ item.id }}</th>
+                            <td>{{ item.nom }}</th>
+                                <td id="afficheStock-cout">{{ item.prixAchat }}</td>
+                                <td id="afficheStock-prix">{{ item.prixVente }}</td>
+                                <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
+                                <td>
+                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': item.id }) }}">MODIFIER</a>
+                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">SUPPRIMER</a>
+                                </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a class="btn btn-success btn-lg btn-block" href="{{ path('ajout_article') }}">Ajouter un article</a>
     </div>
-
-    <div class="table-responsive pad-t">
-        <table class="table table-striped table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col-lg-1">#</th>
-                    <th scope="col-lg-2">Nom bouteille</th>
-                    <th scope="col-lg-2">Prix à l'achat</th>
-                    <th scope="col-lg-2">Prix de vente</th>
-                    <th scope="col-lg-2">Bouteilles restantes</th>
-                    <th scope="col-lg-3">Action</th>
-                </tr>
-            </thead>
-            
-            <tbody>
-                {% for bottle in bottles %}
-                <tr>
-                    <th scope="row">{{ bottle.id }}</th>
-                    <td>{{ bottle.nom }}</th>
-                    <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
-                    <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
-                    <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
-                    <td>
-                        <a class="btn btn-outline-info" href="{{ path("modif_article", { 'id_article': bottle.id }) }}">MODIFIER</a>
-                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.id}) }}"
-                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">SUPPRIMER</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="table-responsive pad-t">
-        <table class="table table-striped table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col-lg-1">#</th>
-                    <th scope="col-lg-2">Nom article</th>
-                    <th scope="col-lg-2">Prix à l'achat</th>
-                    <th scope="col-lg-2">Prix de vente</th>
-                    <th scope="col-lg-2">Articles restants</th>
-                    <th scope="col-lg-3">Action</th>
-                </tr>
-            </thead>
-            
-            <tbody>
-                {% for item in article %}
-                <tr>
-                    <th scope="row">{{ item.id }}</th>
-                    <td>{{ item.nom }}</th>
-                    <td id="afficheStock-cout">{{ item.prixAchat }}</td>
-                    <td id="afficheStock-prix">{{ item.prixVente }}</td>
-                    <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
-                    <td>
-                        <a class="btn btn-outline-info" href="{{ path("modif_article", { 'id_article': item.id }) }}">MODIFIER</a>
-                        <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.id}) }}"
-                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">SUPPRIMER</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <a class="btn btn-success btn-lg btn-block" href="{{ path('ajout_article') }}">Ajouter un article</a>
-</div>
 {% endblock %}

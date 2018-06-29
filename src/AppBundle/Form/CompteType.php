@@ -1,22 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: pierrick
- * Date: 18/05/18
- * Time: 18:10
- */
-
 namespace AppBundle\Form;
 
 use AppBundle\Entity\Comptes;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class CompteType extends AbstractType
 {
@@ -42,8 +34,8 @@ class CompteType extends AbstractType
                 'label' => "Intronisé",
                 'placeholder' => "Intronisé ?",
                 'choices' => array(
-                    'OUI' => '1',
-                    'NON' => '0',
+                    'OUI' => true,
+                    'NON' => false,
                 ),
             ))
             ;
@@ -51,6 +43,8 @@ class CompteType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array('data_class' => Comptes::class,));
+        $resolver->setDefaults(array(
+          'data_class' => Comptes::class,
+        ));
     }
 }
