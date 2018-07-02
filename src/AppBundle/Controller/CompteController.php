@@ -37,7 +37,7 @@ class CompteController extends Controller {
         }
       
         $compte=new Comptes();
-        $form=$this->createForm(CompteType::class,$compte);
+        $form=$this->createForm(CompteType::class, $compte);
 
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()) {

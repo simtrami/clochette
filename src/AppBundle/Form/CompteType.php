@@ -30,6 +30,7 @@ class CompteType extends AbstractType
             ))
             ->add('annee',IntegerType::class, array(
                 'label' => "Année",
+                'attr' => array('placeholder' => '1', 'value' => '1')
             ))
             ->add('is_intro', ChoiceType::class, array(
                 'label' => "Intronisé",
