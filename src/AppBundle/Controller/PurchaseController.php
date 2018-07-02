@@ -2,7 +2,9 @@
 // src/AppBundle/Controller/PurchaseController.php
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Comptes;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -44,6 +46,5 @@ class PurchaseController extends Controller
         $data['selected_articles'] = $selected_articles;
 
         return $this->render("purchase/index.html.twig", $data);
-                                
     }
 }

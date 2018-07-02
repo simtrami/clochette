@@ -141,7 +141,7 @@ Pour le dernier champ
 `secret (ThisTokenIsNotSoSecretChangeIt):`ouvrir un nouveau terminal (Ubuntu)
 ou Git Bash (Windows) et exécuter
 ```bash
-cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1
 ```
 Copier et coller la chaîne de caractères retournée pour remplir le champ du
 token secret de l'application Symfony.
