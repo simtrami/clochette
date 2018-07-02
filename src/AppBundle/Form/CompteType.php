@@ -9,11 +9,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
 
 class CompteType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
+    public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
             ->add('nom',TextType::class, array(
                 'label' => "Nom",
@@ -38,8 +39,22 @@ class CompteType extends AbstractType
                     'NON' => false,
                 ),
             ))
+            
             ;
-    }
+            
+            $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+                $compte = $event->getData();
+                $form = $event->getForm();
+
+                if (!(!$compte || null === $compte->getIdcompte())) {
+                    $form->add('nomStaff', TextType::class, array(
+                        'label' => 'Nom de Staff', 
+                        'required' => false
+                    ));
+                }
+            });
+    
+        }
 
     public function configureOptions(OptionsResolver $resolver)
     {

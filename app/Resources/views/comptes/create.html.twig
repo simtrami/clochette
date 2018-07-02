@@ -14,13 +14,13 @@
         <div class="alert alert-light center">
             <h4>{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ prenom ~ " " ~ nom }}</h4>
         </div>
-            {{ form_start(form) }}
-                {{ form_row(form.nom) }}
-                {{ form_row(form.prenom) }}
-                {{ form_row(form.pseudo) }}
-                {{ form_row(form.solde) }}
-                {{ form_row(form.annee) }}
-                {{ form_row(form.is_intro) }}
+        
+        {{ form_start(form) }}
+            {{ form_errors(form) }}
+            {% if mode == 'modify_account' %}
+                {{ form_row(form.nomStaff) }}
+            {% endif %}
+        {{ form_rest(form) }}
 
                 <button type="submit" class="btn btn-primary btn-lg btn-block">
                     {{ mode == 'new_account' ? 'Créer' : 'Modifier' }}</button>
