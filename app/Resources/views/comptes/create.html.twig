@@ -23,9 +23,14 @@
             {{ form_row(form.nom) }}
             {{ form_row(form.prenom) }}
             {{ form_row(form.pseudo) }}
-            {{ form_label(form.solde) }}
-            {{ form_errors(form.solde) }}
-            {{ form_widget(form.solde, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
+            {% if mode == 'new_account' %}
+              {{ form_label(form.solde) }}
+              {{ form_errors(form.solde) }}
+              {{ form_widget(form.solde, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
+              {{ form_label(form.annee) }}
+              {{ form_errors(form.annee) }}
+              {{ form_widget(form.annee, { 'attr' : {'placeholder' : '1', 'value' : '1'} }) }}
+          {% endif %}
             {{ form_rest(form) }}
 
                 <button type="submit" class="btn btn-primary btn-lg btn-block">
