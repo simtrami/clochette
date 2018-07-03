@@ -1,8 +1,9 @@
 .vscode/
 .DS_Store
 */.DS_Store
-var/
+var/*
 app/config/parameters.yml
 .web-server-pid
-vendor/
+vendor/*
+!vendor/escpos-php
 app/bootstrap.php.cache
