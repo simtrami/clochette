@@ -137,15 +137,15 @@ class Comptes
     }
 
     /**
-     * Set username
+     * Set pseudo
      *
-     * @param string $username
+     * @param string $pseudo
      *
      * @return Comptes
      */
-    public function setUsername($username)
+    public function setPseudo($pseudo)
     {
-        $this->username = $username;
+        $this->pseudo = $pseudo;
 
         return $this;
     }
