@@ -7,10 +7,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Algolia\SearchBundle\IndexManagerInterface;
 
 class PurchaseController extends Controller
 {
-    
+    protected $indexManager;
+
+    public function __construct(IndexManagerInterface $indexingManager)
+    {
+        $this->indexManager = $indexingManager;
+    }
+
     /**
      * @Route("/purchase", name="purchase")
      **/
@@ -45,6 +52,10 @@ class PurchaseController extends Controller
         $data['selected_bottles'] = $selected_bottles;
         $data['selected_articles'] = $selected_articles;
 
+        $em = $this->getDoctrine()->getManagerForClass(Comptes::class);
+        $comptes = $this->indexManager->search('query', Comptes::class, $em);
+
         return $this->render("purchase/index.html.twig", $data);
     }
+    
 }

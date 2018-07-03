@@ -4,71 +4,8 @@
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/caisse.css') }}">
-{% endblock %}
-
-{% block javascripts %}
-<script>
-$(".btn-value").on("click", function () {
-
-    var button = $(this);
-    var qte = button.parent().parent().find(".qte");
-    var oldValue = button.parent().parent().find("input").val();
-    var qteMax = button.parent().find(".qteStock").val();
-
-    if (button.text() == "+") {
-        if (parseFloat(oldValue) < parseFloat(qteMax)){
-            var newVal = parseFloat(oldValue) + 1;
-            //console.log(qteMax);
-        } else {
-            var newVal = parseFloat(qteMax);
-            //console.log(qteMax);
-        }
-    } else {
-        // Don't allow decrementing below zero
-        if (oldValue > 0) {
-            var newVal = parseFloat(oldValue) - 1;
-            //console.log(newVal);
-        } else {
-            newVal = 0;
-        }
-    }
-
-    button.parent().parent().find(".qte").attr("value", newVal);
-    button.parent().parent().find(".qte").val(newVal);
-    //console.log(button.parent().parent().find(".qte").val());
-
-    var tot = 0;
-    $(".qte").each(function () {
-        var prix = $(this).parent().parent().find("#prix").val();
-        tot = tot + parseFloat($(this).val()) * parseFloat(prix);
-    });
-    $("#total").attr("value", tot);
-});
-
-$(".qte").on("input", function () {
-
-    var tot = 0;
-    
-    $(".qte").each(function () {
-        var qte = parseFloat($(this).val());
-        var qteMax = parseFloat($(this).parent().find(".qteStock").val());
-        var prix = parseFloat($(this).parent().parent().find("#prix").val());
-
-        if (qte < 0) {
-            $(this).attr("value", 0);
-            $(this).val(0);
-            qte = 0;
-        } else if (qte > qteMax) {
-            $(this).attr("value", qteMax);
-            $(this).val(qteMax);
-            qte = qteMax;
-        }
-        tot = tot + qte * prix;
-    });
-    $("#total").attr("value", tot);
-});
-
-</script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.8.0/dist/instantsearch.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -182,6 +119,16 @@ $(".qte").on("input", function () {
             </div>
         </div>
 
+        {# Pour collapse le champ lors de la sélection d'une autre méthode sans recliquer sur le bouton Compte
+        il faut faut un script js qui supprime l'attribut "show" de #collapseAccount lorsque #showAccount n'est
+        n'a ni l'attribut "focus" ni "active" #}
+        <div class="collapse pad-b" id="collapseAccount">
+            <div class="form-group">
+                <label class="form-control-label" for="search-input">Compte à débiter</label><br/>
+                <input type="search" id="paying-account" class="form-control aa-input-search" placeholder="Rechercher un compte..." name="search" autocomplete="off" />
+            </div>
+        </div>
+      
         <div class="col-md-3">
             <div class="input-group mb-3">
                 <div class="btn-group btn-group-toggle moyen_paiement" data-toggle="buttons">
@@ -210,20 +157,43 @@ $(".qte").on("input", function () {
             </div>
         </div>
 
-        {# Pour collapse le champ lors de la sélection d'une autre méthode sans recliquer sur le bouton Compte
-        il faut faut un script js qui supprime l'attribut "show" de #collapseAccount lorsque #showAccount n'est
-        n'a ni l'attribut "focus" ni "active" #}
-        <div class="collapse" id="collapseAccount">
-            <form>
-                <div class="form-group">
-                    <label class="form-control-label" for="paying-account">Compte à débiter</label>
-                    <input type="text" class="form-control" id="paying-account"/>
-                </div>
-            </form>
-        </div>
-
         <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
 
     </div>
+
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('js/qteChecker.js') }}"></script>
+
+<!-- Include AlgoliaSearch JS Client and autocomplete.js library -->
+<script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+<script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
+
+<!-- Initialize autocomplete menu -->
+{% raw %}
+<script>
+var client = algoliasearch('1ZO7CPQOBJ', '7fe454f3c66329bdf0687b9586b350e7');
+var index = client.initIndex('dev_comptes');
+//initialize autocomplete on search input (ID selector must match)
+autocomplete('#paying-account',
+{ hint: false }, {
+    source: autocomplete.sources.hits(index, {hitsPerPage: 5}),
+    //value to be displayed in input control after user's suggestion selection
+    displayKey: 'pseudo',
+    //hash of templates used when rendering dataset
+    templates: {
+        //'suggestion' templating function used to render a single suggestion
+        suggestion: function(suggestion) {
+          return '<span>' +
+            suggestion._highlightResult.pseudo.value + '</span> (<span>' +
+            suggestion._highlightResult.prenom.value + '</span> <span>' +
+            suggestion._highlightResult.nom.value + '</span>)';
+        }
+    }
+});
+</script>
+{% endraw %}
 
 {% endblock %}

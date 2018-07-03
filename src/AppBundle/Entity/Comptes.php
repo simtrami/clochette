@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Comptes
@@ -73,7 +74,9 @@ class Comptes
 
     /**
      * Get idcompte
-     *
+     * 
+     * @Groups({"searchable"})
+     * 
      * @return integer
      */
     public function getIdcompte()
@@ -98,6 +101,8 @@ class Comptes
     /**
      * Get nom
      *
+     * @Groups({"searchable"})
+     * 
      * @return string
      */
     public function getNom()
@@ -122,6 +127,8 @@ class Comptes
     /**
      * Get prenom
      *
+     * @Groups({"searchable"})
+     * 
      * @return string
      */
     public function getPrenom()
@@ -144,32 +151,10 @@ class Comptes
     }
 
     /**
-     * Get username
-     *
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set pseudo
-     *
-     * @param string $pseudo
-     *
-     * @return Comptes
-     */
-    public function setPseudo($pseudo)
-    {
-        $this->pseudo = $pseudo;
-
-        return $this;
-    }
-
-    /**
      * Get pseudo
      *
+     * @Groups({"searchable"})
+     * 
      * @return string
      */
     public function getPseudo()
@@ -194,6 +179,8 @@ class Comptes
     /**
      * Get solde
      *
+     * @Groups({"searchable"})
+     * 
      * @return string
      */
     public function getSolde()
@@ -218,9 +205,11 @@ class Comptes
     /**
      * Get annee
      *
+     * @Groups({"searchable"})
+     * 
      * @return integer
      */
-    public function getAnnee()
+    public function getAnnee(): ?int
     {
         return $this->annee;
     }
@@ -242,6 +231,8 @@ class Comptes
     /**
      * Get nomstaff
      *
+     * @Groups({"searchable"})
+     * 
      * @return string
      */
     public function getNomstaff()
@@ -266,6 +257,8 @@ class Comptes
     /**
      * Get isIntro
      *
+     * @Groups({"searchable"})
+     * 
      * @return boolean
      */
     public function getIsIntro()

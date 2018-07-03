@@ -15,5 +15,9 @@ parameters:
     mailer_user: ~
     mailer_password: ~
 
+    # IDs for Algolia, Can be found on the Dashboard. The API key is the Admin one.
+    env(ALGOLIA_APP_ID): XXXXXXXX
+    env(ALGOLIA_API_KEY): indicateYourAdminApiKeyHere
+
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
