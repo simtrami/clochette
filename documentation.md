@@ -13,7 +13,7 @@ Et on entre la commande :
 C:\Users\user> set PATH=%PATH%;C:\php
 ```
 Enfin, on teste l'ajout de PHP dans le PATH en ouvrant Powershell
-(Windows+R > powershell) et en affichant le version de PHP installée
+(Windows+R > powershell) et en affichant le version de PHP installée :
 ```powershell
 PS C:\Users\user> php -v
 PHP 7.2.7 (cli) (built: Jun 19 2018 23:14:45) ( ZTS MSVC15 (Visual C++ 2017) x64 )
@@ -37,7 +37,7 @@ $ sudo apt-get update
 $ sudo apt-get autoremove -y
 $ sudo LC_ALL=fr_FR.UTF-8 add-apt-repository ppa:ondrej/php
 $ sudo apt-get update
-$ sudo apt-get install php php-mysql php-mbstring php-zip php-xml -y
+$ sudo apt-get install php php-mysql php-mbstring php-zip php-xml php-curl -y
 ```
 Comme pour Windows, on teste l'installation en tapant `php -v`dans le
 terminal.
@@ -53,7 +53,7 @@ accepter alors la proposition de Composer.
 
 A la fin de l'installation, aller dans C:\php\ et faire Clique-droit > Modifier
 sur le fichier `php.ini`. Depuis la fenêtre Bloc-notes, rechercher avec CTRL+F
-la ligne `extension=pdo_mysql` et la décommenter (retirer le ";"). Puis
+la ligne `extension=pdo_mysql` et la décommenter (retirer le ";") et faire de même pour `extension=curl`. Puis
 sauvegarder le fichier (avec CTRL+S) et fermer la fenêtre Bloc-notes.
 
 On peut tester l'installation en tapant `composer -v`dans un Powershell.
@@ -82,7 +82,7 @@ première se terminant par "winx64.msi". Puis exécuter l'installation en
 cochant "Use UTF8 as default server's character set" et en laissant le
 reste tel quel.
 
-Pour tester l'installation, ouvrir un Powershell et entrer
+Pour tester l'installation, ouvrir un Powershell et entrer :
 ```powershell
 PS C:\Users\user> mysql -u root -p
 ```
@@ -127,8 +127,12 @@ Puis `git --version`.
 ## Récupération du projet et préparation
 Depuis le terminal (Powershell, bash, zsh, etc. Dépendemment de l'OS), cloner
 le dépôt :
-```
+```git
 git clone https://github.com/simtrami/clochette.git
+```
+Pour récupérer les sous-modules au passage (comme escpos-php) :
+```git
+git clone --recurse-submodules https://github.com/simtrami/clochette.git
 ```
 Un dossier _clochette_ va être créé dans le dossier courant, s'y déplacer
 avec `cd clochette`. Il s'agit alors d'installer les dépendances et de
@@ -136,10 +140,16 @@ configurer le serveur PHP de développement ainsi que le client SQL.
 Exécuter alors `composer install`. Les valeurs des champs à remplir sont
 indiqués sur le Slack du projet.
 
+Plus tard, pour récupérer les submodules (comme escpos-php) si l'option
+`--recurse-submodules` n'a pas été passée :
+```git
+git submodule update --init --recursive
+```
+
 ### Générer le secret
-Pour le dernier champ
-`secret (ThisTokenIsNotSoSecretChangeIt):`ouvrir un nouveau terminal (Ubuntu)
-ou Git Bash (Windows) et exécuter
+Pour le dernier champ 
+`secret (ThisTokenIsNotSoSecretChangeIt) :`, ouvrir un nouveau terminal (Ubuntu)
+ou Git Bash (Windows) et exécuter :
 ```bash
 cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1
 ```
@@ -152,7 +162,7 @@ et tester l'application depuis le navigateur. Pour cela, exécuter
 `php bin/console server:run` depuis le répertoire racine du projet et ouvrir
 le lien affiché dans le terminal, le site doit s'afficher dans le navigateur.
 
-**L'environnement local de développement est prêt !**
+## **L'environnement local de développement est prêt !**
 
 # Paramétrer Symfony pour utiliser une bdd :
 ## Fichiers de paramétrage
