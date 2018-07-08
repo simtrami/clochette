@@ -9,12 +9,12 @@ au PATH.
 
 Pour cela on ouvre le terminale : Windows+R > cmd > OK.
 Et on entre la commande :
-```powershell
+```console
 C:\Users\user> set PATH=%PATH%;C:\php
 ```
 Enfin, on teste l'ajout de PHP dans le PATH en ouvrant Powershell
 (Windows+R > powershell) et en affichant le version de PHP installée :
-```powershell
+```console
 PS C:\Users\user> php -v
 PHP 7.2.7 (cli) (built: Jun 19 2018 23:14:45) ( ZTS MSVC15 (Visual C++ 2017) x64 )
 Copyright (c) 1997-2018 The PHP Group
@@ -28,18 +28,18 @@ Afin d'être sûr d'avoir la dernière version de PHP installée, on ajoute
 le PPA d'ondrej en effectuant les commandes suivantes (on part du principe
 que PHP5 est installé sur la machine, si ce n'est pas le cas, exécuter tout
 de même ces commandes) puis on installe PHP :
-```bash
-$ sudo apt-get update
-$ sudo apt-get upgrade -y
-$ sudo apt-get install nano software-properties-common python3-software-properties -y
-$ sudo apt-get purge php5-common -y
-$ sudo apt-get update
-$ sudo apt-get autoremove -y
-$ sudo LC_ALL=fr_FR.UTF-8 add-apt-repository ppa:ondrej/php
-$ sudo apt-get update
-$ sudo apt-get install php php-mysql php-mbstring php-zip php-xml php-curl -y
+```console
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get install software-properties-common python3-software-properties -y
+sudo apt-get purge php5-common -y
+sudo apt-get update
+sudo apt-get autoremove -y
+sudo LC_ALL=fr_FR.UTF-8 add-apt-repository ppa:ondrej/php
+sudo apt-get update
+sudo apt-get install php php-mysql php-mbstring php-zip php-xml php-curl -y
 ```
-Comme pour Windows, on teste l'installation en tapant `php -v`dans le
+Comme pour Windows, on teste l'installation en tapant `php -v` dans le
 terminal.
 
 ### Composer
@@ -56,7 +56,7 @@ sur le fichier `php.ini`. Depuis la fenêtre Bloc-notes, rechercher avec CTRL+F
 la ligne `extension=pdo_mysql` et la décommenter (retirer le ";") et faire de même pour `extension=curl`. Puis
 sauvegarder le fichier (avec CTRL+S) et fermer la fenêtre Bloc-notes.
 
-On peut tester l'installation en tapant `composer -v`dans un Powershell.
+On peut tester l'installation en tapant `composer -v` dans un Powershell.
 
 #### Pour Ubuntu
 Suivre la procédure indiquée sur [le site de Composer](https://getcomposer.org/download/).
@@ -64,9 +64,9 @@ Suivre la procédure indiquée sur [le site de Composer](https://getcomposer.org
 Attention, cela installe Composer dans le dossier courant. Pour l'installer
 globalement dans le système, essayer `sudo apt install composer`
 
-Sinon, depuis le dossier ~/, créer un répertoire bin/ : `mkdir bin`.
+Sinon, depuis le dossier _~/_ (le dossier _home_ de l'utilisateur courant), créer un répertoire _bin/_ : `mkdir bin`.
 Depuis ce dossier, effectuer la procédure d'installation de Composer
-ci-dessus. Ensuite, dans le fichier ~/.bashrc, ajouter en bas la ligne
+ci-dessus. Ensuite, dans le fichier _~/.bashrc_, ajouter en bas la ligne
 suivante :
 ```bash
 alias composer='php ~/bin/composer.phar'
@@ -83,7 +83,7 @@ cochant "Use UTF8 as default server's character set" et en laissant le
 reste tel quel.
 
 Pour tester l'installation, ouvrir un Powershell et entrer :
-```powershell
+```console
 PS C:\Users\user> mysql -u root -p
 ```
 Si la commande est introuvable, rajouter "C:\Program Files\MariaDB xy.z\bin"
@@ -94,15 +94,15 @@ Un redémarrage de la session Windows peut être nécessaire.
 
 #### Pour Ubuntu
 Installer MariaDB depuis les dépôts apt :
-```bash
-$ sudo apt update
-$ sudo apt install mariadb-server
+```console
+sudo apt update
+sudo apt install mariadb-server
 ```
 Bien indiquer un mot de passe root lors de l'installation.
 
 Puis on teste le bon déroulement de l'installation :
-```bash
-$ mysql -u root -p
+```console
+mysql -u root -p
 ```
 Si cela ne fonctionne pas alors que tout s'est bien passé, exécuter
 **_partie à compléter_**
@@ -118,11 +118,11 @@ est bien inclus dans le PATH (depuis cmd, `echo %PATH%`) et relancer la session.
 
 #### Pour Ubuntu
 Installer git depuis les dépôts apt :
-```bash
-$ sudo apt update
-$ sudo apt install git
+```console
+sudo apt update
+sudo apt install git
 ```
-Puis `git --version`.
+Puis `git --version` pour vérifier.
 
 ## Récupération du projet et préparation
 Depuis le terminal (Powershell, bash, zsh, etc. Dépendemment de l'OS), cloner
@@ -142,13 +142,13 @@ indiqués sur le Slack du projet.
 
 Plus tard, pour récupérer les submodules (comme escpos-php) si l'option
 `--recurse-submodules` n'a pas été passée :
-```git
+```console
 git submodule update --init --recursive
 ```
 
 ### Générer le secret
 Pour le dernier champ 
-`secret (ThisTokenIsNotSoSecretChangeIt) :`, ouvrir un nouveau terminal (Ubuntu)
+`secret (ThisTokenIsNotSoSecretChangeIt):`, ouvrir un nouveau terminal (Ubuntu)
 ou Git Bash (Windows) et exécuter :
 ```bash
 cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 40 | head -n 1
@@ -167,41 +167,42 @@ le lien affiché dans le terminal, le site doit s'afficher dans le navigateur.
 # Paramétrer Symfony pour utiliser une bdd :
 ## Fichiers de paramétrage
 Paramètres de la database : `app/config/parameters.yml`
+
 Configuration de Doctrine : `app/config/config.yml`
 
 # Générer la database, les tables et les colonnes avec Doctrine :
 ## Rafraîchir le cache :
-```bash
+```console
 php bin/console cache:clear
 ```
 ## Créer la database :
-```bash
+```console
 php bin/console doctrine:database:create
 ```
 ## Définir des tables puis leurs colonnes (interactif) :
-```bash
+```console
 php bin/console doctrine:generate:entity
 ```
  - `AppBundle:table`
  - `yml`
  - `nomColonne`
- - ...[ses paramètres]...
+ - `...[ses paramètres]...`
 
 ## Générer les tables et colonnes (dans la base) :
 ### Afficher les commandes SQL avant d'exécuter :
-```bash
+```console
 php bin/console doctrine:schema:update --dump-sql
 ```
 ### Exécuter :
-```bash
+```console
 php bin/console doctrine:schema:update --force
 ```
 ## Suite à la modification des fichiers de définition (.yml) :
-```bash
+```console
 php bin/console doctrine:generate:entities AppBundle
 ```
 ## Si les tables sont déjà existantes, on génère les fichiers (.yml) :
-```bash
+```console
 php bin/console doctrine:mapping:import --force AppBundle yml
 ```
 
@@ -263,6 +264,13 @@ _On récupère les données entrées dans le formulaire qu'on insère avec `flus
 
 # Commandes utiles
 ## Pour encoder un password à insérer dans la base directement en SQL (créer l'utilisateur _admin_ par exemple)
-```bash
+```console
 php bin/console security:encode-password
 ```
+
+## Pour mettre à jour les index Algolia (en supprimant les existants avant)
+```console
+php bin/console search:clear
+php bin/console search:import
+```
+_Rajouter l'option `--indices=` suivie de la liste des indices auxquels affecter ces commandes (séparés par ",")._
