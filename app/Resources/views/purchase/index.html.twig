@@ -10,6 +10,7 @@
 
 {% block body %}
     <div class="container-fluid">
+    <form action="{{ path('purchase') }}" method="post">
         <div class="alert alert-secondary">
             <h4><i class="fas fa-beer"></i> Pressions</h4>
         </div>
@@ -18,6 +19,7 @@
                 <div class="card pad-b">
                     <div class="card-body">
                         <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                        <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
                         <div class="input-group">
                             <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                             <div class="input-group-append">
@@ -28,11 +30,11 @@
                         </div>
                         <label for="qte">Quantité</label>
                         <div class="input-group add-delete-article">
-                            <input type="number" min="0" step="1" class="qte form-control" autocomplete="" value="0">
+                            <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="drafts[{{ loop.index }}][quantite]" value="0">
                             <div class="input-group-append">
                                 <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                <button class="btn btn-outline-danger btn-value" id="moins">-</button>
-                                <button class=" btn btn-outline-success btn-value" id="plus">+</button>
+                                <span class="btn btn-outline-danger btn-value" id="moins">-</span>
+                                <span class="btn btn-outline-success btn-value" id="plus">+</span>
                             </div>
                         </div>
                     </div>
@@ -49,6 +51,7 @@
                     <div class="card pad-b">
                         <div class="card-body">
                             <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                            <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
                             <div class="input-group">
                                 <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                                 <div class="input-group-append">
@@ -60,11 +63,11 @@
 
                             <label for="qte">Quantité</label>
                             <div class="input-group add-delete-article">
-                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" value="0">
+                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="bottles[{{ loop.index }}][quantite]" value="0">
                                 <div class="input-group-append">
                                     <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                    <button class="btn btn-outline-danger btn-value" id="moins">-</button>
-                                    <button class=" btn btn-outline-success btn-value" id="plus">+</button>
+                                    <span class="btn btn-outline-danger btn-value" id="moins">-</span>
+                                    <span class="btn btn-outline-success btn-value" id="plus">+</span>
                                 </div>
                             </div>
                         </div>
@@ -82,6 +85,7 @@
                     <div class="card pad-b">
                         <div class="card-body">
                             <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                            <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
                             <div class="input-group">
                                 <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                                 <div class="input-group-append">
@@ -92,11 +96,11 @@
                             </div>
                             <label for="qte">Quantité</label>
                             <div class="input-group add-delete-article">
-                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" value="0">
+                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="articles[{{ loop.index }}][quantite]" value="0">
                                 <div class="input-group-append">
                                     <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                    <button class="btn btn-outline-danger btn-value" id="moins">-</button>
-                                    <button class=" btn btn-outline-success btn-value" id="plus">+</button>
+                                    <span class="btn btn-outline-danger btn-value" id="moins">-</span>
+                                    <span class="btn btn-outline-success btn-value" id="plus">+</span>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +116,7 @@
         <div class="col-md-3">
             <label for="total">Total</label>
             <div class="input-group mb-3">
-                <input class="form-control" type="text" id="total" value="0" placeholder="Total">
+                <input class="form-control" type="text" id="total" name="total" value="0" placeholder="Total">
                 <div class="input-group-append">
                     <span class="input-group-text">€</span>
                 </div>
@@ -133,32 +137,34 @@
             <div class="input-group mb-3">
                 <div class="btn-group btn-group-toggle moyen_paiement" data-toggle="buttons">
 
-                    <label class="btn btn-success">
-                        <input type="radio" name="options" id="option1">
+                    {# <label class="btn btn-success">
+                        <input type="radio" id="option1">
                         <i class="fa fa-credit-card"></i> Carte Bleue
-                    </label>
+                    </label> #}
 
-                    <label class="btn btn-success" id="showAccount" type="button" data-toggle="collapse" data-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
-                        <input type="radio" name="options" id="option2">
-                        <i class="fa fa-id-badge"></i> Compte
-                    </label>
-
-                    <label class="btn btn-success">
-                        <input type="radio" name="options" id="option3">
+                    <label class="btn btn-success active" onclick="choixPaiement('cash')">
+                        <input class="choix-paiement" type="radio" id="option1">
                         <i class="fa fa-money-bill-alt"></i> Liquide
                     </label>
 
-                    <label class="btn btn-success">
-                        <input type="radio" name="options" id="option4">
+                    <label class="btn btn-success" onclick="choixPaiement('account')" id="showAccount" data-toggle="collapse" data-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                        <input class="choix-paiement" type="radio" id="option2">
+                        <i class="fa fa-id-badge"></i> Compte
+                    </label>
+
+                    <label class="btn btn-success" onclick="choixPaiement('pumpkin')">
+                        <input class="choix-paiement" type="radio" id="option3">
                         <i class="fa fa-mobile-alt"></i> Pumpkin
                     </label>
 
+                    <input id="methode-paiement" name="methode" value="cash" hidden>
                 </div>
             </div>
         </div>
 
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
-
+    </form>
     </div>
 
 
@@ -166,6 +172,7 @@
 
 {% block javascripts %}
 <script src="{{ asset('js/qteChecker.js') }}"></script>
+<script src="{{ asset('js/methode-paiement.js') }}"></script>
 
 <!-- Include AlgoliaSearch JS Client and autocomplete.js library -->
 <script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
