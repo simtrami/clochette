@@ -57,5 +57,12 @@ class PurchaseController extends Controller
 
         return $this->render("purchase/index.html.twig", $data);
     }
+
+    /**
+     * @Route("/purchase/validation", name="purchaseValidation")
+     */
+    public function validateCommande(Request $request){
+        
+    }
     
 }

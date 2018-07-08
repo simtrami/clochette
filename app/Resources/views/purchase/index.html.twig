@@ -161,7 +161,7 @@
                 </div>
             </div>
         </div>
-
+        <input type="hidden" name="userId" value="{{ app.user.id }}">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
     </form>
