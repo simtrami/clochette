@@ -39,6 +39,8 @@ class UserType extends AbstractType
                     'Respo Com' => 'ROLE_COM',
                     'Respo Log' => 'ROLE_STOCK',
                     'Respo Tech' => 'ROLE_ADMIN',
+                    'Fée' => 'ROLE_VVP',
+                    'VVP' => 'ROLE_VVP',
                     'PC' => 'ROLE_INTRO',
                 ),
             ))

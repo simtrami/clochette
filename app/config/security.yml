@@ -72,6 +72,8 @@ security:
 
     role_hierarchy:
         ROLE_BUREAU:    ROLE_INTRO
+        ROLE_VVP:     ROLE_BUREAU
+        ROLE_FEE:     ROLE_BUREAU
         ROLE_COM:       ROLE_BUREAU
         ROLE_SECRET:    ROLE_BUREAU
         ROLE_STOCK:     ROLE_BUREAU
