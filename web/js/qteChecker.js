@@ -31,9 +31,10 @@ $(".btn-value").on("click", function () {
     var tot = 0;
     $(".qte").each(function () {
         var prix = $(this).parent().parent().find("#prix").val();
-        tot = tot + parseFloat($(this).val()) * parseFloat(prix);
+        tot = Math.round((tot + parseFloat($(this).val()) * parseFloat(prix)) * 100) / 100;
     });
     $("#total").attr("value", tot);
+    $("#totalForm").attr("value", tot);
 });
 
 $(".qte").on("input", function () {
@@ -54,7 +55,8 @@ $(".qte").on("input", function () {
             $(this).val(qteMax);
             qte = qteMax;
         }
-        tot = tot + qte * prix;
+        tot = Math.round((tot + qte * prix) * 100 ) / 100;
     });
     $("#total").attr("value", tot);
+    $("#totalForm").attr("value", tot);
 });

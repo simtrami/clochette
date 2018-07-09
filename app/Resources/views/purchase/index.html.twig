@@ -10,6 +10,7 @@
 
 {% block body %}
     <div class="container-fluid">
+    {# <form action="{{ path('purchaseValidation') }}" method="post"> #}
     <form action="{{ path('purchase') }}" method="post">
         <div class="alert alert-secondary">
             <h4><i class="fas fa-beer"></i> Pressions</h4>
@@ -116,7 +117,8 @@
         <div class="col-md-3">
             <label for="total">Total</label>
             <div class="input-group mb-3">
-                <input class="form-control" type="text" id="total" name="total" value="0" placeholder="Total">
+                <input class="form-control" type="text" id="total" value="0" placeholder="Total" disabled>
+                <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" hidden>
                 <div class="input-group-append">
                     <span class="input-group-text">€</span>
                 </div>
