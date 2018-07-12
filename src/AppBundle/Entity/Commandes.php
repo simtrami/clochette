@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Commandes
  *
- * @ORM\Table(name="commandes", indexes={@ORM\Index(name="idCompte", columns={"idCompte"})})
+ * @ORM\Table(name="commandes", indexes={@ORM\Index(name="idCompte", columns={"idCompte"}), @ORM\Index(name="idUser", columns={"idUser"})})
  * @ORM\Entity
  */
 class Commandes
@@ -34,15 +34,25 @@ class Commandes
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comptes")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idCompte", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="idCompte", referencedColumnName="id", nullable=true)
      * })
      */
     private $idCompte;
+  
+    /**
+     * @var \AppBundle\Entity\Users
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Users")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="idUser", referencedColumnName="id")
+     * })
+     */
+    private $idUser;
 
     /**
      * @var string
      * 
-     * @ORM\Column(name="montant", type="decimal", precision=8, scale=2, nullable=false)
+     * @ORM\Column(name="montant", type="decimal", precision=8, scale=2)
      */
     private $montant;
   
@@ -115,6 +125,30 @@ class Commandes
     {
         return $this->idCompte;
     }
+
+    /**
+     * Set idUser
+     *
+     * @param \AppBundle\Entity\Users $id
+     *
+     * @return Commandes
+     */
+    public function setIdUser(\AppBundle\Entity\Users $idUser)
+    {
+        $this->idUser = $idUser;
+
+        return $this;
+    }
+
+    /**
+     * Get idUser
+     *
+     * @return \AppBundle\Entity\Users
+     */
+    public function getIdUser()
+    {
+        return $this->idUser;
+    }
     
     /**
      * Set montant
@@ -138,5 +172,15 @@ class Commandes
     public function getMontant()
     {
         return $this->montant;
+    }
+  
+    /**
+     * Get details
+     * 
+     * @return Collection|Details[]
+     */
+    public function getDetails(): Collection
+    {
+        return $this->details;
     }
 }

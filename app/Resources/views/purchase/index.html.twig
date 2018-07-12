@@ -10,6 +10,21 @@
 
 {% block body %}
     <div class="container-fluid">
+    {% if commandeStatus == 0 %}
+      <div class="alert alert-success">
+        <h5>La commande datée du {{ timestamp }} a bien été enregistrée !</h5>
+      </div>
+    {% endif %}
+    {% if commandeStatus == 1 %}
+      <div class="alert alert-danger">
+        <h5>Un problème est survenue lors de l'enregistrement de la commande, veuillez réessayer.</h5>
+      </div>
+    {% endif %}
+    {% if commandeStatus == 2 %}
+      <div class="alert alert-danger">
+        <h5>Cet utilisateur n'a pas le droit de valider cette commande : Solde du compte insuffisant !</h5>
+      </div>
+    {% endif %}
     {# <form action="{{ path('purchaseValidation') }}" method="post"> #}
     <form action="{{ path('purchase') }}" method="post">
         <div class="alert alert-secondary">

@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="details_commandes",
  *  indexes={
- *      @ORM\Index(name="idCommande", columns={"idCommande"}),
+ *      @ORM\Index(name="commande", columns={"commande"}),
  *      @ORM\Index(name="idArticle", columns={"idArticle"})
  *  }
  * )
@@ -22,10 +22,10 @@ class DetailsCommandes
      *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Commandes", inversedBy="details")
-     * @ORM\JoinColumn(name="idCommande", referencedColumnName="id")
+     * @ORM\JoinColumn(name="commande", referencedColumnName="id")
      */
-    private $idCommande;
-
+    private $commande;
+    
     /**
      * @var \AppBundle\Entity\Stocks
      *
@@ -47,27 +47,27 @@ class DetailsCommandes
     ## Fonctions
 
     /**
-     * Set idCommande
+     * Set commande
      *
      * @param \AppBundle\Entity\Commandes $id
      *
      * @return DetailsCommandes
      */
-    public function setIdCommande(\AppBundle\Entity\Commandes $idCommande = null)
+    public function setCommande(\AppBundle\Entity\Commandes $idCommande)
     {
-        $this->idCommande = $idCommande;
+        $this->commande = $commande;
 
         return $this;
     }
 
     /**
-     * Get idCommande
+     * Get commande
      *
      * @return \AppBundle\Entity\Commandes
      */
-    public function getIdCommande()
+    public function getCommande()
     {
-        return $this->idCommande;
+        return $this->commande;
     }
     
     /**

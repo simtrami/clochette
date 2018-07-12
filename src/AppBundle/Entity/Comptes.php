@@ -20,7 +20,7 @@ class Comptes
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $idcompte;
+    private $id;
 
     /**
      * @var string
@@ -73,15 +73,15 @@ class Comptes
 
 
     /**
-     * Get idcompte
+     * Get id
      * 
      * @Groups({"searchable"})
      * 
      * @return integer
      */
-    public function getIdcompte()
+    public function getId()
     {
-        return $this->idcompte;
+        return $this->id;
     }
 
     /**
