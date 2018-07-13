@@ -49,6 +49,10 @@ class CompteController extends Controller {
                 throw new \Exception('Une année doit au moins être égale à 1');
             }
 
+            if (!$checkAccount->namesValid($compte)){
+                throw new \Exception('Les nom, prénom et pseudo ne peuvent contenir que des lettres.');
+            }
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($compte);
             $em->flush();

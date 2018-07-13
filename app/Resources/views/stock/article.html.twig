@@ -37,6 +37,13 @@
             <button type="submit" class="btn btn-primary btn-lg btn-block">
                 {{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
         {{ form_end(form) }}
+
+            <a href="{{path('stock')}}">
+            <button type="button" class="btn btn-danger btn-lg btn-block">
+                {{ mode == 'new_article' ? 'Annuler l\'ajout' : 'Annuler la modification' }}
+            </button>
+            </a>
+
     </div>
 
 {% endblock %}

@@ -33,9 +33,17 @@
           {% endif %}
             {{ form_rest(form) }}
 
-                <button type="submit" class="btn btn-primary btn-lg btn-block">
-                    {{ mode == 'new_account' ? 'Créer' : 'Modifier' }}</button>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                <i class="fa fa-save"></i>{{ mode == 'new_account' ? ' Créer' : ' Modifier' }}
+            </button>
             {{ form_end(form) }}
+
+            <a href="{{path('comptes')}}"><button type="button" class="btn btn-danger btn-lg btn-block">
+                <i class="fa fa-times"></i>{{ mode == 'new_account' ? ' Annuler la création' : ' Annuler la modification' }}
+            </button>
+            </a>
+
     </div>
 
 {% endblock %}
