@@ -12,6 +12,11 @@ class CheckAccount{
     } 
 
     public function namesValid(Comptes $compte){
-        return (is_string($compte->getNom()) && is_string($compte->getPrenom()) && is_string($compte->getPseudo()));
+        return (ctype_alpha($compte->getNom()) && 
+        ctype_alpha($compte->getPrenom()) && 
+        ctype_alpha($compte->getPseudo() 
+        /* ne prend pas en compte 
+        les accents et cédilles */
+    ));
     }
 }
