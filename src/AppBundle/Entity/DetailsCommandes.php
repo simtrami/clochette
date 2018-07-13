@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="details_commandes",
  *  indexes={
  *      @ORM\Index(name="commande", columns={"commande"}),
- *      @ORM\Index(name="idArticle", columns={"idArticle"})
+ *      @ORM\Index(name="article", columns={"article"})
  *  }
  * )
  * @ORM\Entity
@@ -32,10 +32,10 @@ class DetailsCommandes
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Stocks")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idArticle", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="article", referencedColumnName="id")
      * })
      */
-    private $idArticle;
+    private $article;
 
     /**
      * @var integer
@@ -53,7 +53,7 @@ class DetailsCommandes
      *
      * @return DetailsCommandes
      */
-    public function setCommande(\AppBundle\Entity\Commandes $idCommande)
+    public function setCommande(\AppBundle\Entity\Commandes $commande)
     {
         $this->commande = $commande;
 
@@ -71,27 +71,27 @@ class DetailsCommandes
     }
     
     /**
-     * Set idArticle
+     * Set article
      *
      * @param \AppBundle\Entity\Stocks $id
      *
      * @return DetailsCommandes
      */
-    public function setIdArticle(\AppBundle\Entity\Stocks $idArticle = null)
+    public function setArticle(\AppBundle\Entity\Stocks $article)
     {
-        $this->idArticle = $idArticle;
+        $this->article = $article;
 
         return $this;
     }
 
     /**
-     * Get idArticle
+     * Get article
      *
      * @return \AppBundle\Entity\Stocks
      */
-    public function getIdArticle()
+    public function getArticle()
     {
-        return $this->idArticle;
+        return $this->article;
     }
     
     /**
