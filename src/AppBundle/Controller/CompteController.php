@@ -19,7 +19,7 @@ class CompteController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
-      
+
         $em = $this->getDoctrine()->getManager();
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes')->findAll();
         $data['comptes']=$repo_comptes;
@@ -35,17 +35,26 @@ class CompteController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
+
       
         $compte=new Comptes();
         $form=$this->createForm(CompteType::class, $compte);
 
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()) {
-        
+
+        $checkAccount = $this->container->get('appbundle.checkaccount');
+
+        if($form->isSubmitted()) {
+            if ($checkAccount->anneeNotValid($compte)){
+                throw new \Exception('Une année doit au moins être égale à 1');
+            }
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($compte);
             $em->flush();
-          
+
+            $request->getSession()->getFlashbag()->add('info', 'Un nouveau compte a été créé.');
+        
             return $this->redirectToRoute('comptes');
         }
       
@@ -59,23 +68,29 @@ class CompteController extends Controller {
     }
 
     /**
-     * @Route("/comptes/modify/{idcompte}", name="modify_compte")
+     * @Route("/comptes/modify/{id}", name="modify_compte")
      */
 
-    public function modifyCompte(Request $request, $idcompte){
+    public function modifyCompte(Request $request, $id){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
       
         // 1) Récupérer le compte et construire le form
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
-        $compte = $repo_comptes->find($idcompte);
+        $compte = $repo_comptes->find($id);
         
         $form = $this->createForm(CompteType::class, $compte);
 
+        $checkAccount = $this->container->get('appbundle.checkaccount');
+
         // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
+
+            if ($checkAccount->anneeNotValid($compte)){
+                throw new \Exception('Une année doit au moins être égale à 1');
+            }
 
             // 3) Enregistrer le compte!
             $em = $this->getDoctrine()->getManager();
@@ -83,6 +98,8 @@ class CompteController extends Controller {
             $em->flush();
 
             // ... autres actions
+
+            $request->getSession()->getFlashbag()->add('info', 'Le compte de ' .$compte->getPrenom(). ' ' .$compte->getNom(). ' a bien été modifié.');
 
             return $this->redirectToRoute('comptes');
         }

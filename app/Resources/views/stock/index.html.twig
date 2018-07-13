@@ -12,6 +12,10 @@
 {% block body %}
     <div class="container-fluid">
 
+        {% for message in app.session.flashbag.get('info') %}
+            Information : {{message}}
+        {% endfor %}
+        
         <div class="table-responsive pad-t">
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">

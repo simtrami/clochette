@@ -75,6 +75,8 @@ class StockController extends Controller {
 
             // ... autres actions
 
+            $request->getSession()->getFlashbag()->add('info', 'l\'article ' .$article->getNom(). ' ('.$article->getType(). ') a bien été modifié.');
+
             return $this->redirectToRoute('stock');
         }
 
@@ -111,6 +113,8 @@ class StockController extends Controller {
             $em->flush();
 
             // ... autres actions
+
+            $request->getSession()->getFlashbag()->add('info', 'Un nouvel article a été ajouté.');
 
             return $this->redirectToRoute('stock');
         }

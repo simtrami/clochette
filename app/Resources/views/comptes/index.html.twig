@@ -10,8 +10,15 @@
 {% endblock %}
 
 {% block body %}
-    {# PROJET : pouvoir pouvoir un filtre sur chaque head de colonne (à la mode Excel) #}
-    <div class="container-fluid">
+    {# PROJET : pouvoir pouvoir un filtre sur chaque head de colonne (à la mode Excel) #} 
+        
+        
+        <div class="container-fluid">
+        
+        {% for message in app.session.flashbag.get('info') %}
+            Information : {{message}}
+        {% endfor %}
+
         <div class="table-responsive pad-t">
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">
@@ -31,7 +38,7 @@
                     {% for compte in comptes %}
                     <tr>
                         <th id="afficheComptes-id">
-                            <a href="{{ path('modify_compte', { 'idcompte':compte.idcompte }) }}">{{ compte.idcompte }}</a>
+                            <a href="{{ path('modify_compte', { 'id':compte.id }) }}">{{ compte.id }}</a>
                         </th>
                         <td id="afficheComptes-nom">{{ compte.nom }}</td>
                         <td id="afficheComptes-prenom">{{ compte.prenom }}</td>
@@ -51,7 +58,5 @@
         </div>
         <a class="btn btn-success btn-lg btn-block" href="{{ path('create_compte') }}">Créer un compte</a>
         <button type="button" class="btn btn-warning">Pour modifier un compte, cliquez sur son ID</button>
-        {# le bouton modifier a pour lien la page de création alors qu'il n'a pas de
-        <a href=""> #}
 </div>
 {% endblock %}

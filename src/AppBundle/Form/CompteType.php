@@ -46,7 +46,7 @@ class CompteType extends AbstractType
                 $compte = $event->getData();
                 $form = $event->getForm();
 
-                if (!(!$compte || null === $compte->getIdcompte())) {
+                if (!(!$compte || null === $compte->getId())) {
                     $form->add('nomStaff', TextType::class, array(
                         'label' => 'Nom de Staff', 
                         'required' => false
