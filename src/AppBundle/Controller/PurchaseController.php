@@ -128,31 +128,38 @@ class PurchaseController extends Controller
         $em->persist($commande);
       
         // Insertions des articles et de leur quantité (si non nulle) dans des entités DetailsCommandes
-        foreach ($form['drafts'] as $article) {
-            if ($article['quantite'] != 0) {
+        foreach ($form['drafts'] as $item) {
+            if ($item['quantite'] != 0) {
               $detail = new DetailsCommandes();
-              $detail->setArticle($repo_stocks->find($article['id']));
-              $detail->setQuantite($article['quantite']);
+              $article = $repo_stocks->find($item['id']);
+              $detail->setArticle($article);
+              $detail->setQuantite($item['quantite']);
               $detail->setCommande($commande);
               $em->persist($detail);
             }
         }
-        foreach ($form['bottles'] as $article) {
-            if ($article['quantite'] != 0) {
+        foreach ($form['bottles'] as $item) {
+            if ($item['quantite'] != 0) {
               $detail = new DetailsCommandes();
-              $detail->setArticle($repo_stocks->find($article['id']));
-              $detail->setQuantite($article['quantite']);
+              $article = $repo_stocks->find($item['id']);
+              $detail->setArticle($article);
+              $detail->setQuantite($item['quantite']);
               $detail->setCommande($commande);
+              $article->setQuantite($article->getQuantite() - $item['quantite']);
               $em->persist($detail);
+              $em->persist($article);
             }
         }
-        foreach ($form['articles'] as $article) {
-            if ($article['quantite'] != 0) {
+        foreach ($form['articles'] as $item) {
+            if ($item['quantite'] != 0) {
               $detail = new DetailsCommandes();
-              $detail->setArticle($repo_stocks->find($article['id']));
-              $detail->setQuantite($article['quantite']);
+              $article = $repo_stocks->find($item['id']);
+              $detail->setArticle($article);
+              $detail->setQuantite($item['quantite']);
               $detail->setCommande($commande);
+              $article->setQuantite($article->getQuantite() - $item['quantite']);
               $em->persist($detail);
+              $em->persist($article);
             }
         }
       
