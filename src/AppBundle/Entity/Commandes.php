@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Commandes
  *
- * @ORM\Table(name="commandes", indexes={@ORM\Index(name="idCompte", columns={"idCompte"}), @ORM\Index(name="idUser", columns={"idUser"})})
+ * @ORM\Table(name="commandes", indexes={@ORM\Index(name="compte", columns={"compte"}), @ORM\Index(name="user", columns={"user"})})
  * @ORM\Entity
  */
 class Commandes
@@ -34,20 +34,20 @@ class Commandes
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comptes")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idCompte", referencedColumnName="id", nullable=true)
+     *   @ORM\JoinColumn(name="compte", referencedColumnName="id", nullable=true)
      * })
      */
-    private $idCompte;
+    private $compte;
   
     /**
      * @var \AppBundle\Entity\Users
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Users")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idUser", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
      * })
      */
-    private $idUser;
+    private $user;
 
     /**
      * @var string
@@ -103,51 +103,51 @@ class Commandes
     }
 
     /**
-     * Set idCompte
+     * Set compte
      *
      * @param \AppBundle\Entity\Comptes $id
      *
      * @return Commandes
      */
-    public function setIdCompte(\AppBundle\Entity\Comptes $idCompte = null)
+    public function setCompte(\AppBundle\Entity\Comptes $compte = null)
     {
-        $this->idCompte = $idCompte;
+        $this->compte = $compte;
 
         return $this;
     }
 
     /**
-     * Get idCompte
+     * Get compte
      *
      * @return \AppBundle\Entity\Comptes
      */
-    public function getIdCompte()
+    public function getCompte()
     {
-        return $this->idCompte;
+        return $this->compte;
     }
 
     /**
-     * Set idUser
+     * Set user
      *
      * @param \AppBundle\Entity\Users $id
      *
      * @return Commandes
      */
-    public function setIdUser(\AppBundle\Entity\Users $idUser)
+    public function setUser(\AppBundle\Entity\Users $user)
     {
-        $this->idUser = $idUser;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get idUser
+     * Get user
      *
      * @return \AppBundle\Entity\Users
      */
-    public function getIdUser()
+    public function getUser()
     {
-        return $this->idUser;
+        return $this->user;
     }
     
     /**
