@@ -55,9 +55,16 @@ class Commandes
      * @ORM\Column(name="montant", type="decimal", precision=8, scale=2)
      */
     private $montant;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="methode", type="string", length=10)
+     */
+    private $methode;
   
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DetailsCommandes", mappedBy="idCommande")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DetailsCommandes", mappedBy="commande")
      */
     private $details;
 
@@ -173,13 +180,37 @@ class Commandes
     {
         return $this->montant;
     }
+
+    /**
+     * Set methode
+     *
+     * @param string $methode
+     *
+     * @return Commandes
+     */
+    public function setMethode($methode)
+    {
+        $this->methode = $methode;
+
+        return $this;
+    }
+
+    /**
+     * Get methode
+     *
+     * @return string
+     */
+    public function getMethode()
+    {
+        return $this->methode;
+    }
   
     /**
      * Get details
      * 
-     * @return Collection|Details[]
+     * @return ArrayCollection
      */
-    public function getDetails(): Collection
+    public function getDetails()
     {
         return $this->details;
     }

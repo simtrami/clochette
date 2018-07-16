@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commandes{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block body %}
+
+
+    <div class="container-fluid">
+        {#
+            TODO:
+            - Changer l'affichage des méthodes de paiement (icones, traductions, etc.)
+            - Afficher l'heure et la date pour que ce soit plus pratique à lire (sans modifier la base)
+        #}
+        
+        <div class="table-responsive pad-t">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Nom d'utilisateur</th>
+                        <th>Pseudo du compte (opt.)</th>
+                        <th>Montant</th>
+                        <th>Méthode de paiement</th>
+                        <th>Date et heure</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for commande in commandes %}
+                    <tr>
+                        <th>
+                            <div class="btn-group dropright">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ commande.id }}</button>
+                                <div class="dropdown-menu">
+                                    <h6 class="dropdown-header">Articles achetés</h6>
+                                    {% for detail in commande.details %}
+                                        <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </th>
+                        <td>{{ commande.user.username }}</td>
+                        <td>{{ commande.compte != NULL ? commande.compte.pseudo : "N/A" }}</td>
+                        <td>{{ commande.montant }}€</td>
+                        <td>{{ commande.methode }}</td>
+                        <td>{{ commande.timestamp|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

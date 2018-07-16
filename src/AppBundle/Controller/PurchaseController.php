@@ -70,6 +70,10 @@ class PurchaseController extends Controller
         
         $commande = new Commandes();
 
+        // Insertion du timestamp dans l'entité Commandes
+        $timestamp = date_create(date("Y-m-d H:i:s"));
+        $commande->setTimestamp($timestamp);
+
         $form = [];
         $form['userId'] = $request->request->get('userId');
         $form['methode'] = $request->request->get('methode');
@@ -112,10 +116,11 @@ class PurchaseController extends Controller
       
         // Insertion du prix dans l'entité Commandes
         $commande->setMontant($form['total']);
-        
-        // Insertion du timestamp dans l'entité Commandes
-        $timestamp = date_create(date("Y-m-d H:i:s"));
-        $commande->setTimestamp($timestamp);
+
+        // Insertion de la méthode de paiement dans l'entité Commandes
+        $commande->setMethode($form['methode']);
+
+        // Insertion de la commande dans la base
         $em->persist($commande);
       
         // Insertions des articles et de leur quantité (si non nulle) dans des entités DetailsCommandes

@@ -38,43 +38,49 @@
                             <i class="fa fa-home" aria-hidden="true"></i>
                             Accueil</a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('purchase') }}">
                             <i class="fa fa-money-bill-wave"></i> Caisse</a>
                     </li>
+
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('stock') }}">
                                 <i class="fa fa-boxes" aria-hidden="true"></i> Stock</a>
                         </li>
                     {% endif %}
+
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('comptes') }}">
                                 <i class="fa fa-address-card" aria-hidden="true"></i> Comptes</a>
                         </li>
                     {% endif %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-user" aria-hidden="true"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
+
+                    {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                                     <a class="dropdown-item" href="#">
                                         <i class="fa fa-cog"></i> {{ app.user.username }}</a>
                                 {% endif %}
-                                <a class="dropdown-item" href="#">Autre action</a>
                                 {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
                                     <a class="dropdown-item" href="{{ path('user_registration') }}">Créer un utilisateur</a>
                                 {% endif %}
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ path('logout') }}">Se déconnecter</a>
-                                {% else %}
-                                    <a class="dropdown-item" href="{{ path('login') }}">Se connecter</a>
-                            {% endif %}
-                        </div>
-                    </li>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('login') }}">
+                                <i class="fa fa-user" aria-hidden="true"></i> Se connecter</a>
+                        </li>
+                    {% endif %}
 
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item dropdown">
@@ -83,6 +89,7 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" href="{{ path('preparation') }}">Préparer la tenue</a>
+                                <a class="dropdown-item" href="{{ path('commandes') }}">Historique des commandes</a>
                             </div>
                         </li>
                     {% endif %}

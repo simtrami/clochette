@@ -68,6 +68,7 @@ security:
     - { path: ^/stock/details, roles: ROLE_STOCK }
     - { path: ^/stock/ajout, roles: ROLE_STOCK }
     - { path: ^/preparation, roles: ROLE_BUREAU }
+    - { path: ^/commandes, roles: ROLE_BUREAU }
     - { path: ^/purchase, roles: ROLE_INTRO }
 
     role_hierarchy:

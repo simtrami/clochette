@@ -3,6 +3,7 @@
 {% block title %}Achat{% endblock %}
 
 {% block stylesheet %}
+    <!--suppress JSUnresolvedLibraryURL, JSUnresolvedVariable -->
     <link rel="stylesheet" href="{{ asset('css/caisse.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.8.0/dist/instantsearch.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
@@ -179,8 +180,8 @@
 <!-- Initialize autocomplete menu -->
 {% raw %}
 <script>
-var client = algoliasearch('1ZO7CPQOBJ', '7fe454f3c66329bdf0687b9586b350e7');
-var index = client.initIndex('dev_comptes');
+    const client = algoliasearch('1ZO7CPQOBJ', '7fe454f3c66329bdf0687b9586b350e7');
+    const index = client.initIndex('dev_comptes');
 //initialize autocomplete on search input (ID selector must match)
 autocomplete('#paying-account',
 { hint: false }, {
