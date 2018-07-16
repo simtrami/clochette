@@ -7,3 +7,4 @@ app/config/parameters.yml
 vendor/*
 !vendor/escpos-php
 app/bootstrap.php.cache
+.idea/

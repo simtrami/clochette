@@ -23,22 +23,11 @@ class PreparerTenueController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
-        $drafts_notnull = $repo_stocks->findQuantPos('draft');
-        
-        $bottles_notnull = $repo_stocks->findQuantPos('bottle');
-
-        $articles_notnull = $repo_stocks->findQuantPos('article');
-
-        $data=[];
-        $data['drafts_notnull'] = $drafts_notnull;
-        $data['bottles_notnull'] = $bottles_notnull;
-        $data['articles_notnull'] = $articles_notnull;
-
         $preparation = new PreparerTenue();
 
-        $drafts = $repo_stocks->findQuantPos("draft");
-        $bottles = $repo_stocks->findQuantPos("bottle");
-        $articles = $repo_stocks->findQuantPos("article");
+        $drafts = $repo_stocks->loadQuantiteNotNullByType("draft");
+        $bottles = $repo_stocks->loadQuantiteNotNullByType("bottle");
+        $articles = $repo_stocks->loadQuantiteNotNullByType("article");
 
         foreach ($drafts as $draft){
             $preparation->getDrafts()->add($draft);
@@ -65,7 +54,7 @@ class PreparerTenueController extends Controller{
                 $em->persist($article);
             }
             $em->flush();
-            return $this->redirectToRoute('preparation');
+            return $this->redirectToRoute('purchase');
         }
 
         $data['form'] = $form->createView();

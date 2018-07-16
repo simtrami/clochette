@@ -10,23 +10,6 @@
 
 {% block body %}
     <div class="container-fluid">
-      {% if commanfeStatus is defined %}
-        {% if commandeStatus == 0 %}
-          <div class="alert alert-success">
-            <h5>La commande datée du {{ timestamp }} a bien été enregistrée !</h5>
-          </div>
-        {% endif %}
-        {% if commandeStatus == 1 %}
-          <div class="alert alert-danger">
-            <h5>Un problème est survenue lors de l'enregistrement de la commande, veuillez réessayer.</h5>
-          </div>
-        {% endif %}
-        {% if commandeStatus == 2 %}
-          <div class="alert alert-danger">
-            <h5>Cet utilisateur n'a pas le droit de valider cette commande : Solde du compte insuffisant !</h5>
-          </div>
-        {% endif %}
-      {% endif %}
     <form action="{{ path('purchaseValidation') }}" method="post">
     {# <form action="{{ path('purchase') }}" method="post"> #}
         <div class="alert alert-secondary">
@@ -142,9 +125,6 @@
             </div>
         </div>
 
-        {# Pour collapse le champ lors de la sélection d'une autre méthode sans recliquer sur le bouton Compte
-        il faut faut un script js qui supprime l'attribut "show" de #collapseAccount lorsque #showAccount n'est
-        n'a ni l'attribut "focus" ni "active" #}
         <div class="collapse pad-b" id="collapseAccount">
             <div class="form-group">
                 <label class="form-control-label" for="search-input">Compte à débiter</label><br/>

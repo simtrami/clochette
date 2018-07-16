@@ -33,13 +33,13 @@ class PurchaseController extends Controller
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
 
-        /* futs */ $selected_drafts = $repo_stocks->isForSale('draft');
+        /* futs */ $selected_drafts = $repo_stocks->loadStocksForSaleByType('draft');
 
 
-        /* bouteilles */ $selected_bottles = $repo_stocks->isForSale('bottle');
+        /* bouteilles */ $selected_bottles = $repo_stocks->loadStocksForSaleByType('bottle');
 
 
-        /* articles */ $selected_articles = $repo_stocks->isForSale('article');
+        /* articles */ $selected_articles = $repo_stocks->loadStocksForSaleByType('article');
 
 
         $data=[];
@@ -83,7 +83,7 @@ class PurchaseController extends Controller
          * TODO SUR LA CLASSE :
          * - EMPECHER DE FAIRE QUOI QUE CE SOIT SI LA COMMANDE EST VIDE (qte nulles OU total nul OU mode de paiement nul)
          * - METTRE DES TESTS UN PEU PARTOUT POUR POUVOIR RENDER LA PAGE AVEC DES STATUTS D'ERREUR
-         *   (implémenter les Flagbags)
+         *   (implémenter les Flashbags)
          */
       
         $user = $repo_users->find($form['userId']);
@@ -96,15 +96,13 @@ class PurchaseController extends Controller
             if ($user->getRoles() == "ROLE_INTRO" && $solde < $form['total']) {
                 /**
                  * Redirige vers la page purchase avec un message signalant et sécrivant l'erreur
-                 * Actuellement c'est un 403 -> implémenter les Flagbags
+                 * Actuellement c'est un 403 -> implémenter les Flashbags
                  */
                 throw $this->createAccessDeniedException();
             } else {
                 $newSolde = $solde - $form['total'];
             }
-            // Insertion de l'user ayant validé la commande dans l'entité Commandes
-                // $form['IdUser'] n'est pas utilisé au cas où cette valeur est erronée et que l'user n'a pas été trouvé
-                // Même si a priori cette ligne ne serait pas exécutée dans ce cas
+            // Insertion de l'user ayant validé la commande dans l'entité Commande
             $commande->setUser($user);
           
             // Insertion du compte dans l'entité Commandes

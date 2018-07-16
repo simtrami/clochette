@@ -7,7 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 
 class StockRepository extends \Doctrine\ORM\EntityRepository{
 
-    public function findQuantPos($type){
+    public function loadQuantiteNotNullByType($type){
 
         $qb = $this->createQueryBuilder('s');
 
@@ -19,7 +19,7 @@ class StockRepository extends \Doctrine\ORM\EntityRepository{
         return $qb->getQuery()->getResult();
     }
 
-    public function whereQuantPos(QueryBuilder $qb){
+    public function whereQuantiteNotNull(QueryBuilder $qb){
 
         $qb->andWhere('s.quantite > :limit')
             ->setParameter('limit', 0);
@@ -31,7 +31,7 @@ class StockRepository extends \Doctrine\ORM\EntityRepository{
             ->setParameter('type', $type);
     }
 
-    public function isForSale($type){
+    public function loadStocksForSaleByType($type){
         $qb = $this->createQueryBuilder('s');
 
         $qb->where('s.isForSale = :foo')
