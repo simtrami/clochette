@@ -106,13 +106,13 @@ class PurchaseController extends Controller
             } else {
                 $newSolde = $solde - $form['total'];
             }
-            // Insertion de l'user ayant validé la commande dans l'entité Commande
-            $commande->setUser($user);
-          
             // Insertion du compte dans l'entité Commandes
             $commande->setCompte($compte);
         }
         // Tout mode de paiement
+
+        // Insertion de l'user ayant validé la commande dans l'entité Commande
+        $commande->setUser($user);
       
         // Insertion du prix dans l'entité Commandes
         $commande->setMontant($form['total']);
