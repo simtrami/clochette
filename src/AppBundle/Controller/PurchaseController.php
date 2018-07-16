@@ -31,23 +31,16 @@ class PurchaseController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
-        $conn = $this->getDoctrine()->getManager()->getConnection();
 
 
-        /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.isForSale = :x AND S.quantite > 0';
+        /* futs */ $selected_drafts = $repo_stocks->isForSale('draft');
 
-        $selected_drafts = $conn->prepare($sql);
-        $selected_drafts -> execute(['x' => 1]);
 
-        /* bouteilles */ $sql = ' SELECT * FROM stocks S WHERE S.type="bottle" AND S.isForSale = :x AND S.quantite > 0';
+        /* bouteilles */ $selected_bottles = $repo_stocks->isForSale('bottle');
 
-        $selected_bottles = $conn->prepare($sql);
-        $selected_bottles -> execute(['x' => 1]);
 
-        /* articles */ $sql = ' SELECT * FROM stocks S WHERE S.type="article" AND S.isForSale = :x AND S.quantite > 0';
+        /* articles */ $selected_articles = $repo_stocks->isForSale('article');
 
-        $selected_articles = $conn->prepare($sql);
-        $selected_articles -> execute(['x' => 1]);
 
         $data=[];
         $data['selected_drafts'] = $selected_drafts;

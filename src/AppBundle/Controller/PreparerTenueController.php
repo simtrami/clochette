@@ -10,8 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class PreparerTenueController extends Controller
-{
+class PreparerTenueController extends Controller{
 
     /**
     * @Route("/preparation", name="preparation")
@@ -23,22 +22,12 @@ class PreparerTenueController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
-        $conn = $this->getDoctrine()->getManager()->getConnection();
 
-        /* futs */ $sql = ' SELECT * FROM stocks S WHERE S.type="draft" AND S.quantite > :quantite ';
+        $drafts_notnull = $repo_stocks->findQuantPos('draft');
         
-        $drafts_notnull = $conn->prepare($sql);
-        $drafts_notnull->execute(['quantite' => 0]);
+        $bottles_notnull = $repo_stocks->findQuantPos('bottle');
 
-        /* bouteilles */ $sql = ' SELECT * FROM stocks S WHERE S.type="bottle" AND S.quantite > :quantite ';
-        
-        $bottles_notnull = $conn->prepare($sql);
-        $bottles_notnull->execute(['quantite' => 0]);
-
-        /* articles */ $sql = ' SELECT * FROM stocks S WHERE S.type="article" AND S.quantite > :quantite ';
-        
-        $articles_notnull = $conn->prepare($sql);
-        $articles_notnull->execute(['quantite' => 0]);
+        $articles_notnull = $repo_stocks->findQuantPos('article');
 
         $data=[];
         $data['drafts_notnull'] = $drafts_notnull;
@@ -47,9 +36,9 @@ class PreparerTenueController extends Controller
 
         $preparation = new PreparerTenue();
 
-        $drafts = $repo_stocks->findByType("draft");
-        $bottles = $repo_stocks->findByType("bottle");
-        $articles = $repo_stocks->findByType("article");
+        $drafts = $repo_stocks->findQuantPos("draft");
+        $bottles = $repo_stocks->findQuantPos("bottle");
+        $articles = $repo_stocks->findQuantPos("article");
 
         foreach ($drafts as $draft){
             $preparation->getDrafts()->add($draft);
