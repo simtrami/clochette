@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * DetailsCommandes
@@ -41,6 +42,7 @@ class DetailsCommandes
      * @var integer
      * 
      * @ORM\Column(name="quantite", type="integer")
+     * @Assert\GreaterThanOrEqual(0)
      */
     private $quantite;
 

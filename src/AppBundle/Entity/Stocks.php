@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Stocks
@@ -25,7 +26,13 @@ class Stocks
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=60, nullable=false)
+     * @ORM\Column(name="nom", type="string", length=40, nullable=false)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 40,
+     *      minMessage = "Le nom de l'article doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Le nom de l'article ne peut pas faire plus de {{ limit }} caractères"
+     * )
      */
     private $nom;
 
@@ -40,6 +47,7 @@ class Stocks
      * @var string
      *
      * @ORM\Column(name="prixVente", type="decimal", precision=8, scale=2, nullable=false)
+     * @Assert\GreaterThanOrEqual(0)
      */
     private $prixVente;
 
@@ -47,6 +55,7 @@ class Stocks
      * @var string
      *
      * @ORM\Column(name="prixAchat", type="decimal", precision=8, scale=2, nullable=false)
+     * @Assert\GreaterThanOrEqual(0)
      */
     private $prixAchat;
 
@@ -54,6 +63,7 @@ class Stocks
      * @var integer
      *
      * @ORM\Column(name="quantite", type="integer", nullable=false)
+     * @Assert\GreaterThanOrEqual(0)
      */
     private $quantite;
 
@@ -61,6 +71,7 @@ class Stocks
      * @var string
      *
      * @ORM\Column(name="volume", type="decimal", precision=8, scale=2, nullable=true)
+     * @Assert\GreaterThanOrEqual(0)
      */
     private $volume;
 

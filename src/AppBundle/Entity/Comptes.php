@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Comptes
@@ -25,21 +26,39 @@ class Comptes
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=60)
+     * @ORM\Column(name="nom", type="string", length=30)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 30,
+     *      minMessage = "Votre nom doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Votre nom ne peut pas faire plus de {{ limit }} caractères"
+     * )
      */
     private $nom;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="prenom", type="string", length=60)
+     * @ORM\Column(name="prenom", type="string", length=30)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 30,
+     *      minMessage = "Votre prénom doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Votre prénom ne peut pas faire plus de {{ limit }} caractères"
+     * )
      */
     private $prenom;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="pseudo", type="string", length=60, unique=true)
+     * @ORM\Column(name="pseudo", type="string", length=30, unique=true)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 30,
+     *      minMessage = "Votre pseudo doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Votre pseudo ne peut pas faire plus de {{ limit }} caractères"
+     * )
      */
     private $pseudo;
 
@@ -47,6 +66,7 @@ class Comptes
      * @var string
      *
      * @ORM\Column(name="solde", type="decimal", precision=8, scale=2, options={"default" : "0.00"})
+     * @Assert\GreaterThanOrEqual(-10)
      */
     private $solde;
 
@@ -54,13 +74,20 @@ class Comptes
      * @var integer
      *
      * @ORM\Column(name="annee", type="integer", options={"default" : 1})
+     * @Assert\GreaterThanOrEqual(1)
      */
     private $annee;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nomStaff", type="string", length=60, nullable=true)
+     * @ORM\Column(name="nomStaff", type="string", length=30, nullable=true)
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 30,
+     *      minMessage = "Le nom de staff doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Le nom de staff ne peut pas faire plus de {{ limit }} caractères"
+     * )
      */
     private $nomstaff;
 

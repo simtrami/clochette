@@ -32,6 +32,12 @@ class Users implements AdvancedUserInterface, \Serializable
     /**
      * @ORM\Column(type="string", length=25, unique=true)
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 25,
+     *      minMessage = "Votre nom d'utilisateur doit faire au moins {{ limit }} caractères",
+     *      maxMessage = "Votre nom d'utilisateur ne peut pas faire plus de {{ limit }} caractères"
+     * )
      */
     private $username;
 

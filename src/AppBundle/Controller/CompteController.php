@@ -44,10 +44,10 @@ class CompteController extends Controller {
 
         $checkAccount = $this->container->get('appbundle.checkaccount');
 
-        if($form->isSubmitted()) {
-            if ($checkAccount->anneeNotValid($compte)){
+        if($form->isSubmitted() && $form->isValid()) {
+            /*if ($checkAccount->anneeNotValid($compte)){
                 throw new \Exception('Une année doit au moins être égale à 1');
-            }
+            }*/
 
             if (!$checkAccount->namesValid($compte)){
                 throw new \Exception('Les nom, prénom et pseudo ne peuvent contenir que des lettres.');
@@ -90,7 +90,7 @@ class CompteController extends Controller {
 
         // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             if ($checkAccount->anneeNotValid($compte)){
                 throw new \Exception('Une année doit au moins être égale à 1');
