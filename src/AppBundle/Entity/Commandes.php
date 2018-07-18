@@ -45,7 +45,7 @@ class Commandes
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Users")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="user", referencedColumnName="id", nullable=true)
      * })
      */
     private $user;
@@ -142,7 +142,7 @@ class Commandes
      *
      * @return Commandes
      */
-    public function setUser(\AppBundle\Entity\Users $user)
+    public function setUser(\AppBundle\Entity\Users $user = null)
     {
         $this->user = $user;
 

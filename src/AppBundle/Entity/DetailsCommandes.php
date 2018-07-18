@@ -32,9 +32,7 @@ class DetailsCommandes
      *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Stocks")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="article", referencedColumnName="id")
-     * })
+     * @ORM\JoinColumn(name="article", referencedColumnName="id")
      */
     private $article;
 

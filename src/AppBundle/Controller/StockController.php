@@ -134,19 +134,24 @@ class StockController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
-      
+
         $idarticle = $request->query->get('idarticle');
 
         $em = $this->getDoctrine()->getEntityManager();
         $article = $em->getRepository('AppBundle:Stocks')->find($idarticle);
-        
+
         if (!$article) {
             throw $this->createNotFoundException("Article non trouvé pour l'id ".$idarticle);
         }
 
+        $commandes = $em->getRepository('AppBundle:DetailsCommandes')->findByArticle($idarticle);
+        foreach ($commandes as $elt_commande) {
+            $em->remove($elt_commande);
+        }
+
         $em->remove($article);
         $em->flush();
-    
+
         return $this->redirectToRoute('stock');
     }
 }
