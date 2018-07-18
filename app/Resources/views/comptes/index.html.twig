@@ -36,6 +36,8 @@
                     <th>Année</th>
                     <th>Nom de Staff</th>
                     <th>Intronisé</th>
+                    <th>Recharger</th>
+
                 </tr>
             </thead>
 
@@ -56,6 +58,7 @@
                     {% else %}
                     <td id="afficheComptes-is_intro">NON</td>
                     {% endif %}
+                    <td><a class="btn btn-primary" href="{{path('recharge_compte', {'id':compte.id})}}">Recharger</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

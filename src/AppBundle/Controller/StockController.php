@@ -24,9 +24,9 @@ class StockController extends Controller {
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
-        $typeDraft = $repo_typeStocks->returnType('draft');
+        $typeDraft = $repo_typeStocks->returnType('Draft');
         $typeBottle = $repo_typeStocks->returnType('Bouteille');
-        $typeArticle = $repo_typeStocks->returnType('article');
+        $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
 
         /* les variables $typeDraft,... sont des instances de TypeStocks, 
         et non des tableaux contenant des instances de TypeStocks, 

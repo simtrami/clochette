@@ -33,9 +33,9 @@ class PurchaseController extends Controller
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
-        $draft = $repo_typeStocks->returnType('draft');
+        $draft = $repo_typeStocks->returnType('Draft');
         $bottle = $repo_typeStocks->returnType('Bouteille');
-        $article = $repo_typeStocks->returnType('article');
+        $article = $repo_typeStocks->returnType('Nourriture ou autre');
 
         /* futs */ $selected_drafts = $repo_stocks->loadStocksForSaleByType($draft);
 
@@ -61,6 +61,7 @@ class PurchaseController extends Controller
         /**
          * TODO
          * VERIFIER QUE LE FORMULAIRE A BIEN ETE PASSE ET QU'ON N'A PAS JUSTE ECRIT L'URL
+         * if $request->isMethod('POST') ?
          */
       
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -71,7 +72,8 @@ class PurchaseController extends Controller
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_users = $this->getDoctrine()->getRepository('AppBundle:Users');
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
-        
+        $session = $request->getSession();
+
         $commande = new Commandes();
 
         // Insertion du timestamp dans l'entité Commandes
@@ -92,7 +94,7 @@ class PurchaseController extends Controller
          * - EMPECHER DE FAIRE QUOI QUE CE SOIT SI LA COMMANDE EST VIDE (qte nulles OU total nul OU mode de paiement nul)
          * - METTRE DES TESTS UN PEU PARTOUT POUR POUVOIR RENDER LA PAGE AVEC DES STATUTS D'ERREUR
          *   (implémenter les Flashbags)
-         */
+        */
       
         $user = $repo_users->find($form['userId']);
       
@@ -100,13 +102,18 @@ class PurchaseController extends Controller
         if ($form['methode'] == "account") {
             $compte = $repo_comptes->findOneBy(['pseudo' => $form['compte']]);
             $solde = $compte->getSolde();
+            $diff  = $form['total']-$solde;
 
-            if ($user->getRoles() == "ROLE_INTRO" && $solde < $form['total']) {
-                /**
-                 * Redirige vers la page purchase avec un message signalant et décrivant l'erreur
-                 * Actuellement c'est un 403 -> implémenter les Flashbags
-                 */
-                throw $this->createAccessDeniedException();
+            if (/* $user->getRoles() == "ROLE_INTRO" &&  */$solde < $form['total']) {
+
+                $session->getFlashbag()->add(
+                    'erreur',
+                    'Le solde du compte de ' .$compte->getPrenom(). ' ' .$compte->getNom(). ' est insuffisant pour valider la commande.
+                     Il manque ' .$diff. '€.'
+                );
+
+                return $this->redirectToRoute('purchase');
+                /*throw $this->createAccessDeniedException();*/            
             } else {
                 $newSolde = $solde - $form['total'];
             }
@@ -162,15 +169,36 @@ class PurchaseController extends Controller
               $em->persist($article);
             }
         }
-      
+        
         // Modification du solde du compte
             // Effectué en dernier en cas d'erreur sur l'enregistrement de la commande (et donc si on veut la refaire)
-        if ($form['methode'] == "account") {
+        if ($form['methode']== "account") {
             $compte->setSolde($newSolde);
             $em->persist($compte);
+
+            $session->getFlashbag()->add('info', $commande->getMontant().'€ ont été débités du compte de ' .$compte->getPrenom(). ' ' .$compte->getNom().'.');
+
         }
+
+        if ($form['methode'] == "cash"){
+            
+            $session->getFlashbag()->add(
+                'info', 
+                $commande->getMontant().'€ ont été payés en cash.'
+            );
+        }
+
+        if ($form['methode'] == "pumpkin"){
+            
+            $session->getFlashbag()->add(
+                'info', 
+                $commande->getMontant().'€ ont été payés par Pumpkin.'
+            );
+        }
+
       
         $em->flush();
+
 
         return $this->redirectToRoute('purchase');
     }

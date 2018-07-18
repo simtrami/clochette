@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "Recharger " ~ compte.prenom ~ " " ~ compte.nom }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        
+        <div class="alert alert-light center">
+            <h4>Recharger le compte de {{compte.prenom}} {{compte.nom}}</h4>
+        </div>
+
+        <input placeholder="Montant du rechargement"></input>
+
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fa fa-save"></i> Recharger
+        </button>
+
+    </div>
+{% endblock %}

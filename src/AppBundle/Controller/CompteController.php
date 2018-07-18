@@ -117,6 +117,24 @@ class CompteController extends Controller {
                 'nom' => $compte->getNom()
             )
         );
-    }    
+    }
+
+
+    /** 
+     * @Route("/comptes/recharge/{id}", name="recharge_compte")
+     */
+    public function rechargeCompte(Request $request, $id){
+
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
+        $compte = $repo_comptes->find($id);
+
+        return $this->render('comptes/recharge.html.twig', array(
+            'compte' => $compte
+        ));
+    }
     
 }
