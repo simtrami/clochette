@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class StocksType extends AbstractType
 {
@@ -49,16 +50,11 @@ class StocksType extends AbstractType
                     ->add('nom', TextType::class, array(
                         'label' => "Nom de l'article",
                     ))
-                    ->add('type', ChoiceType::class, array(
+                    ->add('type', EntityType::class, array(
                         'label' => "Type d'article",
                         'placeholder' => "Selectionner le type d'article",
-                        'choices' => array(
-                            'Fût' => 'draft',
-                            'Bouteille' => 'bottle',
-                            'Nourriture ou autre' => 'article',
-                        ),
-                    ))
-                ;
+                        'class' => 'AppBundle:TypeStocks'
+                    ));
             }
         });
     }/**
