@@ -5,7 +5,7 @@ namespace AppBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
-class StockRepository extends \Doctrine\ORM\EntityRepository{
+class StocksRepository extends \Doctrine\ORM\EntityRepository{
 
     public function loadQuantiteNotNullByType($type){
 

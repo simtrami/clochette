@@ -9,11 +9,19 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Stocks
  *
  * @ORM\Table(name="stocks")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\StockRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\StocksRepository")
  */
 
 class Stocks
 {
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TypeStocks")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $type;
+
+
     /**
      * @var integer
      *
@@ -36,12 +44,6 @@ class Stocks
      */
     private $nom;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="type", type="string", length=15, nullable=false)
-     */
-    private $type;
 
     /**
      * @var string
@@ -265,5 +267,3 @@ class Stocks
         return $this->isForSale;
     }
 }
-
-    

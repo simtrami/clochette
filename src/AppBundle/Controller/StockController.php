@@ -21,11 +21,20 @@ class StockController extends Controller {
         }
       
         $em = $this->getDoctrine()->getManager();
+        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
-        $drafts = $repo_stocks->findByType('draft');
-        $bottles = $repo_stocks->findByType('bottle');
-        $article = $repo_stocks->findByType('article');
+        $typeDraft = $repo_typeStocks->returnType('draft');
+        $typeBottle = $repo_typeStocks->returnType('Bouteille');
+        $typeArticle = $repo_typeStocks->returnType('article');
+
+        /* les variables $typeDraft,... sont des instances de TypeStocks, 
+        et non des tableaux contenant des instances de TypeStocks, 
+        ceci grâce à returnType() */
+
+        $drafts = $repo_stocks->findByType($typeDraft);
+        $bottles = $repo_stocks->findByType($typeBottle);
+        $article = $repo_stocks->findByType($typeArticle);
 
         $data=[];
         $data['drafts'] = $drafts;
@@ -46,21 +55,11 @@ class StockController extends Controller {
 
         // 1) Récupérer l'Article et construire le form
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
+        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
+
         $article = $repo_stocks->find($id_article);
+        $type = $article->getType()->getName();
         // Récupération du type d'article et traduction pour l'affichage
-        switch($article->getType()) {
-            case "draft":
-                $type = "Fût";
-                break;
-            case "bottle":
-                $type = "Bouteille";
-                break;
-            case "article":
-                $type = "Nourriture ou autre";
-                break;
-            default:
-                $type = "Type non défini";
-        }
         
         $form = $this->createForm(StocksType::class, $article);
 
@@ -75,7 +74,7 @@ class StockController extends Controller {
 
             // ... autres actions
 
-            $request->getSession()->getFlashbag()->add('info', 'l\'article ' .$article->getNom(). ' ('.$article->getType(). ') a bien été modifié.');
+            $request->getSession()->getFlashbag()->add('info', 'l\'article ' .$article->getNom(). ' ('.$article->getType()->getName(). ') a bien été modifié.');
 
             return $this->redirectToRoute('stock');
         }

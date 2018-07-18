@@ -31,15 +31,19 @@ class PurchaseController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
+        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
+
+        $draft = $repo_typeStocks->returnType('draft');
+        $bottle = $repo_typeStocks->returnType('Bouteille');
+        $article = $repo_typeStocks->returnType('article');
+
+        /* futs */ $selected_drafts = $repo_stocks->loadStocksForSaleByType($draft);
 
 
-        /* futs */ $selected_drafts = $repo_stocks->loadStocksForSaleByType('draft');
+        /* bouteilles */ $selected_bottles = $repo_stocks->loadStocksForSaleByType($bottle);
 
 
-        /* bouteilles */ $selected_bottles = $repo_stocks->loadStocksForSaleByType('bottle');
-
-
-        /* articles */ $selected_articles = $repo_stocks->loadStocksForSaleByType('article');
+        /* articles */ $selected_articles = $repo_stocks->loadStocksForSaleByType($article);
 
 
         $data=[];
@@ -99,7 +103,7 @@ class PurchaseController extends Controller
 
             if ($user->getRoles() == "ROLE_INTRO" && $solde < $form['total']) {
                 /**
-                 * Redirige vers la page purchase avec un message signalant et sécrivant l'erreur
+                 * Redirige vers la page purchase avec un message signalant et décrivant l'erreur
                  * Actuellement c'est un 403 -> implémenter les Flashbags
                  */
                 throw $this->createAccessDeniedException();

@@ -22,12 +22,17 @@ class PreparerTenueController extends Controller{
 
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
+        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
+
+        $draft = $repo_typeStocks->returnType('draft');
+        $bottle = $repo_typeStocks->returnType('Bouteille');
+        $article = $repo_typeStocks->returnType('article');
 
         $preparation = new PreparerTenue();
 
-        $drafts = $repo_stocks->loadQuantiteNotNullByType("draft");
-        $bottles = $repo_stocks->loadQuantiteNotNullByType("bottle");
-        $articles = $repo_stocks->loadQuantiteNotNullByType("article");
+        $drafts = $repo_stocks->findByType($draft);
+        $bottles = $repo_stocks->findByType($bottle);
+        $articles = $repo_stocks->findByType($article);
 
         foreach ($drafts as $draft){
             $preparation->getDrafts()->add($draft);
