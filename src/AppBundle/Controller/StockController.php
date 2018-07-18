@@ -24,9 +24,9 @@ class StockController extends Controller {
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
-        $typeDraft = $repo_typeStocks->returnType('draft');
+        $typeDraft = $repo_typeStocks->returnType('Draft');
         $typeBottle = $repo_typeStocks->returnType('Bouteille');
-        $typeArticle = $repo_typeStocks->returnType('article');
+        $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
 
         /* les variables $typeDraft,... sont des instances de TypeStocks, 
         et non des tableaux contenant des instances de TypeStocks, 
@@ -134,19 +134,24 @@ class StockController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
-      
+
         $idarticle = $request->query->get('idarticle');
 
         $em = $this->getDoctrine()->getEntityManager();
         $article = $em->getRepository('AppBundle:Stocks')->find($idarticle);
-        
+
         if (!$article) {
             throw $this->createNotFoundException("Article non trouvé pour l'id ".$idarticle);
         }
 
+        $commandes = $em->getRepository('AppBundle:DetailsCommandes')->findByArticle($idarticle);
+        foreach ($commandes as $elt_commande) {
+            $em->remove($elt_commande);
+        }
+
         $em->remove($article);
         $em->flush();
-    
+
         return $this->redirectToRoute('stock');
     }
 }

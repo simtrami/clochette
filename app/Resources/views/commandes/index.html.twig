@@ -40,14 +40,25 @@
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ commande.id }}</button>
                                 <div class="dropdown-menu">
                                     <h6 class="dropdown-header">Articles achetés</h6>
-                                    {% for detail in commande.details %}
-                                        <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
-                                    {% endfor %}
+                                    {% if commande.details is not empty %}
+                                        {% for detail in commande.details %}
+                                            <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="dropdown-item">Articles supprimés</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         </th>
-                        <td>{{ commande.user.username }}</td>
-                        <td>{{ commande.compte != NULL ? commande.compte.pseudo : "N/A" }}</td>
+                        <td>{{ commande.user is not null ? commande.user.username : "Utilisateur supprimé" }}</td>
+                        <td>{% if commande.compte != NULL %}
+                                {{ commande.compte.pseudo }}
+                            {% elseif commande.methode != "account" %}
+                                N/A
+                            {% else %}
+                                Utilisateur supprimé
+                            {% endif %}
+                        </td>
                         <td>{{ commande.montant }}€</td>
                         <td>{{ commande.methode }}</td>
                         <td>{{ commande.timestamp|date('Y-m-d H:i:s') }}</td>

@@ -17,7 +17,7 @@ class Stocks
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TypeStocks")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $type;
 
