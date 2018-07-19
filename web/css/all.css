@@ -1,0 +1,52 @@
+/*** Buttons ***/
+
+.btn-primary{
+    background-color: #01A867;
+    border-color: #01A867;
+}
+
+.btn-success {
+    background-color: #01A867;
+    border-color: #01A867;
+}
+
+.btn-danger {
+    background-color: red;
+}
+
+.btn-orange {
+    background-color: #ffc107;
+}
+
+/*** Alerts ***/
+
+.alert-danger {
+    background-color: #ffc107;
+}
+
+.alert-light {
+    background-color: #e9ecef;
+}
+
+/*** Spaces ***/
+
+.pad-t {
+    padding-top: 20px;
+}
+
+.pad-b{
+    padding-bottom: 20px;
+}
+
+.marg-t {
+    margin-top: 20px;
+}
+.marg-b{
+    margin-bottom: 20px;
+}
+
+/*** Texts ***/
+
+.center {
+    text-align: center;
+}

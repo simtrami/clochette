@@ -9,16 +9,3 @@
 .container-fluid {
     padding-bottom: 16px;
 }
-
-.btn-success {
-    background-color: #01A867;
-    border-color: #01A867;
-}
-
-.center {
-    text-align: center;
-}
-
-.alert-light {
-    background-color: #e9ecef;
-}
