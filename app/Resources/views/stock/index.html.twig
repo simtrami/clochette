@@ -4,6 +4,7 @@
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/stock.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
 {% endblock %}
 
@@ -13,17 +14,93 @@
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#table-drafts').DataTable();
-        } );
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('#table-bottles').DataTable();
-        } );
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('#table-articles').DataTable();
+            $('#table-drafts').DataTable( {
+                "language": {
+                    "decimal":        ".",
+                    "emptyTable":     "Aucune donnée disponible dans le tableau",
+                    "info": "Page _PAGE_ sur _PAGES_",
+                    "infoEmpty":      "Aucune entrée disponible",
+                    "infoFiltered":   "(d'après les _MAX_ entrées)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Afficher _MENU_ entrées par page",
+                    "loadingRecords": "Chargement...",
+                    "processing":     "En traitement...",
+                    "search":         "Rechercher:",
+                    "zeroRecords":    "Aucune entrée correspondante trouvée",
+                    "paginate": {
+                        "first":      "Début",
+                        "last":       "Fin",
+                        "next":       "Suivante",
+                        "previous":   "Précédente"
+                    },
+                    "aria": {
+                        "sortAscending":  ": activer pour trier dans l'ordre croissant",
+                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
+                    }
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": 5 }
+                ]
+            } );
+            $('#table-bottles').DataTable( {
+                "language": {
+                    "decimal":        ".",
+                    "emptyTable":     "Aucune donnée disponible dans le tableau",
+                    "info": "Page _PAGE_ sur _PAGES_",
+                    "infoEmpty":      "Aucune entrée disponible",
+                    "infoFiltered":   "(d'après les _MAX_ entrées)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Afficher _MENU_ entrées par page",
+                    "loadingRecords": "Chargement...",
+                    "processing":     "En traitement...",
+                    "search":         "Rechercher:",
+                    "zeroRecords":    "Aucune entrée correspondante trouvée",
+                    "paginate": {
+                        "first":      "Début",
+                        "last":       "Fin",
+                        "next":       "Suivante",
+                        "previous":   "Précédente"
+                    },
+                    "aria": {
+                        "sortAscending":  ": activer pour trier dans l'ordre croissant",
+                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
+                    }
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": 5 }
+                ]
+            } );
+            $('#table-articles').DataTable( {
+                "language": {
+                    "decimal":        ".",
+                    "emptyTable":     "Aucune donnée disponible dans le tableau",
+                    "info": "Page _PAGE_ sur _PAGES_",
+                    "infoEmpty":      "Aucune entrée disponible",
+                    "infoFiltered":   "(d'après les _MAX_ entrées)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Afficher _MENU_ entrées par page",
+                    "loadingRecords": "Chargement...",
+                    "processing":     "En traitement...",
+                    "search":         "Rechercher:",
+                    "zeroRecords":    "Aucune entrée correspondante trouvée",
+                    "paginate": {
+                        "first":      "Début",
+                        "last":       "Fin",
+                        "next":       "Suivante",
+                        "previous":   "Précédente"
+                    },
+                    "aria": {
+                        "sortAscending":  ": activer pour trier dans l'ordre croissant",
+                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
+                    }
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": 5 }
+                ]
+            } );
         } );
     </script>
 {% endblock %}
@@ -31,6 +108,11 @@
 {% block body %}
     <div class="container-fluid">
 
+      
+        <div class="alert alert-light">
+            <h1 class="display-4">Gestion des stocks</h1>
+        </div>
+      
         {% for message in app.session.flashbag.get('info') %}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fa fa-save"></i> Information : {{message}}
@@ -39,8 +121,9 @@
                 </button>
             </div>
         {% endfor %}
-        
-        <a class="btn btn-success btn-lg btn-block" href="{{ path('ajout_article') }}">Ajouter un article</a>
+      
+        <a class="btn btn-success btn-lg btn-block" href="{{ path('ajout_article') }}">
+            <i class="fas fa-plus-circle"></i> Ajouter un article</a>
       
         <div class="alert alert-secondary marg-t">
             <h4><i class="fas fa-beer"></i> Pressions</h4>
@@ -50,11 +133,11 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col-lg-1">#</th>
-                        <th scope="col-lg-2">Nom pression</th>
+                        <th scope="col-lg-3">Nom</th>
                         <th scope="col-lg-2">Prix à l'achat (pinte)</th>
                         <th scope="col-lg-2">Prix à la vente</th>
                         <th scope="col-lg-2">Fûts restants</th>
-                        <th scope="col-lg-3">Action</th>
+                        <th scope="col-lg-2"></th>
                     </tr>
                 </thead>
 
@@ -66,9 +149,11 @@
                                 <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat - 30) / beer.volume /2 }})</td>
                                 <td id="afficheStock-prix">{{ beer.prixVente }}</td>
                                 <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
-                                <td>
-                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': beer.id }) }}">MODIFIER</a>
-                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">SUPPRIMER</a>
+                                <td class="center">
+                                    <a class="btn btn-secondary marg-r" href="{{ path('modif_article', { 'id_article': beer.id }) }}">
+                                        <i class="fas fa-edit"></i> Modif.</a>
+                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': beer.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">
+                                        <i class="fas fa-times"></i> Suppr.</a>
                                 </td>
                         </tr>
                     {% endfor %}
@@ -84,11 +169,11 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col-lg-1">#</th>
-                        <th scope="col-lg-2">Nom bouteille</th>
+                        <th scope="col-lg-3">Nom</th>
                         <th scope="col-lg-2">Prix à l'achat</th>
                         <th scope="col-lg-2">Prix de vente</th>
                         <th scope="col-lg-2">Bouteilles restantes</th>
-                        <th scope="col-lg-3">Action</th>
+                        <th scope="col-lg-2"></th>
                     </tr>
                 </thead>
 
@@ -100,9 +185,11 @@
                                 <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
                                 <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
                                 <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
-                                <td>
-                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': bottle.id }) }}">MODIFIER</a>
-                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">SUPPRIMER</a>
+                                <td class="center">
+                                    <a class="btn btn-secondary marg-r" href="{{ path('modif_article', { 'id_article': bottle.id }) }}">
+                                        <i class="fas fa-edit"></i> Modif.</a>
+                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': bottle.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">
+                                        <i class="fas fa-times"></i> Suppr.</a>
                                 </td>
                         </tr>
                     {% endfor %}
@@ -118,11 +205,11 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col-lg-1">#</th>
-                        <th scope="col-lg-2">Nom article</th>
+                        <th scope="col-lg-3">Nom</th>
                         <th scope="col-lg-2">Prix à l'achat</th>
                         <th scope="col-lg-2">Prix de vente</th>
                         <th scope="col-lg-2">Articles restants</th>
-                        <th scope="col-lg-3">Action</th>
+                        <th scope="col-lg-2"></th>
                     </tr>
                 </thead>
 
@@ -134,9 +221,11 @@
                                 <td id="afficheStock-cout">{{ item.prixAchat }}</td>
                                 <td id="afficheStock-prix">{{ item.prixVente }}</td>
                                 <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
-                                <td>
-                                    <a class="btn btn-outline-info" href="{{ path('modif_article', { 'id_article': item.id }) }}">MODIFIER</a>
-                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">SUPPRIMER</a>
+                                <td class="center">
+                                    <a class="btn btn-secondary marg-r" href="{{ path('modif_article', { 'id_article': item.id }) }}">
+                                        <i class="fas fa-edit"></i> Modif.</a>
+                                    <a class="btn btn-danger" href="{{ path('suppr_article', {'idarticle': item.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">
+                                        <i class="fas fa-times"></i> Suppr.</a>
                                 </td>
                         </tr>
                     {% endfor %}

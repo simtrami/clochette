@@ -1,9 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Commandes{% endblock %}
+{% block title %}Historique des commandes{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
 {% endblock %}
 
@@ -13,7 +14,35 @@
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#table').DataTable();
+            $('#table').DataTable( {
+                "language": {
+                    "decimal":        ".",
+                    "emptyTable":     "Aucune donnée disponible dans le tableau",
+                    "info": "Page _PAGE_ sur _PAGES_",
+                    "infoEmpty":      "Aucune entrée disponible",
+                    "infoFiltered":   "(d'après les _MAX_ entrées)",
+                    "infoPostFix":    "",
+                    "thousands":      ",",
+                    "lengthMenu":     "Afficher _MENU_ entrées par page",
+                    "loadingRecords": "Chargement...",
+                    "processing":     "En traitement...",
+                    "search":         "Rechercher:",
+                    "zeroRecords":    "Aucune entrée correspondante trouvée",
+                    "paginate": {
+                        "first":      "Début",
+                        "last":       "Fin",
+                        "next":       "Suivante",
+                        "previous":   "Précédente"
+                    },
+                    "aria": {
+                        "sortAscending":  ": activer pour trier dans l'ordre croissant",
+                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
+                    }
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": 6 }
+                ]
+            } );
         } );
     </script>
 {% endblock %}
@@ -27,8 +56,12 @@
             - Changer l'affichage des méthodes de paiement (icones, traductions, etc.)
             - Afficher l'heure et la date pour que ce soit plus pratique à lire (sans modifier la base)
         #}
-        
-        <div class="table-responsive pad-t">
+      
+        <div class="alert alert-light">
+            <h1 class="display-4">Historique des commandes</h1>
+        </div>
+      
+        <div class="table-responsive marg-b">
             <table id="table" class="table table-striped table-bordered">
                 <thead class="thead-dark">
                     <tr>
@@ -38,6 +71,7 @@
                         <th>Montant</th>
                         <th>Méthode de paiement</th>
                         <th>Date et heure</th>
+                        <th class="center">Détails</th>
                     </tr>
                 </thead>
 
@@ -45,19 +79,7 @@
                 {% for commande in commandes %}
                     <tr>
                         <th>
-                            <div class="btn-group dropright">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ commande.id }}</button>
-                                <div class="dropdown-menu">
-                                    <h6 class="dropdown-header">Articles achetés</h6>
-                                    {% if commande.details is not empty %}
-                                        {% for detail in commande.details %}
-                                            <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
-                                        {% endfor %}
-                                    {% else %}
-                                        <span class="dropdown-item">Articles supprimés</span>
-                                    {% endif %}
-                                </div>
-                            </div>
+                            {{ commande.id }}
                         </th>
                         <td>{{ commande.user is not null ? commande.user.username : "Utilisateur supprimé" }}</td>
                         <td>{% if commande.compte != NULL %}
@@ -71,6 +93,23 @@
                         <td>{{ commande.montant }}€</td>
                         <td>{{ commande.methode }}</td>
                         <td>{{ commande.timestamp|date('Y-m-d H:i:s') }}</td>
+                        <td class="center">
+                            <div class="btn-group dropleft">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                     Afficher</i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <h6 class="dropdown-header">Articles achetés</h6>
+                                    {% if commande.details is not empty %}
+                                        {% for detail in commande.details %}
+                                            <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="dropdown-item">Articles supprimés</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -7,7 +7,9 @@
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
     <div class="container-fluid">
-        <h4>Connexion à Clochette</h4>
+        <div class="alert alert-light">
+            <h1 class="display-4">Connexion à Clochette</h1>
+        </div>
         <form action="{{ path('login') }}" method="post">
             <div class="form-row">
                 <div class="form-group col-md-6">
@@ -32,7 +34,7 @@
 
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <button class="btn btn-primary" type="submit">Se connecter</button>
+            <button class="btn btn-success" type="submit">Se connecter</button>
         </form>
     </div>
 

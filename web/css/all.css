@@ -1,31 +1,82 @@
-/*** Buttons ***/
-
-.btn-primary{
-    background-color: #01A867;
-    border-color: #01A867;
-}
+/****** Elements ******/
+/***** Buttons *****/
 
 .btn-success {
     background-color: #01A867;
     border-color: #01A867;
 }
 
+.btn-success:hover {
+    background-color: #01955b;
+    border-color: #01814f;
+} 
+
+.btn-outline-success {
+    color: #01A867;
+    background-color: transparent;
+    background-image: none;
+    border-color: #01A867;
+}
+
+.btn-outline-success:hover {
+    color: #fff;
+    background-color: #01A867;
+    border-color: #01A867;
+}
+
+.btn-success.active:not(:disabled):not(.disabled) {
+    background-color: #01955b;
+    border-color: #01955b;
+}
+
+.btn-success.active:not(:disabled):not(.disabled):hover {
+    background-color: #01955b;
+    border-color: #01814f;
+}
+
 .btn-danger {
-    background-color: red;
+    background-color: #c11601;
+    border-color: #c11601;
+}
+
+.btn-danger:hover {
+    background-color: #a81301;
+    border-color: #a81301;
+}
+
+.btn-outline-danger {
+    color: #c11601;
+    background-color: transparent;
+    background-image: none;
+    border-color: #c11601;
+}
+
+.btn-outline-danger:hover {
+    color: #fff;
+    background-color: #c11601;
+    border-color: #c11601;
 }
 
 .btn-orange {
     background-color: #ffc107;
 }
 
-/*** Alerts ***/
+/***** Blocks *****/
+/**** Alerts ****/
 
 .alert-danger {
     background-color: #ffc107;
 }
 
 .alert-light {
-    background-color: #e9ecef;
+    background-color: transparent;
+}
+
+/**** Cards ****/
+
+.card {
+    border: none;
+    background-color: #f8f9fa;
 }
 
 /*** Spaces ***/
@@ -34,15 +85,32 @@
     padding-top: 20px;
 }
 
-.pad-b{
+.pad-b {
     padding-bottom: 20px;
+}
+
+.pad-l {
+    padding-left: 20px;
+}
+
+.pad-r {
+    padding-right: 20px;
 }
 
 .marg-t {
     margin-top: 20px;
 }
-.marg-b{
+
+.marg-b {
     margin-bottom: 20px;
+}
+
+.marg-l {
+    margin-left: 20px;
+}
+
+.marg-r {
+    margin-right: 20px;
 }
 
 /*** Texts ***/

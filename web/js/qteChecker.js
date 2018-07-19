@@ -6,7 +6,7 @@ $(".btn-value").on("click", function () {
     var qteMax = button.parent().find(".qteStock").val();
     var newVal = parseFloat(0);
 
-    if (button.text() == "+") {
+    if (button.attr("id") == "plus") {
         if (parseFloat(oldValue) < parseFloat(qteMax)){
             newVal = parseFloat(oldValue) + 1;
             //console.log(qteMax);
@@ -14,7 +14,7 @@ $(".btn-value").on("click", function () {
             newVal = parseFloat(qteMax);
             //console.log(qteMax);
         }
-    } else {
+    } else if (button.attr("id") == "moins") {
         // Don't allow decrementing below zero
         if (oldValue > 0) {
             newVal = parseFloat(oldValue) - 1;
@@ -35,6 +35,7 @@ $(".btn-value").on("click", function () {
     });
     $("#total").attr("value", tot);
     $("#totalForm").attr("value", tot);
+    $('#totalTxt').html(tot);
 });
 
 $(".qte").on("input", function () {
@@ -59,4 +60,5 @@ $(".qte").on("input", function () {
     });
     $("#total").attr("value", tot);
     $("#totalForm").attr("value", tot);
+    $('#totalTxt').innerHTML = tot;
 });

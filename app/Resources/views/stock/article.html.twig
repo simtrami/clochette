@@ -22,8 +22,8 @@
 
 {% block body %}
     <div class="container-fluid">
-        <div class="alert alert-light center">
-            <h4>{{ mode == 'new_article' ? 'Ajouter un article' : "Modifier l'article : " ~ nom ~ " (" ~ type ~ ")" }}</h4>
+        <div class="alert alert-light">
+            <h1 class="display-4">{{ mode == 'new_article' ? 'Ajouter un article' : "Modifier l'article : " ~ nom ~ " (" ~ type ~ ")" }}</h1>
         </div>
 
         {{ form_start(form) }}
@@ -34,15 +34,15 @@
             {% endif %}
             {{ form_rest(form) }}
 
-            <button type="submit" class="btn btn-primary btn-lg btn-block">
-                {{ mode == 'new_article' ? 'Ajouter' : 'Modifier' }}</button>
+            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
+                <button type="submit" class="btn btn-success btn-lg col-md-8">
+                    {{ mode == 'new_article' ? '<i class="fas fa-plus-circle"></i> Ajouter' : '<i class="fas fa-save"></i> Modifier' }}</button>
         {{ form_end(form) }}
-
-            <a href="{{path('stock')}}">
-            <button type="button" class="btn btn-danger btn-lg btn-block">
-                {{ mode == 'new_article' ? 'Annuler l\'ajout' : 'Annuler la modification' }}
-            </button>
-            </a>
+                
+                <button class="btn btn-danger btn-lg col-md-3" href="{{path('stock')}}">
+                    <i class="fas fa-times"></i> {{ mode == 'new_article' ? 'Annuler l\'ajout' : 'Annuler la modification' }}
+                </button>
+            </div>
 
     </div>
 

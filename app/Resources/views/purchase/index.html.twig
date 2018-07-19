@@ -10,7 +10,11 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
+    {#
+        TODO:
+        Implémenter ça : https://stackoverflow.com/questions/36430816/bootstrap-4-card-deck-with-number-of-columns-based-on-viewport
+    #}
+<div class="container-fluid">
 
     {% for message in app.session.flashbag.get('info') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -38,11 +42,11 @@
         </div>
         <div class="card-deck affichage-articles">
             {% for article in selected_drafts %}
-                <div class="card pad-b">
+                <div class="card marg-b">
                     <div class="card-body">
                         <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
                         <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
-                        <div class="input-group">
+                        <div class="input-group input-prix">
                             <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                             <div class="input-group-append">
                                 <span class="input-group-text" id="inputGroupAppend">
@@ -50,13 +54,16 @@
                                 </span>
                             </div>
                         </div>
-                        <label for="qte">Quantité</label>
+                      
                         <div class="input-group add-delete-article">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Quantité</span>
+                            </div>
                             <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="drafts[{{ loop.index }}][quantite]" value="0">
                             <div class="input-group-append">
                                 <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                <span class="btn btn-outline-danger btn-value" id="moins">-</span>
-                                <span class="btn btn-outline-success btn-value" id="plus">+</span>
+                                <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
+                                <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                             </div>
                         </div>
                     </div>
@@ -70,11 +77,11 @@
         <div class="row justify-content-md-center affichage-articles">
             {% for article in selected_bottles %}
                 <div class="col-md-auto">
-                    <div class="card pad-b">
+                    <div class="card marg-b">
                         <div class="card-body">
                             <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
                             <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
-                            <div class="input-group">
+                            <div class="input-group input-prix">
                                 <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                                 <div class="input-group-append">
                                     <span class="input-group-text" id="inputGroupAppend">
@@ -83,13 +90,15 @@
                                 </div>
                             </div>
 
-                            <label for="qte">Quantité</label>
                             <div class="input-group add-delete-article">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Quantité</span>
+                                </div>
                                 <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="bottles[{{ loop.index }}][quantite]" value="0">
                                 <div class="input-group-append">
                                     <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                    <span class="btn btn-outline-danger btn-value" id="moins">-</span>
-                                    <span class="btn btn-outline-success btn-value" id="plus">+</span>
+                                    <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
+                                    <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                                 </div>
                             </div>
                         </div>
@@ -104,11 +113,11 @@
         <div class="row justify-content-md-center affichage-articles">
             {% for article in selected_articles %}
                 <div class="col-md-auto">
-                    <div class="card pad-b">
+                    <div class="card marg-b">
                         <div class="card-body">
                             <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
                             <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
-                            <div class="input-group">
+                            <div class="input-group input-prix">
                                 <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                                 <div class="input-group-append">
                                     <span class="input-group-text" id="inputGroupAppend">
@@ -116,13 +125,16 @@
                                     </span>
                                 </div>
                             </div>
-                            <label for="qte">Quantité</label>
+                          
                             <div class="input-group add-delete-article">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Quantité</span>
+                                </div>
                                 <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="articles[{{ loop.index }}][quantite]" value="0">
                                 <div class="input-group-append">
                                     <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                    <span class="btn btn-outline-danger btn-value" id="moins">-</span>
-                                    <span class="btn btn-outline-success btn-value" id="plus">+</span>
+                                    <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
+                                    <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                                 </div>
                             </div>
                         </div>
@@ -135,26 +147,30 @@
             <h4>Paiement</h4>
         </div>
 
-        <div class="col-md-3">
+        Choisir entre les deux affichages ou en conceptualiser un autre :
+        <div class="col-md-5">
+            <h1 class="display-4">Total : <span id="totalTxt">0</span>€</h1>
             <label for="total">Total</label>
-            <div class="input-group mb-3">
+            <div class="input-group mb-5">
                 <input class="form-control" type="text" id="total" value="0" placeholder="Total" disabled>
                 <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" hidden>
-                <div class="input-group-append">
-                    <span class="input-group-text">€</span>
+                <div class="input-group-append"><span class="input-group-text">
+                    <i class="fa fa-euro-sign"></i></span>
                 </div>
             </div>
         </div>
 
-        <div class="collapse pad-b" id="collapseAccount">
+        <div class="collapse marg-b" id="collapseAccount">
+        <div class="col-md-5">
             <div class="form-group">
-                <label class="form-control-label" for="search-input">Compte à débiter</label><br/>
+                <label class="form-control-label" for="search-input"><h5>Compte à débiter</h5></label><br/>
                 <input type="search" id="paying-account" class="form-control aa-input-search" placeholder="Rechercher un compte..." name="search" autocomplete="off" />
             </div>
         </div>
+        </div>
       
-        <div class="col-md-3">
-            <div class="input-group mb-3">
+        <div class="col-md-5">
+            <div class="input-group mb-5">
                 <div class="btn-group btn-group-toggle moyen_paiement" data-toggle="buttons">
 
                     {# <label class="btn btn-success">
@@ -184,9 +200,8 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
     </form>
-    </div>
-
-
+      
+</div>
 {% endblock %}
 
 {% block javascripts %}

@@ -7,13 +7,20 @@
 
 {% block body %}
 
-<div class="alert alert-secondary">
-
-    {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
-        <h1>Salut {{ app.user.username }}</h1>
-    {% else %}
-        <h1>Connectez-vous</h1>
-    {% endif %}
+<div class="container-fluid">
+    <div class="jumbotron">
+        <div class="container">
+            {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
+                <h1 class="display-3">Bonjour {{ app.user.username }} :)</h1>
+                <p class="lead">La connexion est validée, vous pouvez commencer à explorer !</p>
+            {% else %}
+                <h1 class="display-3">Connectez-vous</h1>
+                <p class="lead">Cette application est en cours de développement mais vous pouvez l'explorer
+                    librement en vous connectant <a href="{{ path('login') }}">ici</a> !</p>
+            {% endif %}
+        </div>
+    </div> 
 </div>
+
 
 {% endblock %}

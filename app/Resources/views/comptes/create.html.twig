@@ -10,9 +10,9 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="alert alert-light center">
-            <h4>{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ prenom ~ " " ~ nom }}</h4>
+    <div class="container-fluid pad-b">
+        <div class="alert alert-light">
+            <h1 class="display-4">{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ prenom ~ " " ~ nom }}</h1>
         </div>
         
         {{ form_start(form) }}
@@ -33,16 +33,14 @@
           {% endif %}
             {{ form_rest(form) }}
 
-
-            <button type="submit" class="btn btn-primary btn-lg btn-block">
-                <i class="fa fa-save"></i>{{ mode == 'new_account' ? ' Créer' : ' Modifier' }}
-            </button>
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
+                <button type="submit" class="btn btn-success btn-lg col-md-8">
+                    {{ mode == 'new_account' ? '<i class="fas fa-plus-circle"></i> Créer' : '<i class="fas fa-save"></i> Modifier' }}</button>
             {{ form_end(form) }}
 
-            <a href="{{path('comptes')}}"><button type="button" class="btn btn-danger btn-lg btn-block">
-                <i class="fa fa-times"></i>{{ mode == 'new_account' ? ' Annuler la création' : ' Annuler la modification' }}
+            <button class="btn btn-danger btn-lg col-md-3" href="{{ path('comptes') }}">
+                <i class="fas fa-times"></i> {{ mode == 'new_account' ? 'Annuler la création' : 'Annuler la modification' }}
             </button>
-            </a>
 
     </div>
 
