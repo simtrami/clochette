@@ -28,6 +28,8 @@ class PreparerTenueController extends Controller{
         $bottle = $repo_typeStocks->returnType('Bouteille');
         $article = $repo_typeStocks->returnType('Nourriture ou autre');
 
+        $session = $request->getSession();
+
         $preparation = new PreparerTenue();
 
         $drafts = $repo_stocks->findByType($draft);
@@ -59,6 +61,9 @@ class PreparerTenueController extends Controller{
                 $em->persist($article);
             }
             $em->flush();
+
+            $session->getFlashbag()->add('info', 'La liste des articles en vente a bien été mise à jour.');
+
             return $this->redirectToRoute('purchase');
         }
 

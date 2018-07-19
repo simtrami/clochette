@@ -135,6 +135,8 @@ class StockController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
+        $session = $request->getSession();
+
         $idarticle = $request->query->get('idarticle');
 
         $em = $this->getDoctrine()->getEntityManager();
@@ -150,6 +152,11 @@ class StockController extends Controller {
         }
 
         $em->remove($article);
+
+        $session->getFlashBag()->add(
+            'info', 'l\'article ' .$article->getNom(). ' a bien été supprimé.'
+        );
+
         $em->flush();
 
         return $this->redirectToRoute('stock');
