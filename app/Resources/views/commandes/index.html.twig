@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Historique des transactions{% endblock %}
+{% block title %}Historique des commandes{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/index.css') }}">
@@ -33,7 +33,7 @@
         #}
       
         <div class="alert alert-light">
-            <h1 class="display-4">Historique des transactions</h1>
+            <h1 class="display-4">Historique des commandes</h1>
         </div>
       
         <div class="table-responsive marg-b">
@@ -51,35 +51,35 @@
                 </thead>
 
                 <tbody>
-                {% for transaction in transactions %}
+                {% for commande in commandes %}
                     <tr>
                         <th>
-                            {{ transaction.id }}
+                            {{ commande.id }}
                         </th>
-                        <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
-                        <td>{% if transaction.compte != NULL %}
-                                {{ transaction.compte.pseudo }}
-                            {% elseif transaction.methode != "account" %}
+                        <td>{{ commande.user is not null ? commande.user.username : "Utilisateur supprimé" }}</td>
+                        <td>{% if commande.compte != NULL %}
+                                {{ commande.compte.pseudo }}
+                            {% elseif commande.methode != "account" %}
                                 N/A
                             {% else %}
                                 Compte supprimé
                             {% endif %}
                         </td>
-                        <td>{{ transaction.montant }}€</td>
+                        <td>{{ commande.montant }}€</td>
                         <td>
-                            {% if transaction.methode == "account" %}
+                            {% if commande.methode == "account" %}
                                 Compte
-                            {% elseif transaction.methode == "cash" %}
+                            {% elseif commande.methode == "cash" %}
                                 Liquide
-                            {% elseif transaction.methode == "pumpkin" %}
+                            {% elseif commande.methode == "pumpkin" %}
                                 Pumpkin
-                            {% elseif transaction.methode == "refill" %}
+                            {% elseif commande.methode == "refill" %}
                                 Rechargement
                             {% else %}
                                 Non reconnue
                             {% endif %}
                         </td>
-                        <td>{{ transaction.timestamp|date('H:i:s d/m/Y') }}</td>
+                        <td>{{ commande.timestamp|date('H:i:s d/m/Y') }}</td>
                         <td class="center">
                             <div class="btn-group dropleft">
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -87,8 +87,8 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <h6 class="dropdown-header">Articles achetés</h6>
-                                    {% if transaction.details is not empty %}
-                                        {% for detail in transaction.details %}
+                                    {% if commande.details is not empty %}
+                                        {% for detail in commande.details %}
                                             <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
                                         {% endfor %}
                                     {% else %}
