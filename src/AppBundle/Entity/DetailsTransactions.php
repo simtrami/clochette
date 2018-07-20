@@ -6,26 +6,26 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * DetailsCommandes
+ * DetailsTransactions
  *
- * @ORM\Table(name="details_commandes",
+ * @ORM\Table(name="details_transactions",
  *  indexes={
- *      @ORM\Index(name="commande", columns={"commande"}),
+ *      @ORM\Index(name="transaction", columns={"transaction"}),
  *      @ORM\Index(name="article", columns={"article"})
  *  }
  * )
  * @ORM\Entity
  */
-class DetailsCommandes
+class DetailsTransactions
 {
     /**
-     * @var \AppBundle\Entity\Commandes
+     * @var \AppBundle\Entity\Transactions
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Commandes", inversedBy="details")
-     * @ORM\JoinColumn(name="commande", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Transactions", inversedBy="details")
+     * @ORM\JoinColumn(name="transaction", referencedColumnName="id")
      */
-    private $commande;
+    private $transaction;
     
     /**
      * @var \AppBundle\Entity\Stocks
@@ -47,27 +47,27 @@ class DetailsCommandes
     ## Fonctions
 
     /**
-     * Set commande
+     * Set transaction
      *
-     * @param \AppBundle\Entity\Commandes $id
+     * @param \AppBundle\Entity\Transactions $id
      *
-     * @return DetailsCommandes
+     * @return DetailsTransactions
      */
-    public function setCommande(\AppBundle\Entity\Commandes $commande)
+    public function setTransaction(\AppBundle\Entity\Transactions $transaction)
     {
-        $this->commande = $commande;
+        $this->transaction = $transaction;
 
         return $this;
     }
 
     /**
-     * Get commande
+     * Get transaction
      *
-     * @return \AppBundle\Entity\Commandes
+     * @return \AppBundle\Entity\Transactions
      */
-    public function getCommande()
+    public function getTransaction()
     {
-        return $this->commande;
+        return $this->transaction;
     }
     
     /**
@@ -75,7 +75,7 @@ class DetailsCommandes
      *
      * @param \AppBundle\Entity\Stocks $id
      *
-     * @return DetailsCommandes
+     * @return DetailsTransactions
      */
     public function setArticle(\AppBundle\Entity\Stocks $article)
     {
@@ -99,7 +99,7 @@ class DetailsCommandes
      *
      * @param integer $quantite
      *
-     * @return DetailsCommandes
+     * @return DetailsTransactions
      */
     public function setQuantite($quantite)
     {

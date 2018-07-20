@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Comptes;
-use AppBundle\Entity\Commandes;
-use AppBundle\Entity\DetailsCommandes;
+use AppBundle\Entity\Transactions;
+use AppBundle\Entity\DetailsTransactions;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,7 +57,7 @@ class PurchaseController extends Controller
     /**
      * @Route("/purchase/validation", name="purchaseValidation")
      */
-    public function validateCommande(Request $request){
+    public function validateTransaction(Request $request){
         /**
          * TODO
          * VERIFIER QUE LE FORMULAIRE A BIEN ETE PASSE ET QU'ON N'A PAS JUSTE ECRIT L'URL
@@ -74,9 +74,9 @@ class PurchaseController extends Controller
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
         $session = $request->getSession();
 
-        $commande = new Commandes();
+        $commande = new Transactions();
 
-        // Insertion du timestamp dans l'entité Commandes
+        // Insertion du timestamp dans l'entité Transactions
         $timestamp = date_create(date("Y-m-d H:i:s"));
         $commande->setTimestamp($timestamp);
 
@@ -86,7 +86,6 @@ class PurchaseController extends Controller
         $form['drafts'] = $request->request->get('drafts');
         $form['bottles'] = $request->request->get('bottles');
         $form['articles'] = $request->request->get('articles');
-        $form['total'] = $request->request->get('total');
         $form['compte'] = $request->request->get('search');
         
         /**
@@ -95,6 +94,70 @@ class PurchaseController extends Controller
          * - METTRE DES TESTS UN PEU PARTOUT POUR POUVOIR RENDER LA PAGE AVEC DES STATUTS D'ERREUR
          *   (implémenter les Flashbags)
         */
+
+        // Insertion de la méthode de paiement dans l'entité Transactions
+        $commande->setMethode($form['methode']);
+      
+        // Insertions des articles et de leur quantité (si non nulle) dans des entités DetailsTransactions
+        // et calul du montant de la commande (car possibilité d'injecter une fausse valeur en html)
+        $montant = 0;
+        foreach ($form['drafts'] as $item) {
+            if ($item['quantite'] != 0) {
+              $detail = new DetailsTransactions();
+              $article = $repo_stocks->find($item['id']);
+              
+              $montant += $item['quantite'] * $article->getPrixVente();
+              
+              $detail->setArticle($article);
+              $detail->setQuantite($item['quantite']);
+              $detail->setTransaction($commande);
+              
+              $em->persist($detail);
+            }
+        }
+        foreach ($form['bottles'] as $item) {
+            if ($item['quantite'] != 0) {
+              $detail = new DetailsTransactions();
+              $article = $repo_stocks->find($item['id']);
+              
+              $montant += $item['quantite'] * $article->getPrixVente();
+              
+              $detail->setArticle($article);
+              $detail->setQuantite($item['quantite']);
+              $detail->setTransaction($commande);
+              $article->setQuantite($article->getQuantite() - $item['quantite']);
+              
+              $em->persist($detail);
+              $em->persist($article);
+            }
+        }
+        foreach ($form['articles'] as $item) {
+            if ($item['quantite'] != 0) {
+              $detail = new DetailsTransactions();
+              $article = $repo_stocks->find($item['id']);
+              
+              $montant += $item['quantite'] * $article->getPrixVente();
+              
+              $detail->setArticle($article);
+              $detail->setQuantite($item['quantite']);
+              $detail->setTransaction($commande);
+              $article->setQuantite($article->getQuantite() - $item['quantite']);
+              
+              $em->persist($detail);
+              $em->persist($article);
+            }
+        }
+      
+        if ($montant <= 0) {
+            $session->getFlashbag()->add(
+                'erreur',
+                "Le montant de la commande semble incorrecte, merci de la renvoyer."
+            );
+            return $this->redirectToRoute('purchase');
+        } else {
+            // Insertion du prix dans l'entité Transactions
+            $commande->setMontant($montant);
+        }
       
         $user = $repo_users->find($form['userId']);
       
@@ -102,103 +165,63 @@ class PurchaseController extends Controller
         if ($form['methode'] == "account") {
             $compte = $repo_comptes->findOneBy(['pseudo' => $form['compte']]);
             $solde = $compte->getSolde();
-            $diff  = $form['total']-$solde;
+            //$diff  = $montant - $solde;
 
-            if (/* $user->getRoles() == "ROLE_INTRO" &&  */$solde < $form['total']) {
+            if ( $user->getRoles() == "ROLE_INTRO" &&  $solde < $montant) {
 
                 $session->getFlashbag()->add(
                     'erreur',
-                    'Le solde du compte de ' .$compte->getPrenom(). ' ' .$compte->getNom(). ' est insuffisant pour valider la commande.
-                     Il manque ' .$diff. '€.'
+                    "Le solde du compte de ".$compte->getPrenom()." ".$compte->getNom()." est insuffisant pour valider la commande.</br>
+                     Il manque ". $montant - $solde ."€."
                 );
-
-                return $this->redirectToRoute('purchase');
-                /*throw $this->createAccessDeniedException();*/            
+                return $this->redirectToRoute('purchase');            
             } else {
-                $newSolde = $solde - $form['total'];
+                $newSolde = $solde - $montant;
             }
-            // Insertion du compte dans l'entité Commandes
+            // Insertion du compte dans l'entité Transactions
             $commande->setCompte($compte);
-        }
-        // Tout mode de paiement
-
-        // Insertion de l'user ayant validé la commande dans l'entité Commande
-        $commande->setUser($user);
-      
-        // Insertion du prix dans l'entité Commandes
-        $commande->setMontant($form['total']);
-
-        // Insertion de la méthode de paiement dans l'entité Commandes
-        $commande->setMethode($form['methode']);
-
-        // Insertion de la commande dans la base
-        $em->persist($commande);
-      
-        // Insertions des articles et de leur quantité (si non nulle) dans des entités DetailsCommandes
-        foreach ($form['drafts'] as $item) {
-            if ($item['quantite'] != 0) {
-              $detail = new DetailsCommandes();
-              $article = $repo_stocks->find($item['id']);
-              $detail->setArticle($article);
-              $detail->setQuantite($item['quantite']);
-              $detail->setCommande($commande);
-              $em->persist($detail);
-            }
-        }
-        foreach ($form['bottles'] as $item) {
-            if ($item['quantite'] != 0) {
-              $detail = new DetailsCommandes();
-              $article = $repo_stocks->find($item['id']);
-              $detail->setArticle($article);
-              $detail->setQuantite($item['quantite']);
-              $detail->setCommande($commande);
-              $article->setQuantite($article->getQuantite() - $item['quantite']);
-              $em->persist($detail);
-              $em->persist($article);
-            }
-        }
-        foreach ($form['articles'] as $item) {
-            if ($item['quantite'] != 0) {
-              $detail = new DetailsCommandes();
-              $article = $repo_stocks->find($item['id']);
-              $detail->setArticle($article);
-              $detail->setQuantite($item['quantite']);
-              $detail->setCommande($commande);
-              $article->setQuantite($article->getQuantite() - $item['quantite']);
-              $em->persist($detail);
-              $em->persist($article);
-            }
+          
+            // Modification du solde du compte
+            $compte->setSolde($newSolde);
+            // Mise à jour du compte dans la base
+            $em->persist($compte);
         }
         
-        // Modification du solde du compte
-            // Effectué en dernier en cas d'erreur sur l'enregistrement de la commande (et donc si on veut la refaire)
-        if ($form['methode']== "account") {
-            $compte->setSolde($newSolde);
-            $em->persist($compte);
-
-            $session->getFlashbag()->add('info', $commande->getMontant().'€ ont été débités du compte de ' .$compte->getPrenom(). ' ' .$compte->getNom().'.');
-
-        }
-
-        if ($form['methode'] == "cash"){
-            
-            $session->getFlashbag()->add(
-                'info', 
-                $commande->getMontant().'€ ont été payés en cash.'
-            );
-        }
-
-        if ($form['methode'] == "pumpkin"){
-            
-            $session->getFlashbag()->add(
-                'info', 
-                $commande->getMontant().'€ ont été payés par Pumpkin.'
-            );
-        }
-
+        // Insertion de l'user ayant validé la commande dans l'entité Transactions
+        $commande->setUser($user);
       
-        $em->flush();
+        // Insertion de la commande dans la base
+        $em->persist($commande);
+        
+        // Envoie de flashbags
+        switch ($form['methode']) {
+            case 'account':
+                $session->getFlashbag()->add(
+                    'info',
+                    $commande->getMontant()."€ ont été débités du compte de ".$compte->getPrenom()." ".$compte->getNom()."."
+                );
+                break;
+            case 'cash':
+                $session->getFlashbag()->add(
+                    'info', 
+                    $commande->getMontant()."€ ont été payés en liquide."
+                );
+                break;
+            case 'pumpkin':
+                $session->getFlashbag()->add(
+                    'info', 
+                    $commande->getMontant()."€ ont été payés par Pumpkin."
+                );
+                break;
+            default:
+                $session->getFlashbag()->add(
+                    'erreur', 
+                    "La méthode de paiement n'a pas été reconnue."
+                );
+                return $this->redirectToRoute('purchase');
+        }
 
+        $em->flush();
 
         return $this->redirectToRoute('purchase');
     }

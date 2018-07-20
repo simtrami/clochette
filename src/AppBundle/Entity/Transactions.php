@@ -7,12 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Commandes
+ * Transactions
  *
- * @ORM\Table(name="commandes", indexes={@ORM\Index(name="compte", columns={"compte"}), @ORM\Index(name="user", columns={"user"})})
+ * @ORM\Table(name="transactions", indexes={@ORM\Index(name="compte", columns={"compte"}), @ORM\Index(name="user", columns={"user"})})
  * @ORM\Entity
  */
-class Commandes
+class Transactions
 {
     /**
      * @var integer
@@ -26,7 +26,7 @@ class Commandes
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateCommande", type="datetime", options={"default" : "2017-12-12 05:40:42"})
+     * @ORM\Column(name="dateTransaction", type="datetime", options={"default" : "2017-12-12 05:40:42"})
      */
     private $timestamp;
 
@@ -66,7 +66,7 @@ class Commandes
     private $methode;
   
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DetailsCommandes", mappedBy="commande")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DetailsTransactions", mappedBy="transaction")
      */
     private $details;
 
@@ -92,7 +92,7 @@ class Commandes
      *
      * @param \datetime $timestamp
      *
-     * @return Commandes
+     * @return Transactions
      */
     public function setTimestamp($timestamp)
     {
@@ -116,7 +116,7 @@ class Commandes
      *
      * @param \AppBundle\Entity\Comptes $id
      *
-     * @return Commandes
+     * @return Transactions
      */
     public function setCompte(\AppBundle\Entity\Comptes $compte = null)
     {
@@ -140,7 +140,7 @@ class Commandes
      *
      * @param \AppBundle\Entity\Users $id
      *
-     * @return Commandes
+     * @return Transactions
      */
     public function setUser(\AppBundle\Entity\Users $user = null)
     {
@@ -164,7 +164,7 @@ class Commandes
      *
      * @param string $montant
      *
-     * @return Commandes
+     * @return Transactions
      */
     public function setMontant($montant)
     {
@@ -188,7 +188,7 @@ class Commandes
      *
      * @param string $methode
      *
-     * @return Commandes
+     * @return Transactions
      */
     public function setMethode($methode)
     {
