@@ -1,50 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Historique des commandes{% endblock %}
+{% block title %}Historique des transactions{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    {# <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"> #}
+    <link rel="stylesheet" href="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     {# Sorting rows : https://datatables.net/examples/styling/bootstrap4.html #}
-    <script src=" https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#table').DataTable( {
-                "language": {
-                    "decimal":        ".",
-                    "emptyTable":     "Aucune donnée disponible dans le tableau",
-                    "info": "Page _PAGE_ sur _PAGES_",
-                    "infoEmpty":      "Aucune entrée disponible",
-                    "infoFiltered":   "(d'après les _MAX_ entrées)",
-                    "infoPostFix":    "",
-                    "thousands":      ",",
-                    "lengthMenu":     "Afficher _MENU_ entrées par page",
-                    "loadingRecords": "Chargement...",
-                    "processing":     "En traitement...",
-                    "search":         "Rechercher:",
-                    "zeroRecords":    "Aucune entrée correspondante trouvée",
-                    "paginate": {
-                        "first":      "Début",
-                        "last":       "Fin",
-                        "next":       "Suivante",
-                        "previous":   "Précédente"
-                    },
-                    "aria": {
-                        "sortAscending":  ": activer pour trier dans l'ordre croissant",
-                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
-                    }
-                },
-                "columnDefs": [
-                    { "orderable": false, "targets": 6 }
-                ]
-            } );
-        } );
-    </script>
+    {# <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> #}
+    <script src="{{ asset('lib/DataTables-1.10.19/jquery.dataTables.min.js') }}"></script>
+    {# <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script> #}
+    <script src="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.js') }}"></script>
+    {# <script src="http://momentjs.com/downloads/moment.min.js"></script> #}
+    <script src="{{ asset('lib/moment.min.js') }}"></script>
+    {# <script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/"></script> #}
+    <script src="{{ asset('lib/DataTables-1.10.19/datetime-moment.js') }}"></script>
+    <script src="{{ asset('js/orderTableTransactions.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -58,7 +33,7 @@
         #}
       
         <div class="alert alert-light">
-            <h1 class="display-4">Historique des commandes</h1>
+            <h1 class="display-4">Historique des transactions</h1>
         </div>
       
         <div class="table-responsive marg-b">
@@ -76,23 +51,35 @@
                 </thead>
 
                 <tbody>
-                {% for commande in commandes %}
+                {% for transaction in transactions %}
                     <tr>
                         <th>
-                            {{ commande.id }}
+                            {{ transaction.id }}
                         </th>
-                        <td>{{ commande.user is not null ? commande.user.username : "Utilisateur supprimé" }}</td>
-                        <td>{% if commande.compte != NULL %}
-                                {{ commande.compte.pseudo }}
-                            {% elseif commande.methode != "account" %}
+                        <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
+                        <td>{% if transaction.compte != NULL %}
+                                {{ transaction.compte.pseudo }}
+                            {% elseif transaction.methode != "account" %}
                                 N/A
                             {% else %}
                                 Compte supprimé
                             {% endif %}
                         </td>
-                        <td>{{ commande.montant }}€</td>
-                        <td>{{ commande.methode }}</td>
-                        <td>{{ commande.timestamp|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ transaction.montant }}€</td>
+                        <td>
+                            {% if transaction.methode == "account" %}
+                                Compte
+                            {% elseif transaction.methode == "cash" %}
+                                Liquide
+                            {% elseif transaction.methode == "pumpkin" %}
+                                Pumpkin
+                            {% elseif transaction.methode == "refill" %}
+                                Rechargement
+                            {% else %}
+                                Non reconnue
+                            {% endif %}
+                        </td>
+                        <td>{{ transaction.timestamp|date('H:i:s d/m/Y') }}</td>
                         <td class="center">
                             <div class="btn-group dropleft">
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -100,8 +87,8 @@
                                 </button>
                                 <div class="dropdown-menu">
                                     <h6 class="dropdown-header">Articles achetés</h6>
-                                    {% if commande.details is not empty %}
-                                        {% for detail in commande.details %}
+                                    {% if transaction.details is not empty %}
+                                        {% for detail in transaction.details %}
                                             <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
                                         {% endfor %}
                                     {% else %}
