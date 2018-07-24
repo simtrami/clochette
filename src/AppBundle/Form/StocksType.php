@@ -52,6 +52,7 @@ class StocksType extends AbstractType
                     ))
                     ->add('type', EntityType::class, array(
                         'label' => "Type d'article",
+                        'choice_label' => 'name',
                         'placeholder' => "Selectionner le type d'article",
                         'class' => 'AppBundle:TypeStocks'
                     ));

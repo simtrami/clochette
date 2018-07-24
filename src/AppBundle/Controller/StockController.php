@@ -153,11 +153,11 @@ class StockController extends Controller {
 
         $em->remove($article);
 
+        $em->flush();
+        
         $session->getFlashBag()->add(
             'info', 'l\'article ' .$article->getNom(). ' a bien été supprimé.'
         );
-
-        $em->flush();
 
         return $this->redirectToRoute('stock');
     }

@@ -82,7 +82,7 @@ class Stocks
      * 
      * @ORM\Column(name="isForSale", type="boolean", nullable=true, options={"default" : false})
      */
-    private $isForSale;
+    private $isForSale = true;
     
 
 ## Fonctions
