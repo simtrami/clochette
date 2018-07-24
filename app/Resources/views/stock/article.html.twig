@@ -8,14 +8,14 @@
 
 {% block javascripts %}
 <script>
-    if (document.getElementById("appbundle_stocks_type") == null && document.getElementById("appbundle_stocks_volume").value == "0") {
-        document.getElementById("appbundle_stocks_volume").disabled = true;
-    }
     document.getElementById("appbundle_stocks_type").onchange = function () {
-        if (this.value == "article") {
-            document.getElementById("appbundle_stocks_volume").value = "0";
+        if (this.value == "1" || this.value == "2") {
+            $("#volume-row").collapse('show');
+            $("#appbundle_stocks_volume").attr('disable', 'false');
+        } else {
+            $("#volume-row").collapse('hide');
+            $("#appbundle_stocks_volume").attr('disable', 'true');
         }
-        document.getElementById("appbundle_stocks_volume").disabled = (this.value == "article");
     }
 </script>
 {% endblock %}
@@ -23,14 +23,28 @@
 {% block body %}
     <div class="container-fluid">
         <div class="alert alert-light">
-            <h1 class="display-4">{{ mode == 'new_article' ? 'Ajouter un article' : "Modifier l'article : " ~ nom ~ " (" ~ type ~ ")" }}</h1>
+          {% if mode == 'new_article' %}
+              <h1 class="display-4">Ajouter un article</h1>
+          {% else %}
+              <h1 class="display-4">Modifier un article</h1>
+              <p class='lead'>{{ nom }} ({{ type }})</p>
+          {% endif %}
         </div>
+        <!-- <h1 class="display-4">{{ mode == 'new_article' ? 'Ajouter un article </h1>' : "Modifier l'article </h1><p class='lead'>" ~ nom ~ " (" ~ type ~ ")</p>" }} -->
 
         {{ form_start(form) }}
             {{ form_errors(form) }}
             {% if mode == 'new_article' %}
                 {{ form_row(form.nom) }}
                 {{ form_row(form.type) }}
+            {% endif %}
+            {{ form_row(form.prixAchat) }}
+            {{ form_row(form.prixVente) }}
+            {{ form_row(form.quantite) }}
+            {% if mode == 'new_article' %}
+            <div class="collapse" id="volume-row" aria-expanded="false">
+                {{ form_row(form.volume) }}
+            </div>
             {% endif %}
             {{ form_rest(form) }}
 

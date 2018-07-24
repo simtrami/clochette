@@ -32,10 +32,6 @@ class StocksType extends AbstractType
             ->add('quantite', IntegerType::class, array(
                 'label' => "Quantité",
             ))
-            ->add('volume', NumberType::class, array(
-                'label' => "Volume à l'unité",
-                'required' => false,
-            ))
         ;
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
@@ -55,6 +51,16 @@ class StocksType extends AbstractType
                         'choice_label' => 'name',
                         'placeholder' => "Selectionner le type d'article",
                         'class' => 'AppBundle:TypeStocks'
+                    ))
+                    ->add('volume', NumberType::class, array(
+                        'label' => "Volume à l'unité",
+                        'required' => false,
+                    ));
+            } else if ($article->getType() != "Nourriture ou autre") {
+                $form
+                    ->add('volume', NumberType::class, array(
+                        'label' => "Volume à l'unité",
+                        'required' => false,
                     ));
             }
         });

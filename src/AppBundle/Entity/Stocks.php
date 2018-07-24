@@ -214,7 +214,7 @@ class Stocks
      *
      * @return string
      */
-    public function getprixVente()
+    public function getPrixVente()
     {
         return $this->prixVente;
     }
