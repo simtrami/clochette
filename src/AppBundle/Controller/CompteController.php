@@ -9,6 +9,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\DBAL\Types\BooleanType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use AppBundle\Entity\Commandes;
+use AppBundle\Entity\DetailsCommandes;
 
 class CompteController extends Controller {
 
@@ -119,7 +124,6 @@ class CompteController extends Controller {
         );
     }
 
-
     /** 
      * @Route("/comptes/recharge/{id}", name="recharge_compte")
      */
@@ -128,12 +132,64 @@ class CompteController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
+        
+        $em = $this->getDoctrine()->getManager();
+        $repo_comptes = $em->getRepository('AppBundle:Comptes');
+        $repo_users = $em->getRepository('AppBundle:Users');
+        $session = $request->getSession();
 
-        $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
         $compte = $repo_comptes->find($id);
+        $commande = new Commandes();
+        $form_methode = [];
+
+        $form_methode['userId'] = $request->request->get('userId');
+        $form_methode['methode'] = $request->request->get('methode');
+        $form_methode['compte'] = $compte;
+
+        $commande->setCompte($compte);
+        $commande->setMethode($form_methode['methode']);
+
+        $user = $repo_users->find(2);
+        $commande->setUser($user);
+
+        $timestamp = date_create(date("Y-m-d H:i:s"));
+        $commande->setTimestamp($timestamp);
+
+        $detail = new DetailsCommandes();
+        $detail->setCommande($commande);
+        $em->persist($detail);
+            
+        $montant = array('message' => 'Montant du rechargement');
+        $form = $this->createFormBuilder($montant)
+            ->add('montant', MoneyType::class)
+            ->add('Recharger', SubmitType::class)
+            ->getForm()
+        ;
+
+        $formerSolde = $compte->getSolde();
+
+        if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()){
+            
+            $newSolde = $formerSolde + $form['montant']->getData();
+            $commande->setMontant($form['montant']->getData());
+            $compte->setSolde($newSolde);
+            $em->persist($compte);
+            $em->persist($commande);
+            $em->flush();
+
+            $session->getFlashbag()->add('info', 
+                $form['montant']->getData().
+                '€ ont été ajoutés au compte de '.$compte->getPrenom(). 
+                ' '.$compte->getNom().
+                '. Son solde est désormais de '.$newSolde.'€.'
+            );
+
+            return $this->redirectToRoute('comptes');
+        }
 
         return $this->render('comptes/recharge.html.twig', array(
-            'compte' => $compte
+            'compte' => $compte,
+            'form' => $form->createView()
         ));
     }
     

@@ -16,11 +16,42 @@
             <h4>Recharger le compte de {{compte.prenom}} {{compte.nom}}</h4>
         </div>
 
-        <input placeholder="Montant du rechargement"></input>
+        {{form_start(form)}}
 
-        <button type="submit" class="btn btn-success btn-lg">
-            <i class="fa fa-save"></i> Recharger
-        </button>
+        {{form_label(form.montant, 'Montant du rechargement')}}
+        {{form_errors(form.montant)}}
+        {{form_widget(form.montant)}}
+
+        <div class="col-md-5">
+            <div class="input-group mb-5">
+                <div class="btn-group btn-group-toggle moyen_paiement" data-toggle="buttons">
+
+                    {# <label class="btn btn-success">
+                        <input type="radio" id="option1">
+                        <i class="fa fa-credit-card"></i> Carte Bleue
+                    </label> #}
+
+                    <label class="btn btn-success active" onclick="choixPaiement('cash')">
+                        <input class="choix-paiement" type="radio" id="option1">
+                        <i class="fa fa-money-bill-alt"></i> Liquide
+                    </label>
+
+                    <label class="btn btn-success" onclick="choixPaiement('account')" id="showAccount" data-toggle="collapse" data-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                        <input class="choix-paiement" type="radio" id="option2">
+                        <i class="fa fa-id-badge"></i> Compte
+                    </label>
+
+                    <label class="btn btn-success" onclick="choixPaiement('pumpkin')">
+                        <input class="choix-paiement" type="radio" id="option3">
+                        <i class="fa fa-mobile-alt"></i> Pumpkin
+                    </label>
+                </div>
+                <input id="methode-paiement" name="methode" value="cash" hidden>
+            </div>
+        </div>
+        {{form_rest(form)}}
+        {{form_end(form)}}
+
 
     </div>
 {% endblock %}
