@@ -12,8 +12,8 @@ use Doctrine\DBAL\Types\BooleanType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use AppBundle\Entity\Commandes;
-use AppBundle\Entity\DetailsCommandes;
+use AppBundle\Entity\Transactions;
+use AppBundle\Entity\DetailsTransactions;
 
 class CompteController extends Controller {
 
@@ -136,29 +136,26 @@ class CompteController extends Controller {
         $em = $this->getDoctrine()->getManager();
         $repo_comptes = $em->getRepository('AppBundle:Comptes');
         $repo_users = $em->getRepository('AppBundle:Users');
+        $repo_stocks = $em->getRepository('AppBundle:Stocks');
         $session = $request->getSession();
 
         $compte = $repo_comptes->find($id);
-        $commande = new Commandes();
+        $transaction = new Transactions();
         $form_methode = [];
 
         $form_methode['userId'] = $request->request->get('userId');
         $form_methode['methode'] = $request->request->get('methode');
         $form_methode['compte'] = $compte;
 
-        $commande->setCompte($compte);
-        $commande->setMethode($form_methode['methode']);
+        $transaction->setCompte($compte);
+        $transaction->setMethode($form_methode['methode']);
 
         $user = $repo_users->find(2);
-        $commande->setUser($user);
+        $transaction->setUser($user);
 
         $timestamp = date_create(date("Y-m-d H:i:s"));
-        $commande->setTimestamp($timestamp);
-
-        $detail = new DetailsCommandes();
-        $detail->setCommande($commande);
-        $em->persist($detail);
-            
+        $transaction->setTimestamp($timestamp);
+                    
         $montant = array('message' => 'Montant du rechargement');
         $form = $this->createFormBuilder($montant)
             ->add('montant', MoneyType::class)
@@ -171,10 +168,10 @@ class CompteController extends Controller {
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()){
             
             $newSolde = $formerSolde + $form['montant']->getData();
-            $commande->setMontant($form['montant']->getData());
+            $transaction->setMontant($form['montant']->getData());
             $compte->setSolde($newSolde);
             $em->persist($compte);
-            $em->persist($commande);
+            $em->persist($transaction);
             $em->flush();
 
             $session->getFlashbag()->add('info', 
