@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
+{% endblock %}
+
+{% block title %}
+
+Modifier {{user.username}}
+
+{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+
+        {{ form_row(form.username) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.plainPassword.first) }}
+        {{ form_row(form.plainPassword.second) }}
+        {{ form_row(form.roles) }}
+
+        <button class="btn btn-success btn-block" type="submit"><i class="fas fa-plus-circle"></i> Enregistrer</button>
+    {{ form_end(form) }}
+
+    </div>
+
+{% endblock %}

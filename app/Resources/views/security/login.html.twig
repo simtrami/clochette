@@ -10,6 +10,16 @@
         <div class="alert alert-light">
             <h1 class="display-4">Connexion à Clochette</h1>
         </div>
+
+        {% for message in app.session.flashbag.get('info') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa fa-save"></i> {{message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+
         <form action="{{ path('login') }}" method="post">
             <div class="form-row">
                 <div class="form-group col-md-6">

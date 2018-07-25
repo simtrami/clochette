@@ -62,7 +62,7 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="{{ path('users_modify', {id : app.user.id}) }}">
                                         <i class="fa fa-cog"></i> {{ app.user.username }}</a>
                                 {% endif %}
                                 {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
@@ -87,6 +87,7 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" href="{{ path('preparation') }}">Préparer la tenue</a>
                                 <a class="dropdown-item" href="{{ path('transactions') }}">Historique des transactions</a>
+                                <a class="dropdown-item" href="{{ path('users') }}">Gestion des utilisateurs</a>
                             </div>
                         </li>
                     {% endif %}
