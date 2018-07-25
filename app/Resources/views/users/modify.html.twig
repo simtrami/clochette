@@ -13,18 +13,12 @@ Modifier {{user.username}}
 {% block body %}
 
     <div class="container-fluid">
-    {{ form_start(form) }}
-        {{ form_errors(form) }}
-
-        {{ form_row(form.username) }}
-        {{ form_row(form.email) }}
-        {{ form_row(form.plainPassword.first) }}
-        {{ form_row(form.plainPassword.second) }}
-        {{ form_row(form.roles) }}
-
-        <button class="btn btn-success btn-block" type="submit"><i class="fas fa-plus-circle"></i> Enregistrer</button>
-    {{ form_end(form) }}
-
+        {{form(form)}}
     </div>
+
+    <div class="container-fluid">
+        {{form(form_pw)}}
+    </div>
+
 
 {% endblock %}

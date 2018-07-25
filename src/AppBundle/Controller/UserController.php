@@ -8,6 +8,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Form\UserType;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class UserController extends Controller{
 
@@ -34,7 +40,7 @@ class UserController extends Controller{
     /**
      * @Route("/users/modify/{id}", name="users_modify")
     **/
-    public function modifyAction(Request $request, $id){
+    public function modifyAction(Request $request, $id, UserPasswordEncoderInterface $passwordEncoder){
 
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
@@ -44,10 +50,54 @@ class UserController extends Controller{
         $repo_users = $em->getRepository('AppBundle:Users');
 
         $user = $repo_users->find($id);
+        $infos = array(
+            'email' => $user->getEmail(),
+            'username' => $user->getUsername(),
+        );
 
-        $form = $this->createForm(UserType::class, $user);
+        $infos_pw = array('plainPassword' => $user->getPlainPassword());
+
+        $form = $this->createFormBuilder($infos)
+            ->add('email', EmailType::class, array(
+                'label' => 'Adresse E-mail'
+            ))
+            ->add('username', TextType::class, array(
+                'label' => 'Nom d\'utilisateur'
+            ))
+            ->add('save', SubmitType::class, array(
+                'label' => 'Enregistrer'
+            ))
+            ->getForm()
+        ;
+
+        $form_pw = $this->createFormBuilder($infos_pw)
+            ->add('plainPassword', RepeatedType::class, array(
+                'type' => PasswordType::class,
+                'first_options'  => array('label' => 'Mot de passe'),
+                'second_options' => array('label' => 'Confirmer le mot de passe')
+            ))
+            ->add('save', SubmitType::class, array(
+                'label' => 'Enregistrer'
+            ))
+            ->getForm()
+        ;
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()){
+
+            $user->setEmail($form['email']->getData());
+            $user->setUsername($form['username']->getData());
+
+            $em->persist($user);
+            $em->flush();
+
+            return $this->redirectToRoute('users');
+        }
+
+        if ($request->isMethod('POST') && $form_pw->handleRequest($request)->isValid()){
+
+            $password = $passwordEncoder->encodePassword($user, $form_pw['plainPassword']->getData());
+            $user->setPassword($password);
+
             $em->persist($user);
             $em->flush();
 
@@ -56,6 +106,7 @@ class UserController extends Controller{
 
         return $this->render('users/modify.html.twig', array(
             'form' => $form->createView(),
+            'form_pw' => $form_pw->createView(),
             'user' => $user
         ));
     }

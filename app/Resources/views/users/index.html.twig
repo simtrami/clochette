@@ -22,7 +22,6 @@
                         <th scope="col-lg-1">#</th>
                         <th scope="col-lg-3">Nom d'Utilisateur</th>
                         <th scope="col-lg-2">Email</th>
-                        <th scope="col-lg-2">Mot de Passe</th>
                         <th scope="col-lg-2">Rôle</th>
                         <th scope="col-lg-2">Action</th>
                     </tr>
@@ -34,7 +33,6 @@
                             <th scope="row">{{ user.id }}</th>
                                 <td>{{ user.username }}</th>
                                 <td>{{ user.email }}</td>
-                                <td>{{user.plainPassword}}</td>
                                 <td>
                                     {% for roles in user.roles %}
                                         {{roles}}{% if not loop.last %}, {% endif %}
