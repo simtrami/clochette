@@ -87,7 +87,9 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" href="{{ path('preparation') }}">Préparer la tenue</a>
                                 <a class="dropdown-item" href="{{ path('transactions') }}">Historique des transactions</a>
-                                <a class="dropdown-item" href="{{ path('users') }}">Gestion des utilisateurs</a>
+                                {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
+                                    <a class="dropdown-item" href="{{ path('users') }}">Gestion des utilisateurs</a>
+                                {% endif %}
                             </div>
                         </li>
                     {% endif %}

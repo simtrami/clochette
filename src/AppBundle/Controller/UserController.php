@@ -14,11 +14,13 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class UserController extends Controller{
 
     /**
      * @Route("/users", name="users")
+     * @Security("has_role('ROLE_ADMIN')")
     **/
 
     public function indexAction(){
@@ -46,7 +48,12 @@ class UserController extends Controller{
             throw $this->createAccessDeniedException();
         }
 
+        if ($this->getUser()->getId() != $id && !$this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')){
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier un compte qui n\'est pas le votre');
+        }
+
         $em = $this->getDoctrine()->getManager();
+        $session = $request->getSession();
         $repo_users = $em->getRepository('AppBundle:Users');
 
         $user = $repo_users->find($id);
@@ -90,7 +97,18 @@ class UserController extends Controller{
             $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('users');
+            if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')){
+
+                $session->getFlashbag()->add('info', $user->getUsername(). ', votre compte a bien été modifié');
+
+                return $this->redirectToRoute('users');
+            }
+            else{
+
+                $session->getFlashbag()->add('info', $user->getUsername(). ', votre compte a bien été modifié');
+                
+                return $this->redirectToRoute('homepage');
+            }
         }
 
         if ($request->isMethod('POST') && $form_pw->handleRequest($request)->isValid()){
@@ -111,8 +129,9 @@ class UserController extends Controller{
         ));
     }
 
-        /**
+    /**
      * @Route("/users/register", name="user_registration")
+     * @Security("has_role('ROLE_SUPER_ADMIN')")
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {

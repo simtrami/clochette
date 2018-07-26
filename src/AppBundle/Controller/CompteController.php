@@ -143,14 +143,14 @@ class CompteController extends Controller {
         $transaction = new Transactions();
         $form_methode = [];
 
-        $form_methode['userId'] = $request->request->get('userId');
+        $form_methode['userId'] = $this->getUser()->getId();
         $form_methode['methode'] = $request->request->get('methode');
         $form_methode['compte'] = $compte;
 
         $transaction->setCompte($compte);
         $transaction->setMethode($form_methode['methode']);
 
-        $user = $repo_users->find(2);
+        $user = $repo_users->find($form_methode['userId']);
         $transaction->setUser($user);
 
         $timestamp = date_create(date("Y-m-d H:i:s"));
