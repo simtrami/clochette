@@ -1,11 +1,17 @@
-.btn-secondary{
-    background-color: #a7a7ac;
-    border-color: #212529;
+.form-control:disabled{
+    background: transparent !important;
+    border: none !important;
+    color: inherit;
 }
-.btn-secondary:not(:disabled):not(.disabled).active{
-    background-color: #01A867;
-    border-color: #01A867;
+.table th {
+    vertical-align: middle;
 }
-.btn-secondary.focus{
-    box-shadow: 0 0 0 .2rem rgba(209,210,211,0.1);
+
+th[scope=row] {
+    text-align: center;
+}
+
+.custom-control-label::before, .custom-control-label::after {
+    top: -.8rem;
+    left: -1.9rem;
 }

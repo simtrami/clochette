@@ -1,10 +1,10 @@
 $(".btn-value").on("click", function () {
 
-    var button = $(this);
-    var qte = button.parent().parent().find(".qte");
-    var oldValue = button.parent().parent().find("input").val();
-    var qteMax = button.parent().find(".qteStock").val();
-    var newVal = parseFloat(0);
+    const button = $(this);
+    const qteInput = button.parent().parent().find(".qte");
+    let oldValue = button.parent().parent().find("input").val();
+    const qteMax = button.parent().find(".qteStock").val();
+    let newVal = parseFloat(0);
 
     if (button.attr("id") == "plus") {
         if (parseFloat(oldValue) < parseFloat(qteMax)){
@@ -24,23 +24,23 @@ $(".btn-value").on("click", function () {
         }
     }
 
-    button.parent().parent().find(".qte").attr("value", newVal);
-    button.parent().parent().find(".qte").val(newVal);
+    qteInput.attr("value", newVal);
+    qteInput.val(newVal);
     //console.log(button.parent().parent().find(".qte").val());
 
-    var tot = 0;
+    let tot = 0;
     $(".qte").each(function () {
-        var prix = $(this).parent().parent().find("#prix").val();
+        let prix = $(this).parent().parent().find("#prix").val();
         tot = Math.round((tot + parseFloat($(this).val()) * parseFloat(prix)) * 100) / 100;
     });
-    $("#total").attr("value", tot);
+    // $("#total").attr("value", tot);
     $("#totalForm").attr("value", tot);
     $('#totalTxt').html(tot);
 });
 
 $(".qte").on("input", function () {
 
-    var tot = 0;
+    let tot = 0;
     
     $(".qte").each(function () {
         var qte = parseFloat($(this).val());
@@ -58,7 +58,7 @@ $(".qte").on("input", function () {
         }
         tot = Math.round((tot + qte * prix) * 100 ) / 100;
     });
-    $("#total").attr("value", tot);
+    // $("#total").attr("value", tot);
     $("#totalForm").attr("value", tot);
-    $('#totalTxt').innerHTML = tot;
+    $('#totalTxt').html(tot);
 });

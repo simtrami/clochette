@@ -10,17 +10,16 @@
     {# <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous"> #}
     <link rel="stylesheet" href="{{ asset('lib/Bootstrap-4.1.2/bootstrap.css') }}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
     <link rel="stylesheet" href="{{ asset('css/all.css') }}">
     {% block stylesheet %}{% endblock %}
 
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-md">
+    <header class="mb-3">
+        <nav class="navbar navbar-expand-sm mx-auto">
             <a class="navbar-brand" href="{{ path('homepage') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width:110px;">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo">
             </a>
 
             <button id="header-toggler" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
@@ -104,9 +103,11 @@
         </nav>
     </header>
 
+    <div class="container-fluid">
     {% block body %}{% endblock %}
+    </div>
 
-    <footer>
+    <footer>{% block footer %}{% endblock %}</footer>
     {# <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> #}
     <script src="{{ asset('lib/jquery-3.3.1.slim.min.js') }}"></script>
     {# <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> #}
@@ -114,7 +115,6 @@
     {# <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script> #}
     <script src="{{ asset('lib/Bootstrap-4.1.2/bootstrap.js') }}"></script>
     {% block javascripts %}{% endblock %}
-    </footer>
 
 </body>
 

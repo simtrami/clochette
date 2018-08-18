@@ -10,38 +10,35 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="alert alert-light">
-            <h1 class="display-4">{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ prenom ~ " " ~ nom }}</h1>
-        </div>
-        
-        {{ form_start(form) }}
-            {{ form_errors(form) }}
-            {% if mode == 'modify_account' %}
-                {{ form_row(form.nomStaff) }}
-            {% endif %}
-            {{ form_row(form.nom) }}
-            {{ form_row(form.prenom) }}
-            {{ form_row(form.pseudo) }}
-            {% if mode == 'new_account' %}
-              {{ form_label(form.solde) }}
-              {{ form_errors(form.solde) }}
-              {{ form_widget(form.solde, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
-              {{ form_label(form.annee) }}
-              {{ form_errors(form.annee) }}
-              {{ form_widget(form.annee, { 'attr' : {'placeholder' : '1', 'value' : '1'} }) }}
-          {% endif %}
-            {{ form_rest(form) }}
-
-        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
-                <button type="submit" class="btn btn-success btn-lg col-md-8">
-                    {{ mode == 'new_account' ? '<i class="fas fa-plus-circle"></i> Créer' : '<i class="fas fa-save"></i> Modifier' }}</button>
-            {{ form_end(form) }}
-
-            <button class="btn btn-danger btn-lg col-md-3" href="{{ path('comptes') }}">
-                <i class="fas fa-times"></i> {{ mode == 'new_account' ? 'Annuler la création' : 'Annuler la modification' }}
-            </button>
-
+    <div class="alert alert-light">
+        <h1 class="display-4">{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ prenom ~ " " ~ nom }}</h1>
     </div>
 
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        {% if mode == 'modify_account' %}
+            {{ form_row(form.nomStaff) }}
+        {% endif %}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.pseudo) }}
+        {% if mode == 'new_account' %}
+          {{ form_label(form.solde) }}
+          {{ form_errors(form.solde) }}
+          {{ form_widget(form.solde, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
+          {{ form_label(form.annee) }}
+          {{ form_errors(form.annee) }}
+          {{ form_widget(form.annee, { 'attr' : {'placeholder' : '1', 'value' : '1'} }) }}
+      {% endif %}
+        {{ form_rest(form) }}
+
+    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
+            <button type="submit" class="btn btn-success btn-lg col-md-8">
+                {{ mode == 'new_account' ? '<i class="fas fa-plus-circle"></i> Créer' : '<i class="fas fa-save"></i> Modifier' }}</button>
+        {{ form_end(form) }}
+
+        <button class="btn btn-danger btn-lg col-md-3" href="{{ path('comptes') }}">
+            <i class="fas fa-times"></i> {{ mode == 'new_account' ? 'Annuler la création' : 'Annuler la modification' }}
+        </button>
+    </div>
 {% endblock %}

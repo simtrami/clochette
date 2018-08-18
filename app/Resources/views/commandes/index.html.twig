@@ -23,84 +23,80 @@
 {% endblock %}
 
 {% block body %}
+    {#
+        TODO:
+        - Changer l'affichage des méthodes de paiement (icones, traductions, etc.)
+        - Afficher l'heure et la date pour que ce soit plus pratique à lire (sans modifier la base)
+    #}
 
+    <div class="alert alert-light">
+        <h1 class="display-4">Historique des commandes</h1>
+    </div>
 
-    <div class="container-fluid">
-        {#
-            TODO:
-            - Changer l'affichage des méthodes de paiement (icones, traductions, etc.)
-            - Afficher l'heure et la date pour que ce soit plus pratique à lire (sans modifier la base)
-        #}
-      
-        <div class="alert alert-light">
-            <h1 class="display-4">Historique des commandes</h1>
-        </div>
-      
-        <div class="table-responsive marg-b">
-            <table id="table" class="table table-striped table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Nom d'utilisateur</th>
-                        <th>Pseudo du compte (opt.)</th>
-                        <th>Montant</th>
-                        <th>Méthode de paiement</th>
-                        <th>Date et heure</th>
-                        <th class="center">Détails</th>
-                    </tr>
-                </thead>
+    <div class="table-responsive mb-3">
+        <table id="table" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Pseudo du compte (opt.)</th>
+                    <th>Montant</th>
+                    <th>Méthode de paiement</th>
+                    <th>Date et heure</th>
+                    <th class="center">Détails</th>
+                </tr>
+            </thead>
 
-                <tbody>
-                {% for commande in commandes %}
-                    <tr>
-                        <th>
-                            {{ commande.id }}
-                        </th>
-                        <td>{{ commande.user is not null ? commande.user.username : "Utilisateur supprimé" }}</td>
-                        <td>{% if commande.compte != NULL %}
-                                {{ commande.compte.pseudo }}
-                            {% elseif commande.methode != "account" %}
-                                N/A
-                            {% else %}
-                                Compte supprimé
-                            {% endif %}
-                        </td>
-                        <td>{{ commande.montant }}€</td>
-                        <td>
-                            {% if commande.methode == "account" %}
-                                Compte
-                            {% elseif commande.methode == "cash" %}
-                                Liquide
-                            {% elseif commande.methode == "pumpkin" %}
-                                Pumpkin
-                            {% elseif commande.methode == "refill" %}
-                                Rechargement
-                            {% else %}
-                                Non reconnue
-                            {% endif %}
-                        </td>
-                        <td>{{ commande.timestamp|date('H:i:s d/m/Y') }}</td>
-                        <td class="center">
-                            <div class="btn-group dropleft">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                     Afficher</i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <h6 class="dropdown-header">Articles achetés</h6>
-                                    {% if commande.details is not empty %}
-                                        {% for detail in commande.details %}
-                                            <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
-                                        {% endfor %}
-                                    {% else %}
-                                        <span class="dropdown-item">Articles supprimés</span>
-                                    {% endif %}
-                                </div>
+            <tbody>
+            {% for commande in commandes %}
+                <tr>
+                    <th>
+                        {{ commande.id }}
+                    </th>
+                    <td>{{ commande.user is not null ? commande.user.username : "Utilisateur supprimé" }}</td>
+                    <td>{% if commande.compte != NULL %}
+                            {{ commande.compte.pseudo }}
+                        {% elseif commande.methode != "account" %}
+                            N/A
+                        {% else %}
+                            Compte supprimé
+                        {% endif %}
+                    </td>
+                    <td>{{ commande.montant }}€</td>
+                    <td>
+                        {% if commande.methode == "account" %}
+                            Compte
+                        {% elseif commande.methode == "cash" %}
+                            Liquide
+                        {% elseif commande.methode == "pumpkin" %}
+                            Pumpkin
+                        {% elseif commande.methode == "refill" %}
+                            Rechargement
+                        {% else %}
+                            Non reconnue
+                        {% endif %}
+                    </td>
+                    <td>{{ commande.timestamp|date('H:i:s d/m/Y') }}</td>
+                    <td class="center">
+                        <div class="btn-group dropleft">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                 Afficher
+                            </button>
+                            <div class="dropdown-menu">
+                                <h6 class="dropdown-header">Articles achetés</h6>
+                                {% if commande.details is not empty %}
+                                    {% for detail in commande.details %}
+                                        <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="dropdown-item">Articles supprimés</span>
+                                {% endif %}
                             </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}

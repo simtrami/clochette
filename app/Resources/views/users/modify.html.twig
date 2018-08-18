@@ -11,14 +11,7 @@ Modifier {{user.username}}
 {% endblock %}
 
 {% block body %}
+    {{form(form)}}
 
-    <div class="container-fluid">
-        {{form(form)}}
-    </div>
-
-    <div class="container-fluid">
-        {{form(form_pw)}}
-    </div>
-
-
+    {{form(form_pw)}}
 {% endblock %}

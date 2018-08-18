@@ -1,11 +1,12 @@
 .tableau-article a {
-
     text-decoration: none;
-
     color: black;
-
 }
 
-.container-fluid {
-    padding-bottom: 16px;
+.table-actions {
+    width: 12.5rem !important;
+}
+
+td.table-actions {
+    padding-top: 0.5rem;
 }

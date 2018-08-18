@@ -14,8 +14,6 @@
         TODO:
         Implémenter ça : https://stackoverflow.com/questions/36430816/bootstrap-4-card-deck-with-number-of-columns-based-on-viewport
     #}
-<div class="container-fluid">
-
     {% for message in app.session.flashbag.get('info') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fa fa-save"></i> Information : {{message}}
@@ -36,142 +34,165 @@
 
 
     <form action="{{ path('purchaseValidation') }}" method="post">
-    {# <form action="{{ path('purchase') }}" method="post"> #}
-        <div class="alert alert-secondary">
-            <h4><i class="fas fa-beer"></i> Pressions</h4>
+        <div class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseDrafts" aria-expanded="false" aria-controls="collapseDrafts">
+            <i class="fas fa-beer"></i> Pressions
         </div>
-        <div class="card-deck affichage-articles">
-            {% for article in selected_drafts %}
-                <div class="card marg-b">
-                    <div class="card-body">
-                        <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
-                        <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
-                        <div class="input-group input-prix">
-                            <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="inputGroupAppend">
-                                    <i class="fa fa-euro-sign"></i>
-                                </span>
-                            </div>
+
+        <div class="collapse" id="collapseDrafts">
+        {% for article in selected_drafts %}
+            {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
+                <div class="card-columns mb-1">
+            {% elseif ((loop.index-1)%3==0 and loop.revindex<=3) %}
+                <div class="card-columns mb-2">
+            {% endif %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                    <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <div class="input-group input-prix">
+                        <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
+                        <div class="input-group-append">
+                            <span class="input-group-text" id="inputGroupAppend">
+                                <i class="fa fa-euro-sign"></i>
+                            </span>
                         </div>
-                      
-                        <div class="input-group add-delete-article">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Quantité</span>
-                            </div>
-                            <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="drafts[{{ loop.index }}][quantite]" value="0">
-                            <div class="input-group-append">
-                                <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
-                                <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
-                            </div>
+                    </div>
+
+                    <div class="input-group add-delete-article">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Quantité</span>
+                        </div>
+                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="drafts[{{ loop.index }}][quantite]" value="0">
+                        <div class="input-group-append">
+                            <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
+                            <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
+                            <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+            {% if loop.index % 3 == 0 %}
+                </div>
+            {% elseif loop.last %}
+                </div>
+            {% endif %}
+        {% endfor %}
         </div>
 
-        <div class="alert alert-secondary">
-            <h4><img src="{{ asset('svg/si-glyph-fridge.svg') }}" style="height: 1.8rem;vertical-align: bottom;margin-left: -5px;"/>Bouteilles</h4>
+        <div class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseBottles" aria-expanded="false" aria-controls="collapseBottles">
+            <img src="{{ asset('svg/si-glyph-fridge.svg') }}" style="height: 1.8rem;vertical-align: bottom;margin-left: -5px;"/>Bouteilles
         </div>
-        <div class="row justify-content-md-center affichage-articles">
-            {% for article in selected_bottles %}
-                <div class="col-md-auto">
-                    <div class="card marg-b">
-                        <div class="card-body">
-                            <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
-                            <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
-                            <div class="input-group input-prix">
-                                <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
-                                <div class="input-group-append">
-                                    <span class="input-group-text" id="inputGroupAppend">
-                                        <i class="fa fa-euro-sign"></i>
-                                    </span>
-                                </div>
-                            </div>
 
-                            <div class="input-group add-delete-article">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Quantité</span>
-                                </div>
-                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="bottles[{{ loop.index }}][quantite]" value="0">
-                                <div class="input-group-append">
-                                    <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                    <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
-                                    <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
-                                </div>
-                            </div>
+        <div class="collapse" id="collapseBottles">
+        {% for article in selected_bottles %}
+            {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
+                <div class="card-columns mb-1">
+            {% elseif ((loop.index-1)%3==0 and loop.revindex<=3) %}
+                <div class="card-columns mb-2">
+            {% endif %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                    <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <div class="input-group input-prix">
+                        <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
+                        <div class="input-group-append">
+                            <span class="input-group-text" id="inputGroupAppend">
+                                <i class="fa fa-euro-sign"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="input-group add-delete-article">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Quantité</span>
+                        </div>
+                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="bottles[{{ loop.index }}][quantite]" value="0">
+                        <div class="input-group-append">
+                            <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
+                            <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
+                            <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+            {% if loop.index % 3 == 0 %}
+                </div>
+            {% elseif loop.last %}
+                </div>
+            {% endif %}
+        {% endfor %}
         </div>
 
-        <div class="alert alert-secondary">
-            <h4><i class="fas fa-cookie-bite"></i> Nourriture et autres</h4>
+        <div class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseArticles" aria-expanded="false" aria-controls="collapseArticles">
+            <i class="fas fa-cookie-bite"></i> Nourriture et autres
         </div>
-        <div class="row justify-content-md-center affichage-articles">
-            {% for article in selected_articles %}
-                <div class="col-md-auto">
-                    <div class="card marg-b">
-                        <div class="card-body">
-                            <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
-                            <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
-                            <div class="input-group input-prix">
-                                <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
-                                <div class="input-group-append">
-                                    <span class="input-group-text" id="inputGroupAppend">
-                                        <i class="fa fa-euro-sign"></i>
-                                    </span>
-                                </div>
-                            </div>
-                          
-                            <div class="input-group add-delete-article">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Quantité</span>
-                                </div>
-                                <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="articles[{{ loop.index }}][quantite]" value="0">
-                                <div class="input-group-append">
-                                    <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
-                                    <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
-                                    <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
-                                </div>
-                            </div>
+
+        <div class="collapse" id="collapseArticles">
+        {% for article in selected_articles %}
+            {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
+            <div class="card-columns mb-1">
+            {% elseif ((loop.index-1)%3==0 and loop.revindex<=3) %}
+            <div class="card-columns mb-2">
+            {% endif %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                    <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <div class="input-group input-prix">
+                        <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
+                        <div class="input-group-append">
+                            <span class="input-group-text" id="inputGroupAppend">
+                                <i class="fa fa-euro-sign"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="input-group add-delete-article">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Quantité</span>
+                        </div>
+                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="articles[{{ loop.index }}][quantite]" value="0">
+                        <div class="input-group-append">
+                            <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
+                            <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
+                            <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+            {% if loop.index % 3 == 0 %}
+            </div>
+            {% elseif loop.last %}
+            </div>
+            {% endif %}
+        {% endfor %}
         </div>
 
-        <div class="alert alert-success">
-            <h4>Paiement</h4>
+        <div class="alert alert-success h4" data-toggle="collapse" data-target="#collapsePayer" aria-expanded="true" aria-controls="collapsePayer">
+            <i class="far fa-credit-card"></i> Paiement
         </div>
 
-        Choisir entre les deux affichages ou en conceptualiser un autre :
-        <div class="col-md-5">
-            <h1 class="display-4">Total : <span id="totalTxt">0</span>€</h1>
-            <label for="total">Total</label>
-            <div class="input-group mb-5">
-                <input class="form-control" type="text" id="total" value="0" placeholder="Total" disabled>
+        <div class="collapse show" id="collapsePayer">
+            {# TODO:
+            Réparer le js
+            #}
+            <div class="d-flex justify-content-center w-75 mx-auto mb-2">
+                <div class="display-4">Total :</div>
+                <div class="display-4">&nbsp;<span id="totalTxt">0</span>€</div>
                 <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" hidden>
-                <div class="input-group-append"><span class="input-group-text">
-                    <i class="fa fa-euro-sign"></i></span>
-                </div>
+                {#<label for="total">Total</label>
+                <div class="input-group mb-5">
+                    <input class="form-control" type="text" id="total" value="0" placeholder="Total" disabled>
+                    <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" hidden>
+                    <div class="input-group-append"><span class="input-group-text">
+                        <i class="fa fa-euro-sign"></i></span>
+                    </div>
+                </div>#}
             </div>
-        </div>
 
-        <div class="collapse marg-b" id="collapseAccount">
-        <div class="col-md-5">
-            <div class="form-group">
-                <label class="form-control-label" for="search-input"><h5>Compte à débiter</h5></label><br/>
-                <input type="search" id="paying-account" class="form-control aa-input-search" placeholder="Rechercher un compte..." name="search" autocomplete="off" />
-            </div>
-        </div>
-        </div>
-      
-        <div class="col-md-5">
-            <div class="input-group mb-5">
-                <div class="btn-group btn-group-toggle moyen_paiement" data-toggle="buttons">
+            <div class="input-group w-100 mb-2">
+                <div class="btn-group btn-group-lg btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
 
                     {# <label class="btn btn-success">
                         <input type="radio" id="option1">
@@ -183,7 +204,7 @@
                         <i class="fa fa-money-bill-alt"></i> Liquide
                     </label>
 
-                    <label class="btn btn-success" onclick="choixPaiement('account')" id="showAccount" data-toggle="collapse" data-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                    <label class="btn btn-success" onclick="choixPaiement('account')" id="showAccount">
                         <input class="choix-paiement" type="radio" id="option2">
                         <i class="fa fa-id-badge"></i> Compte
                     </label>
@@ -193,14 +214,46 @@
                         <i class="fa fa-mobile-alt"></i> Pumpkin
                     </label>
                 </div>
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+                <div class="collapse" id="collapseSelectedAccount">
+                    <div class="input-group">
+                        <input id="selectedAccount" class="form-control" type="text" name="accountPseudo" value="" autocomplete="off" disabled>
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#modalAccount">Modifier</button>
+                        </div>
+                    </div>
+                </div>
+
                 <input id="methode-paiement" name="methode" value="cash" hidden>
             </div>
+            <input type="hidden" name="userId" value="{{ app.user.id }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
         </div>
-        <input type="hidden" name="userId" value="{{ app.user.id }}">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-        <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
     </form>
-      
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalAccount">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAccountLabel">Paiement par compte</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-control-label" for="search-input">Compte à débiter</label><br/>
+                    <input type="search" id="paying-account" class="form-control aa-input-search" placeholder="Rechercher un compte..." name="search" autocomplete="off" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-success" onclick="saveAccount()">Valider</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -214,7 +267,7 @@
 
 <!-- Initialize autocomplete menu -->
 {% raw %}
-<script>
+    <script>
     const client = algoliasearch('1ZO7CPQOBJ', '272432d6490c6e91341e471f151981ac');
     const index = client.initIndex('dev_comptes');
 //initialize autocomplete on search input (ID selector must match)

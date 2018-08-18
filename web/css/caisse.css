@@ -1,26 +1,17 @@
-.container-fluid {
-    padding-bottom: 16px;
-}
 .affichage-articles {
     margin-bottom: 16px;
 }
 
-/*.card {
-    width: 80%;
-}*/
-
 .btn-outline-success {
-    color: #01A867;
-    background-color: #fff;
-    background-image: none;
-    border-color: #ced4da;
+    color: var(--success);
+    background: var(--white) none;
+    border-color: var(--gray-light);
 }
 
 .btn-outline-danger {
-    color: #c11601;
-    background-color: #fff;
-    background-image: none;
-    border-color: #ced4da;
+    color: var(--danger);
+    background: var(--white) none;
+    border-color: var(--gray-light);
 }
 
 .input-prix {
@@ -31,7 +22,8 @@
     margin-bottom: 1rem !important;
 }
 
-/*label {
-    color: #495057;
-    margin-bottom: 0;
-}*/
+@media (min-width: 800px), (min-device-width: 800px) {
+    #collapseDrafts, #collapseBottles, #collapseArticles, #collapsePayer {
+        display: block;
+    }
+}

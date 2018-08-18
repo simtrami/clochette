@@ -1,128 +1,201 @@
+/****** Couleurs ******/
+:root {
+    --blue: #0E55F4;
+    --indigo: #6235FF;
+    --purple: #8624E8;
+    --pink: #CE28FF;
+    --red: #A81D01;
+    --orange: #DB7117;
+    --yellow: #FFC107;
+    --green: #01A867;
+    --teal: #3AE4D2;
+    --cyan: #4DDEFB;
+    --white: #FFF;
+    --gray: #525A5F;
+
+    --primary: #0E55F4;
+    --secondary: #5D666C;
+    --success: #01A867;
+    --info: #4DDEFB;
+    --warning: #FFC107;
+    --danger: #A81D01;
+    --light: #F8F9FA;
+    --dark: #212426;
+
+    --blue-light:#5889F6;
+    --green-light:#01F496;
+    --red-light:#F4674B;
+    --gray-light:#94A2AB;
+    --blue-dark:#0A3FB5;
+    --green-dark:#01955b;
+    --red-dark:#5B0F00;
+    --gray-dark: #2C3033;
+    --blue-darker:#072975;
+    --green-darker: #01814f;
+    --black:#121314;
+}
+
 /****** Elements ******/
 /***** Buttons *****/
 
 .btn-success {
-    background-color: #01A867;
-    border-color: #01A867;
+    background-color: var(--success);
+    border-color: var(--success);
 }
 
 .btn-success:hover {
-    background-color: #01955b;
-    border-color: #01814f;
+    background-color: var(--green-dark);
+    border-color: var(--green-dark);
 } 
 
 .btn-outline-success {
-    color: #01A867;
-    background-color: transparent;
-    background-image: none;
-    border-color: #01A867;
+    color: var(--success);
+    background: transparent none;
+    border-color: var(--success);
 }
 
 .btn-outline-success:hover {
-    color: #fff;
-    background-color: #01A867;
-    border-color: #01A867;
+    color: var(--white);
+    background-color: var(--success);
+    border-color: var(--success);
 }
 
 .btn-success.active:not(:disabled):not(.disabled) {
-    background-color: #01955b;
-    border-color: #01955b;
+    background-color: var(--green-dark);
+    border-color: var(--green-dark);
 }
 
 .btn-success.active:not(:disabled):not(.disabled):hover {
-    background-color: #01955b;
-    border-color: #01814f;
+    background-color: var(--green-dark);
+    border-color: var(--green-darker);
 }
 
 .btn-danger {
-    background-color: #c11601;
-    border-color: #c11601;
+    background-color: var(--danger);
+    border-color: var(--danger);
 }
 
 .btn-danger:hover {
-    background-color: #a81301;
-    border-color: #a81301;
+    background-color: var(--red-dark);
+    border-color: var(--red-dark);
 }
 
 .btn-outline-danger {
-    color: #c11601;
-    background-color: transparent;
-    background-image: none;
-    border-color: #c11601;
+    color: var(--danger);
+    background: transparent none;
+    border-color: var(--danger);
 }
 
 .btn-outline-danger:hover {
-    color: #fff;
-    background-color: #c11601;
-    border-color: #c11601;
-}
-
-.btn-orange {
-    background-color: #ffc107;
+    color: var(--white);
+    background-color: var(--danger);
+    border-color: var(--danger);
 }
 
 /***** Blocks *****/
 /**** Alerts ****/
 
 .alert-danger {
-    background-color: #ffc107;
+    background-color: var(--red-light);
 }
 
 .alert-light {
-    background-color: transparent;
+    background-color: var(--light);
 }
 
 /**** Cards ****/
 
 .card {
     border: none;
-    background-color: #f8f9fa;
+    background-color: var(--light);
+}
+
+/**** Navs ****/
+
+nav.navbar {
+    width: 85%;
+}
+
+.navbar{
+    background-color: var(--green);
+    color: white;
+}
+
+.navbar-brand img {
+    width: 6rem;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.75)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.navbar-toggler {
+    color: rgba(0, 0, 0, 0.5);
+    border-color : rgba(240, 240, 240, 0.7);
+}
+
+.nav-item a {
+    color: white;
+    text-decoration: none;
+}
+
+.navbar-right {
+    float: right;
+}
+
+.dropdown-menu a{
+    color: var(--green);
+}
+
+/**** Tables ****/
+
+.table th, .table td {
+    vertical-align: middle;
 }
 
 /***** Layouts *****/
-/**** divs ****/
+/**** Divs ****/
+
+header {
+    background-color: var(--green) !important;
+}
 
 .container-fluid {
     padding-bottom: 1rem;
+    width: 85%;
 }
 
 /**** Spaces ****/
 
-.pad-t {
-    padding-top: 1rem;
-}
-
-.pad-b {
-    padding-bottom: 1rem;
-}
-
-.pad-l {
-    padding-left: 1rem;
-}
-
-.pad-r {
-    padding-right: 1rem;
-}
-
-.marg-t {
-    margin-top: 1rem;
-}
-
-.marg-b {
-    margin-bottom: 1rem;
-}
-
-.marg-l {
-    margin-left: 1rem;
-}
-
-.marg-r {
-    margin-right: 1rem;
-}
+/* Outils disponibles ici : https://getbootstrap.com/docs/4.1/utilities/spacing/ */
 
 /***** Content *****/
 /**** Text ****/
 
-.center {
-    text-align: center;
+/* Outils disponibles ici : https://getbootstrap.com/docs/4.1/utilities/text/ */
+
+/****************************************************
+******************* Media Queries *******************
+****************************************************/
+
+/** Desktop specific **/
+
+@media (max-width: 800px), (max-device-width: 800px) {
+    nav.navbar {
+        width: 100%;
+    }
+}
+
+@media (max-width: 800px), (max-device-width: 800px) {
+    .container-fluid {
+        width: 100%;
+    }
+}
+
+/** Mobile specific **/
+
+@media (max-width: 800px), (max-device-width: 800px) {
+    .navbar-brand img {
+        width: 6.5rem;
+    }
 }

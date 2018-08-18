@@ -17,7 +17,7 @@ class SelectArticleType extends AbstractType
     {
         $builder
             ->add('isForSale', CheckboxType::class, array(
-                'label' => 'A vendre',
+                'label' => ' ',
                 'required' => false,
             ))
             ->add('nom', TextType::class, array(

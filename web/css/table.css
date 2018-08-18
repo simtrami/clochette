@@ -1,17 +1,21 @@
 .page-link {
-    color: #01A867;
+    color: var(--green);
 }
 
 .page-link:hover {
-    color: #01955b;
+    color: var(--green-dark);
 }
 
 .page-item.active .page-link {
-    background-color: #01A867;
-    border-color: #01A867;
+    background-color: var(--green);
+    border-color: var(--green);
 }
 
 .page-item:not(:disabled):not(.disabled):active:focus,
 .page-item:not(:disabled):not(.disabled).active:focus {
     box-shadow: 0 0 0 0.2rem rgba(1,168,103, 0.5);
+}
+
+.table-action {
+    width: 1rem !important;
 }

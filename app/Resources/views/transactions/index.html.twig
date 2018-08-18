@@ -23,67 +23,63 @@
 {% endblock %}
 
 {% block body %}
+    {#
+        TODO:
+        - Changer l'affichage des méthodes de paiement (icones, traductions, etc.)
+        - Afficher l'heure et la date pour que ce soit plus pratique à lire (sans modifier la base)
+    #}
 
+    <div class="alert alert-light">
+        <h1 class="display-4">Historique des transactions</h1>
+    </div>
 
-    <div class="container-fluid">
-        {#
-            TODO:
-            - Changer l'affichage des méthodes de paiement (icones, traductions, etc.)
-            - Afficher l'heure et la date pour que ce soit plus pratique à lire (sans modifier la base)
-        #}
-      
-        <div class="alert alert-light">
-            <h1 class="display-4">Historique des transactions</h1>
-        </div>
-      
-        <div class="table-responsive marg-b">
-            <table id="table" class="table table-striped table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Nom d'utilisateur</th>
-                        <th>Pseudo du compte (opt.)</th>
-                        <th>Montant</th>
-                        <th>Méthode de paiement</th>
-                        <th>Date et heure</th>
-                        <th class="center">Détails</th>
-                    </tr>
-                </thead>
+    <div class="table-responsive mb-3">
+        <table id="table" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Pseudo du compte (opt.)</th>
+                    <th>Montant</th>
+                    <th>Méthode de paiement</th>
+                    <th>Date et heure</th>
+                    <th class="table-action">Détails</th>
+                </tr>
+            </thead>
 
-                <tbody>
-                {% for transaction in transactions %}
-                    <tr>
-                        <th>
-                            {{ transaction.id }}
-                        </th>
-                        <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
-                        <td>{% if transaction.compte != NULL %}
-                                {{ transaction.compte.pseudo }}
-                            {% elseif transaction.methode != "account" %}
-                                N/A
-                            {% else %}
-                                Compte supprimé
-                            {% endif %}
-                        </td>
-                        <td>{{ transaction.montant }}€</td>
-                        <td>
-                            {% if transaction.methode == "account" %}
-                                Compte
-                            {% elseif transaction.methode == "cash" %}
-                                Liquide
-                            {% elseif transaction.methode == "pumpkin" %}
-                                Pumpkin
-                            {% elseif transaction.methode == "refill" %}
-                                Rechargement
-                            {% else %}
-                                Non reconnue
-                            {% endif %}
-                        </td>
-                        <td>{{ transaction.timestamp|date('H:i:s d/m/Y') }}</td>
-                        <td class="center">
+            <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                    <th>{{ transaction.id }}</th>
+                    <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
+                    <td>{% if transaction.compte != NULL %}
+                            {{ transaction.compte.pseudo }}
+                        {% elseif transaction.methode != "account" %}
+                            N/A
+                        {% else %}
+                            Compte supprimé
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.montant }}€</td>
+                    <td>
+                        {% if transaction.methode == "account" %}
+                            Compte
+                        {% elseif transaction.methode == "cash" %}
+                            Liquide
+                        {% elseif transaction.methode == "pumpkin" %}
+                            Pumpkin
+                        {% elseif transaction.methode == "refill" %}
+                            Rechargement
+                        {% else %}
+                            Non reconnue
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.timestamp|date('H:i:s d/m/Y') }}</td>
+                    <td class="table-action">
+                        <div class="d-flex mx-auto">
                             <div class="btn-group dropleft">
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                     Afficher</i>
+                                     Afficher
                                 </button>
                                 <div class="dropdown-menu">
                                     <h6 class="dropdown-header">Articles achetés</h6>
@@ -96,11 +92,11 @@
                                     {% endif %}
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}
