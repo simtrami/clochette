@@ -76,7 +76,7 @@ class PurchaseController extends Controller
         $form['drafts'] = $request->request->get('drafts');
         $form['bottles'] = $request->request->get('bottles');
         $form['articles'] = $request->request->get('articles');
-        $form['compte'] = $request->request->get('search');
+        $form['compte'] = $request->request->get('accountPseudo');
         
         /**
          * TODO SUR LA CLASSE :

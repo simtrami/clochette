@@ -62,7 +62,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Quantité</span>
                         </div>
-                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="drafts[{{ loop.index }}][quantite]" value="0">
+                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="off" name="drafts[{{ loop.index }}][quantite]" value="0">
                         <div class="input-group-append">
                             <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
                             <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
@@ -107,7 +107,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Quantité</span>
                         </div>
-                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="bottles[{{ loop.index }}][quantite]" value="0">
+                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="off" name="bottles[{{ loop.index }}][quantite]" value="0">
                         <div class="input-group-append">
                             <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
                             <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
@@ -152,7 +152,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Quantité</span>
                         </div>
-                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="" name="articles[{{ loop.index }}][quantite]" value="0">
+                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="off" name="articles[{{ loop.index }}][quantite]" value="0">
                         <div class="input-group-append">
                             <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
                             <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
@@ -181,12 +181,12 @@
             </div>
 
             <div class="input-group w-100 mb-2">
-                <div class="btn-group btn-group-lg btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
+                <div class="btn-group btn-group-md btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
 
-                    {# <label class="btn btn-success">
+                    {#<label class="btn btn-success" onclick="choixPaiement('cb')">
                         <input type="radio" id="option1">
                         <i class="fa fa-credit-card"></i> Carte Bleue
-                    </label> #}
+                    </label>#}
 
                     <label class="btn btn-success active" onclick="choixPaiement('cash')">
                         <input class="choix-paiement" type="radio" id="option1">
@@ -207,9 +207,9 @@
             <div class="d-flex justify-content-center mb-3">
                 <div class="collapse" id="collapseSelectedAccount">
                     <div class="input-group">
-                        <input id="selectedAccount" class="form-control" type="text" name="accountPseudo" value="" autocomplete="off" disabled>
+                        <input id="selectedAccount" class="form-control" type="text" name="accountPseudo" value="" autocomplete="off" readonly>
                         <div class="input-group-append">
-                            <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#modalAccount">Modifier</button>
+                            <button class="btn btn-secondary" type="button" onclick="openAndFocus('#modalAccount', '#paying-account')">Modifier</button>
                         </div>
                     </div>
                 </div>
@@ -222,61 +222,69 @@
         </div>
     </form>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="modalAccount">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalAccountLabel">Paiement par compte</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-control-label" for="search-input">Compte à débiter</label><br/>
-                    <input type="search" id="paying-account" class="form-control aa-input-search" placeholder="Rechercher un compte..." name="search" autocomplete="off" />
+    <div class="modal fade" tabindex="-1" role="dialog" id="modalAccount">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAccountLabel">Paiement par compte</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-success" onclick="saveAccount()">Valider</button>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-control-label" for="search-input">Compte à débiter</label><br/>
+                        <input type="search" id="paying-account" class="form-control form-control-md" placeholder="Rechercher un compte..." autocomplete="off" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button id="validate" type="button" class="btn btn-success" onclick="saveAccount()">Valider</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}
-<script src="{{ asset('js/qteChecker.js') }}"></script>
-<script src="{{ asset('js/methode-paiement.js') }}"></script>
+    <script src="{{ asset('js/qteChecker.js') }}"></script>
+    <script src="{{ asset('js/methode-paiement.js') }}"></script>
 
-<!-- Include AlgoliaSearch JS Client and autocomplete.js library -->
-<script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
-<script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
+    <!-- Include AlgoliaSearch JS Client and autocomplete.js library -->
+    <script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
 
-<!-- Initialize autocomplete menu -->
-{% raw %}
+    <!-- Initialize autocomplete menu -->
+    {% raw %}
     <script>
-    const client = algoliasearch('1ZO7CPQOBJ', '272432d6490c6e91341e471f151981ac');
-    const index = client.initIndex('dev_comptes');
-//initialize autocomplete on search input (ID selector must match)
-autocomplete('#paying-account',
-{ hint: false }, {
-    source: autocomplete.sources.hits(index, {hitsPerPage: 5}),
-    //value to be displayed in input control after user's suggestion selection
-    displayKey: 'pseudo',
-    //hash of templates used when rendering dataset
-    templates: {
-        //'suggestion' templating function used to render a single suggestion
-        suggestion: function(suggestion) {
-          return '<span>' +
-            suggestion._highlightResult.pseudo.value + '</span> (<span>' +
-            suggestion._highlightResult.prenom.value + '</span> <span>' +
-            suggestion._highlightResult.nom.value + '</span>)';
-        }
-    }
-});
-</script>
-{% endraw %}
+        const client = algoliasearch('1ZO7CPQOBJ', '272432d6490c6e91341e471f151981ac');
+        const index = client.initIndex('dev_comptes');
+        //initialize autocomplete on search input (ID selector must match)
+        autocomplete('#paying-account',
+        { hint: false }, {
+            source: autocomplete.sources.hits(index, {hitsPerPage: 5}),
+            //value to be displayed in input control after user's suggestion selection
+            displayKey: 'pseudo',
+            //hash of templates used when rendering dataset
+            templates: {
+                //'suggestion' templating function used to render a single suggestion
+                suggestion: function(suggestion) {
+                  return suggestion._highlightResult.pseudo.value + ' <small>(' +
+                    suggestion._highlightResult.prenom.value + ' <span class="text-uppercase">' +
+                    suggestion._highlightResult.nom.value + '</span>)</small> - <strong>' +
+                    suggestion.solde + '€</strong>';
+                }
+            }
+        });
+    </script>
+    {% endraw %}
 
+    <script>
+        $(document).ready(function(){
+            $('#paying-account').keypress(function(e){
+                if(e.keyCode==13)
+                    $('#validate').click();
+            });
+        });
+    </script>
 {% endblock %}
