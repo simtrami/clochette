@@ -2,23 +2,14 @@
 // src/AppBundle/Controller/PurchaseController.php
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Comptes;
 use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Algolia\SearchBundle\IndexManagerInterface;
 
 class PurchaseController extends Controller
 {
-    protected $indexManager;
-
-    public function __construct(IndexManagerInterface $indexingManager)
-    {
-        $this->indexManager = $indexingManager;
-    }
 
     /**
      * @Route("/purchase", name="purchase")
@@ -29,7 +20,6 @@ class PurchaseController extends Controller
             throw $this->createAccessDeniedException();
         }
 
-        $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
@@ -185,6 +175,9 @@ class PurchaseController extends Controller
             $compte->setSolde($newSolde);
             // Mise à jour du compte dans la base
             $em->persist($compte);
+
+            $indexManager = $this->get('search.index_manager');
+            $indexManager->index($compte, $em);
         }
         
         // Insertion de l'user ayant validé la commande dans l'entité Transactions

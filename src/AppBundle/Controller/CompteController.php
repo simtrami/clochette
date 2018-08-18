@@ -6,14 +6,10 @@ use AppBundle\Entity\Comptes;
 use AppBundle\Form\CompteType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\DBAL\Types\BooleanType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Entity\Transactions;
-use AppBundle\Entity\DetailsTransactions;
 
 class CompteController extends Controller {
 
@@ -25,7 +21,6 @@ class CompteController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-        $em = $this->getDoctrine()->getManager();
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes')->findAll();
         $data['comptes']=$repo_comptes;
 
@@ -60,6 +55,10 @@ class CompteController extends Controller {
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($compte);
+
+            $indexManager = $this->get('search.index_manager');
+            $indexManager->index($compte, $em);
+
             $em->flush();
 
             $request->getSession()->getFlashbag()->add('info', 'Un nouveau compte a été créé.');
@@ -104,6 +103,10 @@ class CompteController extends Controller {
             // 3) Enregistrer le compte!
             $em = $this->getDoctrine()->getManager();
             $em->persist($compte);
+
+            $indexManager = $this->get('search.index_manager');
+            $indexManager->index($compte, $em);
+
             $em->flush();
 
             // ... autres actions
@@ -171,6 +174,10 @@ class CompteController extends Controller {
             $transaction->setMontant($form['montant']->getData());
             $compte->setSolde($newSolde);
             $em->persist($compte);
+
+            $indexManager = $this->get('search.index_manager');
+            $indexManager->index($compte, $em);
+
             $em->persist($transaction);
             $em->flush();
 
