@@ -47,7 +47,7 @@
             {% endif %}
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                    <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }}L)</h5>
                     <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
                     <div class="input-group input-prix">
                         <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
