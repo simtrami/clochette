@@ -48,5 +48,4 @@ search.addWidget(
   })
 );
 
-
 search.start();

@@ -196,5 +196,4 @@ class CompteController extends Controller {
             'form' => $form->createView()
         ));
     }
-    
 }

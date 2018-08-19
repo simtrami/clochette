@@ -236,7 +236,7 @@ class Comptes
      * 
      * @return integer
      */
-    public function getAnnee(): ?int
+    public function getAnnee()
     {
         return $this->annee;
     }
