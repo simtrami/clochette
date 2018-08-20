@@ -13,6 +13,11 @@ services:
         # this means you cannot fetch services directly from the container via $container->get()
         # if you need to do this, you can override this setting on individual services
         public: true
+        # https://stackoverflow.com/questions/13901256/how-do-i-read-from-parameters-yml-in-a-controller-in-symfony2#answer-48371606
+        bind:
+            $algoliaAppId: '%env(ALGOLIA_APP_ID)%'
+            $algoliaApiSearchKey: '%env(ALGOLIA_API_SEARCH_KEY)%'
+            $algoliaIndex: '%env(ALGOLIA_INDEX)%'
 
     # makes classes in src/AppBundle available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

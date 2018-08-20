@@ -19,8 +19,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class UserController extends Controller{
 
     /**
-     * @Route("/users", name="users")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Route("/utilisateurs", name="utilisateurs")
     **/
 
     public function indexAction(){
@@ -34,13 +33,13 @@ class UserController extends Controller{
 
         $listUsers = $repo_users->findAll();
 
-        return $this->render('users/index.html.twig', array(
+        return $this->render('utilisateurs/index.html.twig', array(
             'users' => $listUsers
         ));
     }
 
     /**
-     * @Route("/users/modify/{id}", name="users_modify")
+     * @Route("/utilisateurs/modifier/{id}", name="modif_utilisateur")
     **/
     public function modifyAction(Request $request, $id, UserPasswordEncoderInterface $passwordEncoder){
 
@@ -122,7 +121,7 @@ class UserController extends Controller{
             return $this->redirectToRoute('users');
         }
 
-        return $this->render('users/modify.html.twig', array(
+        return $this->render('utilisateurs/modifier.html.twig', array(
             'form' => $form->createView(),
             'form_pw' => $form_pw->createView(),
             'user' => $user
@@ -130,8 +129,7 @@ class UserController extends Controller{
     }
 
     /**
-     * @Route("/users/register", name="user_registration")
-     * @Security("has_role('ROLE_SUPER_ADMIN')")
+     * @Route("/utilisateurs/nouveau", name="ajout_utilisateur")
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -166,7 +164,7 @@ class UserController extends Controller{
         }
 
         return $this->render(
-            'users/register.html.twig',
+            'utilisateurs/ajouter.html.twig',
             array('form' => $form->createView())
         );
     }

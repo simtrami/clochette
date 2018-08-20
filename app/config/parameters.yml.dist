@@ -18,6 +18,8 @@ parameters:
     # IDs for Algolia, Can be found on the Dashboard. The API key is the Admin one.
     env(ALGOLIA_APP_ID): XXXXXXXXXX
     env(ALGOLIA_API_KEY): indicateYourAdminApiKeyHere
+    env(ALGOLIA_API_SEARCH_KEY): indicateYourSearchOnlyKeyHere
+    env(ALGOLIA_INDEX): indexToSearchFrom
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt

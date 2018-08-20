@@ -10,6 +10,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class PurchaseController extends Controller
 {
+    /*
+     * @var string
+     */
+    private $algoliaAppId;
+
+    /*
+     * @var string
+     */
+    private $algoliaApiSearchKey;
+
+    /*
+     * @var string
+     */
+    private $algoliaIndex;
+
+
+    public function __construct(string $algoliaAppId, string $algoliaApiSearchKey, string $algoliaIndex)
+    {
+        $this->algoliaAppId = $algoliaAppId;
+        $this->algoliaApiSearchKey = $algoliaApiSearchKey;
+        $this->algoliaIndex = $algoliaIndex;
+    }
 
     /**
      * @Route("/purchase", name="purchase")
@@ -40,6 +62,10 @@ class PurchaseController extends Controller
         $data['selected_drafts'] = $selected_drafts;
         $data['selected_bottles'] = $selected_bottles;
         $data['selected_articles'] = $selected_articles;
+
+        $data['algoliaAppId'] = $this->algoliaAppId;
+        $data['algoliaApiSearchKey'] = $this->algoliaApiSearchKey;
+        $data['algoliaIndex'] = $this->algoliaIndex;
 
         return $this->render("purchase/index.html.twig", $data);
     }

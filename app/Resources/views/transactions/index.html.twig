@@ -10,14 +10,10 @@
 {% endblock %}
 
 {% block javascripts %}
-    {# Sorting rows : https://datatables.net/examples/styling/bootstrap4.html #}
-    {# <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> #}
+    <script src="{{ asset('js/activateTooltips.js') }}"></script>
     <script src="{{ asset('lib/DataTables-1.10.19/jquery.dataTables.min.js') }}"></script>
-    {# <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script> #}
     <script src="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.js') }}"></script>
-    {# <script src="http://momentjs.com/downloads/moment.min.js"></script> #}
     <script src="{{ asset('lib/moment.min.js') }}"></script>
-    {# <script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/"></script> #}
     <script src="{{ asset('lib/DataTables-1.10.19/datetime-moment.js') }}"></script>
     <script src="{{ asset('js/orderTableTransactions.js') }}"></script>
 {% endblock %}
@@ -38,11 +34,11 @@
             <thead class="thead-dark">
                 <tr>
                     <th>#</th>
-                    <th>Nom d'utilisateur</th>
-                    <th>Pseudo du compte (opt.)</th>
+                    <th>Utilisateur</th>
+                    <th>Compte</th>
                     <th>Montant</th>
-                    <th>Méthode de paiement</th>
-                    <th>Date et heure</th>
+                    <th>Méthode</th>
+                    <th>Horodatage</th>
                     <th class="table-action">Détails</th>
                 </tr>
             </thead>
@@ -55,7 +51,7 @@
                     <td>{% if transaction.compte != NULL %}
                             {{ transaction.compte.pseudo }}
                         {% elseif transaction.methode != "account" %}
-                            N/A
+                            ---
                         {% else %}
                             Compte supprimé
                         {% endif %}
@@ -68,30 +64,36 @@
                             Liquide
                         {% elseif transaction.methode == "pumpkin" %}
                             Pumpkin
-                        {% elseif transaction.methode == "refill" %}
-                            Rechargement
                         {% else %}
                             Non reconnue
                         {% endif %}
                     </td>
                     <td>{{ transaction.timestamp|date('H:i:s d/m/Y') }}</td>
                     <td class="table-action">
-                        <div class="d-flex mx-auto">
-                            <div class="btn-group dropleft">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                     Afficher
-                                </button>
-                                <div class="dropdown-menu">
-                                    <h6 class="dropdown-header">Articles achetés</h6>
-                                    {% if transaction.details is not empty %}
-                                        {% for detail in transaction.details %}
-                                            <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
-                                        {% endfor %}
-                                    {% else %}
-                                        <span class="dropdown-item">Articles supprimés</span>
-                                    {% endif %}
+                        <div class="d-flex justify-content-center">
+                            {% if transaction.montant<0 %}
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Rechargement">
+                                        <i class="fas fa-gas-pump"></i>
+                                    </button>
                                 </div>
-                            </div>
+                            {% else %}
+                                <div class="btn-group dropleft">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle no-arrow" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <h6 class="dropdown-header">Articles achetés</h6>
+                                        {% if transaction.details is not empty %}
+                                            {% for detail in transaction.details %}
+                                                <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="dropdown-item">Articles supprimés</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>

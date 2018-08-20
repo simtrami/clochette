@@ -29,7 +29,10 @@ class CompteController extends Controller {
     }
 
     /**
-     * @Route("/comptes/create", name="create_compte")
+     * @Route("/comptes/nouveau", name="ajout_compte")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function createCompte(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -67,7 +70,7 @@ class CompteController extends Controller {
         }
       
         return $this->render(
-          'comptes/create.html.twig',
+          'comptes/compte.html.twig',
           array(
             'form' => $form->createView(),
             'mode' => 'new_account',
@@ -76,9 +79,12 @@ class CompteController extends Controller {
     }
 
     /**
-     * @Route("/comptes/modify/{id}", name="modify_compte")
+     * @Route("/comptes/modifier/{id}", name="modif_compte")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
-
     public function modifyCompte(Request $request, $id){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
@@ -117,7 +123,7 @@ class CompteController extends Controller {
         }
 
         return $this->render(
-            'comptes/create.html.twig',
+            'comptes/compte.html.twig',
             array(
                 'form' => $form->createView(),
                 'mode' => 'modify_account',
@@ -127,58 +133,65 @@ class CompteController extends Controller {
         );
     }
 
-    /** 
-     * @Route("/comptes/recharge/{id}", name="recharge_compte")
+    /**
+     * @Route("/comptes/recharger/{id}", name="recharger_compte")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function rechargeCompte(Request $request, $id){
 
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
-        
-        $em = $this->getDoctrine()->getManager();
-        $repo_comptes = $em->getRepository('AppBundle:Comptes');
-        $repo_users = $em->getRepository('AppBundle:Users');
-        $repo_stocks = $em->getRepository('AppBundle:Stocks');
+
+        $compte = $this->getDoctrine()->getManager()->getRepository('AppBundle:Comptes')->find($id);
         $session = $request->getSession();
 
-        $compte = $repo_comptes->find($id);
-        $transaction = new Transactions();
-        $form_methode = [];
-
-        $form_methode['userId'] = $this->getUser()->getId();
-        $form_methode['methode'] = $request->request->get('methode');
-        $form_methode['compte'] = $compte;
-
-        $transaction->setCompte($compte);
-        $transaction->setMethode($form_methode['methode']);
-
-        $user = $repo_users->find($form_methode['userId']);
-        $transaction->setUser($user);
-
-        $timestamp = date_create(date("Y-m-d H:i:s"));
-        $transaction->setTimestamp($timestamp);
-                    
         $montant = array('message' => 'Montant du rechargement');
         $form = $this->createFormBuilder($montant)
             ->add('montant', MoneyType::class)
-            ->add('Recharger', SubmitType::class)
             ->getForm()
         ;
 
-        $formerSolde = $compte->getSolde();
+        $form->handleRequest($request);
 
-        if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()){
-            
-            $newSolde = $formerSolde + $form['montant']->getData();
-            $transaction->setMontant($form['montant']->getData());
+        if ($form->isSubmitted() && $form->isValid()){
+            $transaction = new Transactions();
+
+            // Insertion du timestamp dans l'entité Transactions
+            $timestamp = date_create(date("Y-m-d H:i:s"));
+            $transaction->setTimestamp($timestamp);
+
+            $em = $this->getDoctrine()->getManager();
+            $repo_comptes = $em->getRepository('AppBundle:Comptes');
+            $repo_users = $em->getRepository('AppBundle:Users');
+
+            $compte = $repo_comptes->find($id);
+
+            $user = $repo_users->find($this->getUser()->getId());
+
+            $methode = $request->request->get('methode');
+
+            $montant = $form->getData()['montant'];
+
+            $transaction->setCompte($compte);
+            $transaction->setUser($user);
+            $transaction->setMethode($methode);
+            $transaction->setMontant(-$montant);
+
+            $solde = $compte->getSolde();
+            $newSolde = $solde + $montant;
+
             $compte->setSolde($newSolde);
+
             $em->persist($compte);
 
             $indexManager = $this->get('search.index_manager');
             $indexManager->index($compte, $em);
 
             $em->persist($transaction);
+
             $em->flush();
 
             $session->getFlashbag()->add('info', 
@@ -191,8 +204,8 @@ class CompteController extends Controller {
             return $this->redirectToRoute('comptes');
         }
 
-        return $this->render('comptes/recharge.html.twig', array(
-            'compte' => $compte,
+        return $this->render('comptes/recharger.html.twig', array(
+            'pseudo' => $compte->getPseudo(),
             'form' => $form->createView()
         ));
     }

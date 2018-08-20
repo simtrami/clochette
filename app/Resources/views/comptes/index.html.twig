@@ -10,7 +10,6 @@
 {% endblock %}
 
 {% block javascripts %}
-    {# Sorting rows : https://datatables.net/examples/styling/bootstrap4.html #}
     <script src=" https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
     <script>
@@ -55,14 +54,14 @@
   
     {% for message in app.session.flashbag.get('info') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fa fa-save"></i> Information : {{message}}
+        <i class="fa fa-save"></i> Information : {{ message }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
     {% endfor %}
     
-    <a class="btn btn-success btn-lg btn-block" href="{{ path('create_compte') }}"><i class="fas fa-plus-circle"></i> Créer un compte</a>
+    <a class="btn btn-success btn-lg btn-block" href="{{ path('ajout_compte') }}"><i class="fas fa-plus-circle"></i> Créer un compte</a>
   
     <div class="table-responsive pb-3 mt-3">
         <table id="table" class="table table-striped table-bordered">
@@ -99,9 +98,9 @@
                     <td class="table-actions">
                         <div class="d-flex">
                             <div class="input-group justify-content-around mx-auto">
-                                <a class="btn btn-secondary mt-1" href="{{ path('modify_compte', { 'id':compte.id }) }}">
+                                <a class="btn btn-secondary mt-1" href="{{ path('modif_compte', { 'id':compte.id }) }}">
                                     <i class="fas fa-edit"></i> Modif.</a>
-                                <a class="btn btn-success mt-1" href="{{path('recharge_compte', {'id':compte.id})}}">
+                                <a class="btn btn-success mt-1" href="{{path('recharger_compte', {'id':compte.id})}}">
                                     <i class="fas fa-gas-pump"></i> Rech.</a>
                             </div>
                         </div>

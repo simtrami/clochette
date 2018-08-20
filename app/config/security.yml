@@ -60,20 +60,28 @@ security:
                 target: /
     
     access_control:
-    - { path: ^/stock/details, roles: ROLE_STOCK }
-    - { path: ^/stock/ajout, roles: ROLE_STOCK }
+    - { path: ^/comptes/modify, roles: ROLE_ALL }
+    - { path: ^/comptes/create, roles: ROLE_ALL }
+    - { path: ^/comptes/recharge, roles: ROLE_BUREAU }
+    - { path: ^/comptes, roles: ROLE_BUREAU }
     - { path: ^/preparation, roles: ROLE_BUREAU }
-    - { path: ^/transactions, roles: ROLE_BUREAU }
     - { path: ^/purchase, roles: ROLE_INTRO }
+    #    - { path: ^/purchase/validation, roles: ROLE_INTRO }
+    - { path: ^/stock/ajout, roles: ROLE_STOCK }
+    - { path: ^/stock/modifier, roles: ROLE_STOCK }
+    - { path: ^/stock/supprimer, roles: ROLE_STOCK }
+    - { path: ^/stock, roles: ROLE_BUREAU }
+    - { path: ^/transactions, roles: ROLE_BUREAU }
+    - { path: ^/transactions, roles: ROLE_BUREAU }
 
     role_hierarchy:
-        ROLE_BUREAU:    ROLE_INTRO
-        ROLE_VVP:     ROLE_BUREAU
-        ROLE_FEE:     ROLE_BUREAU
-        ROLE_COM:       ROLE_BUREAU
-        ROLE_SECRET:    ROLE_BUREAU
-        ROLE_STOCK:     ROLE_BUREAU
-        ROLE_TRESO:     ROLE_BUREAU
-        ROLE_ALL:       [ROLE_STOCK, ROLE_TRESO, ROLE_SECRET, ROLE_COM]
-        ROLE_ADMIN:     ROLE_ALL
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_BUREAU:        ROLE_INTRO
+        ROLE_VVP:           ROLE_BUREAU
+        ROLE_FEE:           ROLE_BUREAU
+        ROLE_COM:           ROLE_BUREAU
+        ROLE_SECRET:        ROLE_BUREAU
+        ROLE_STOCK:         ROLE_BUREAU
+        ROLE_TRESO:         ROLE_BUREAU
+        ROLE_ALL:           [ROLE_STOCK, ROLE_TRESO, ROLE_SECRET, ROLE_COM, ROLE_FEE, ROLE_VVP]
+        ROLE_ADMIN:         ROLE_ALL
+        ROLE_SUPER_ADMIN:   ROLE_ADMIN

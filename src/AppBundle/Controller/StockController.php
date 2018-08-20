@@ -65,6 +65,7 @@ class StockController extends Controller {
 
         // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             // 3) Enregistrer l'Article!

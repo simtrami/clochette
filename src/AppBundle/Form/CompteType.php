@@ -25,9 +25,6 @@ class CompteType extends AbstractType
             ->add('pseudo',TextType::class, array(
                 'label' => "Pseudo",
             ))
-            ->add('solde',MoneyType::class, array(
-                'label' => "Solde",
-            ))
             ->add('annee',IntegerType::class, array(
                 'label' => "Année",
             ))
@@ -47,9 +44,15 @@ class CompteType extends AbstractType
                 $form = $event->getForm();
 
                 if (!(!$compte || null === $compte->getId())) {
-                    $form->add('nomStaff', TextType::class, array(
+                    $form
+                        ->add('nomStaff', TextType::class, array(
                         'label' => 'Nom de Staff', 
                         'required' => false
+                        ));
+                } else {
+                    $form
+                        ->add('solde',MoneyType::class, array(
+                        'label' => "Solde",
                     ));
                 }
             });
