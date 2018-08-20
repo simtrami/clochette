@@ -2,16 +2,23 @@
 // src/AppBundle/Controller/ComptesController.php
 namespace AppBundle\Controller;
 
+use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Comptes;
 use AppBundle\Form\CompteType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Entity\Transactions;
 
 class CompteController extends Controller {
+
+    private $indexManager;
+
+    public function __construct(IndexManagerInterface $indexingManager)
+    {
+        $this->indexManager = $indexingManager;
+    }
 
     /**
      * @Route("/comptes", name="comptes")
@@ -39,7 +46,6 @@ class CompteController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-      
         $compte=new Comptes();
         $form=$this->createForm(CompteType::class, $compte);
 
@@ -59,10 +65,9 @@ class CompteController extends Controller {
             $em = $this->getDoctrine()->getManager();
             $em->persist($compte);
 
-            $indexManager = $this->get('search.index_manager');
-            $indexManager->index($compte, $em);
-
             $em->flush();
+
+            $this->indexManager->index($compte, $em);
 
             $request->getSession()->getFlashbag()->add('info', 'Un nouveau compte a été créé.');
         
@@ -110,10 +115,9 @@ class CompteController extends Controller {
             $em = $this->getDoctrine()->getManager();
             $em->persist($compte);
 
-            $indexManager = $this->get('search.index_manager');
-            $indexManager->index($compte, $em);
-
             $em->flush();
+
+            $this->indexManager->index($compte, $em);
 
             // ... autres actions
 
@@ -187,12 +191,11 @@ class CompteController extends Controller {
 
             $em->persist($compte);
 
-            $indexManager = $this->get('search.index_manager');
-            $indexManager->index($compte, $em);
-
             $em->persist($transaction);
 
             $em->flush();
+
+            $this->indexManager->index($compte, $em);
 
             $session->getFlashbag()->add('info', 
                 $form['montant']->getData().

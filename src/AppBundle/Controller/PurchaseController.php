@@ -2,6 +2,7 @@
 // src/AppBundle/Controller/PurchaseController.php
 namespace AppBundle\Controller;
 
+use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -10,6 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class PurchaseController extends Controller
 {
+    private $indexManager;
+
     /*
      * @var string
      */
@@ -26,11 +29,12 @@ class PurchaseController extends Controller
     private $algoliaIndex;
 
 
-    public function __construct(string $algoliaAppId, string $algoliaApiSearchKey, string $algoliaIndex)
+    public function __construct(string $algoliaAppId, string $algoliaApiSearchKey, string $algoliaIndex, IndexManagerInterface $indexingManager)
     {
         $this->algoliaAppId = $algoliaAppId;
         $this->algoliaApiSearchKey = $algoliaApiSearchKey;
         $this->algoliaIndex = $algoliaIndex;
+        $this->indexManager = $indexingManager;
     }
 
     /**
@@ -201,9 +205,6 @@ class PurchaseController extends Controller
             $compte->setSolde($newSolde);
             // Mise à jour du compte dans la base
             $em->persist($compte);
-
-            $indexManager = $this->get('search.index_manager');
-            $indexManager->index($compte, $em);
         }
         
         // Insertion de l'user ayant validé la commande dans l'entité Transactions
@@ -241,6 +242,10 @@ class PurchaseController extends Controller
         }
 
         $em->flush();
+
+        if (isset($compte)) {
+            $this->indexManager->index($compte, $em);
+        }
 
         return $this->redirectToRoute('purchase');
     }

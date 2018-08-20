@@ -47,6 +47,9 @@ class StockController extends Controller {
 
     /**
      * @Route("/stock/modifier/{id_article}", name="modif_article")
+     * @param Request $request
+     * @param $id_article
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function modifArticleAction(Request $request, $id_article){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -90,9 +93,11 @@ class StockController extends Controller {
              )
         );
     }
-    
+
     /**
      * @Route("/stock/ajout", name="ajout_article")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function ajoutArticleAction(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -129,8 +134,10 @@ class StockController extends Controller {
     }
 
     /**
-    * @Route("/stock/supprimer", name="suppr_article")
-    **/
+     * @Route("/stock/supprimer", name="suppr_article")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function supprArticleAction(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
