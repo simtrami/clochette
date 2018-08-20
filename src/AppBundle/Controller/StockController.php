@@ -147,8 +147,8 @@ class StockController extends Controller {
             throw $this->createNotFoundException("Article non trouvé pour l'id ".$idarticle);
         }
 
-        $commandes = $em->getRepository('AppBundle:DetailsCommandes')->findByArticle($idarticle);
-        foreach ($commandes as $elt_commande) {
+        $transactions = $em->getRepository('AppBundle:DetailsTransactions')->findByArticle($idarticle);
+        foreach ($transactions as $elt_commande) {
             $em->remove($elt_commande);
         }
 
