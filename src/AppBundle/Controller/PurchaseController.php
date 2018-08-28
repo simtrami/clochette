@@ -123,48 +123,56 @@ class PurchaseController extends Controller
         $montant = 0;
         foreach ($form['drafts'] as $item) {
             if ($item['quantite'] != 0) {
-              $detail = new DetailsTransactions();
-              $article = $repo_stocks->find($item['id']);
-              
-              $montant += $item['quantite'] * $article->getPrixVente();
-              
-              $detail->setArticle($article);
-              $detail->setQuantite($item['quantite']);
-              $detail->setTransaction($commande);
-              
-              $em->persist($detail);
+                $detail = new DetailsTransactions();
+                $article = $repo_stocks->find($item['id']);
+
+                $montant += $item['quantite'] * $article->getPrixVente();
+
+                $detail->setArticle($article);
+                $detail->setQuantite($item['quantite']);
+                $detail->setTransaction($commande);
+
+                $em->persist($detail);
             }
         }
         foreach ($form['bottles'] as $item) {
             if ($item['quantite'] != 0) {
-              $detail = new DetailsTransactions();
-              $article = $repo_stocks->find($item['id']);
-              
-              $montant += $item['quantite'] * $article->getPrixVente();
-              
-              $detail->setArticle($article);
-              $detail->setQuantite($item['quantite']);
-              $detail->setTransaction($commande);
-              $article->setQuantite($article->getQuantite() - $item['quantite']);
-              
-              $em->persist($detail);
-              $em->persist($article);
+                $detail = new DetailsTransactions();
+                $article = $repo_stocks->find($item['id']);
+
+                $montant += $item['quantite'] * $article->getPrixVente();
+
+                $detail->setArticle($article);
+                $detail->setQuantite($item['quantite']);
+                $detail->setTransaction($commande);
+                $article->setQuantite($article->getQuantite() - $item['quantite']);
+
+                if ($article->getQuantite() == 0){
+                  $article->setIsForSale(false);
+                }
+
+                $em->persist($detail);
+                $em->persist($article);
             }
         }
         foreach ($form['articles'] as $item) {
             if ($item['quantite'] != 0) {
-              $detail = new DetailsTransactions();
-              $article = $repo_stocks->find($item['id']);
-              
-              $montant += $item['quantite'] * $article->getPrixVente();
-              
-              $detail->setArticle($article);
-              $detail->setQuantite($item['quantite']);
-              $detail->setTransaction($commande);
-              $article->setQuantite($article->getQuantite() - $item['quantite']);
-              
-              $em->persist($detail);
-              $em->persist($article);
+                $detail = new DetailsTransactions();
+                $article = $repo_stocks->find($item['id']);
+
+                $montant += $item['quantite'] * $article->getPrixVente();
+
+                $detail->setArticle($article);
+                $detail->setQuantite($item['quantite']);
+                $detail->setTransaction($commande);
+                $article->setQuantite($article->getQuantite() - $item['quantite']);
+
+                if ($article->getQuantite() == 0){
+                    $article->setIsForSale(false);
+                }
+
+                $em->persist($detail);
+                $em->persist($article);
             }
         }
       
