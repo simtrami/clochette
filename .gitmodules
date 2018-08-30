@@ -1,3 +1,0 @@
-[submodule "vendor/escpos-php"]
-	path = vendor/escpos-php
-	url = https://github.com/mike42/escpos-php

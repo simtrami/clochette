@@ -18,6 +18,8 @@ services:
             $algoliaAppId: '%env(ALGOLIA_APP_ID)%'
             $algoliaApiSearchKey: '%env(ALGOLIA_API_SEARCH_KEY)%'
             $algoliaIndex: '%env(ALGOLIA_INDEX)%'
+            $escposPrinterIP: '%env(ESCPOS_PRINTER_IP)%'
+            $escposPrinterPort: '%env(ESCPOS_PRINTER_PORT)%
 
     # makes classes in src/AppBundle available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

@@ -21,5 +21,9 @@ parameters:
     env(ALGOLIA_API_SEARCH_KEY): indicateYourSearchOnlyKeyHere
     env(ALGOLIA_INDEX): indexToSearchFrom
 
+    # Printer's properties for using Escpos by Mike42
+    env(ESCPOS_PRINTER_IP): 127.0.0.1
+    env(ESCPOS_PRINTER_PORT): 7777
+
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt

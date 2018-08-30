@@ -5,9 +5,12 @@ namespace AppBundle\Controller;
 use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\Printer;
 
 class PurchaseController extends Controller
 {
@@ -28,13 +31,25 @@ class PurchaseController extends Controller
      */
     private $algoliaIndex;
 
+    /*
+     * @var string
+     */
+    private $escposPrinterIP;
 
-    public function __construct(string $algoliaAppId, string $algoliaApiSearchKey, string $algoliaIndex, IndexManagerInterface $indexingManager)
+    /*
+     * @var int
+     */
+    private $escposPrinterPort;
+
+
+    public function __construct($algoliaAppId, $algoliaApiSearchKey, $algoliaIndex, IndexManagerInterface $indexingManager, $escposPrinterIP, $escposPrinterPort)
     {
         $this->algoliaAppId = $algoliaAppId;
         $this->algoliaApiSearchKey = $algoliaApiSearchKey;
         $this->algoliaIndex = $algoliaIndex;
         $this->indexManager = $indexingManager;
+        $this->escposPrinterIP = $escposPrinterIP;
+        $this->escposPrinterPort = $escposPrinterPort;
     }
 
     /**
@@ -76,6 +91,7 @@ class PurchaseController extends Controller
 
     /**
      * @Route("/purchase/validation", name="purchaseValidation")
+     * @throws \Exception
      */
     public function validateTransaction(Request $request){
         /**
@@ -213,6 +229,16 @@ class PurchaseController extends Controller
             $compte->setSolde($newSolde);
             // Mise à jour du compte dans la base
             $em->persist($compte);
+        }
+        // Paiement par cash : Contrôle de la caisse
+        elseif ($form['methode'] == "cash") {
+            $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+            $printer = new Printer($connector);
+            try {
+                $printer->pulse();
+            } finally {
+                $printer->close();
+            }
         }
         
         // Insertion de l'user ayant validé la commande dans l'entité Transactions
