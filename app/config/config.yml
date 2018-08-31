@@ -10,7 +10,7 @@ parameters:
     locale: fr
 
 framework:
-    ide: 'phpstorm://open?url=file://%%f&line=%%l'
+    ide: 'phpstorm://open?file=%%f&line=%%l'
     #esi: ~
     #translator: { fallbacks: ['%locale%'] }
     secret: '%secret%'
@@ -70,3 +70,7 @@ swiftmailer:
     username: '%mailer_user%'
     password: '%mailer_password%'
     spool: { type: memory }
+
+sensio_framework_extra:
+    router:
+        annotations: false

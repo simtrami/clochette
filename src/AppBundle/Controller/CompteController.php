@@ -6,7 +6,7 @@ use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Comptes;
 use AppBundle\Form\CompteType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use AppBundle\Entity\Transactions;

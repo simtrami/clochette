@@ -6,7 +6,7 @@ use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
