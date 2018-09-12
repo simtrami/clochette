@@ -62,22 +62,25 @@
                         </li>
                     {% endif %}
 
-                    {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
+                    {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item{{ "utilisateurs" in current_path ? " active" : "" }} dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-user" aria-hidden="true"></i>
                             </a>
-                            {%  if is_granted(expression('"ROLE_ADMIN" in roles')) %}
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                {# if is_granted(expression('"ROLE_BUREAU" in roles')) #}
+                                {%  if is_granted(expression('"ROLE_ADMIN" in roles')) %}
                                     <a class="dropdown-item" href="{{ path('modif_utilisateur', {id : app.user.id}) }}">
                                         <i class="fa fa-user-cog"></i> {{ app.user.username }}</a>
-                                {# endif #}
                                 <div class="dropdown-divider"></div>
+                                {% endif %}
                                 <a class="dropdown-item" href="{{ path('logout') }}">
                                     <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
                             </div>
-                            {% endif %}
+                        </li>
+                    {% elseif is_granted(expression('"ROLE_INTRO" in roles')) %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('logout') }}">
+                                <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
                         </li>
                     {% else %}
                         <li class="nav-item{{ "/login"==current_path ? " active" : "" }}">

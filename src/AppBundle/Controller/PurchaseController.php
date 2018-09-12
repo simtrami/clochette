@@ -6,6 +6,7 @@ use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,35 +15,37 @@ use Mike42\Escpos\Printer;
 
 class PurchaseController extends Controller
 {
-    private $indexManager;
+    protected $indexManager;
 
     /*
      * @var string
      */
-    private $algoliaAppId;
+    protected $algoliaAppId;
 
     /*
      * @var string
      */
-    private $algoliaApiSearchKey;
+    protected $algoliaApiSearchKey;
 
     /*
      * @var string
      */
-    private $algoliaIndex;
+    protected $algoliaIndex;
 
     /*
      * @var string
      */
-    private $escposPrinterIP;
+    protected $escposPrinterIP;
 
     /*
      * @var int
      */
-    private $escposPrinterPort;
+    protected $escposPrinterPort;
+
+    protected $security;
 
 
-    public function __construct($algoliaAppId, $algoliaApiSearchKey, $algoliaIndex, IndexManagerInterface $indexingManager, $escposPrinterIP, $escposPrinterPort)
+    public function __construct($algoliaAppId, $algoliaApiSearchKey, $algoliaIndex, IndexManagerInterface $indexingManager, $escposPrinterIP, $escposPrinterPort, Security $security)
     {
         $this->algoliaAppId = $algoliaAppId;
         $this->algoliaApiSearchKey = $algoliaApiSearchKey;
@@ -50,6 +53,7 @@ class PurchaseController extends Controller
         $this->indexManager = $indexingManager;
         $this->escposPrinterIP = $escposPrinterIP;
         $this->escposPrinterPort = $escposPrinterPort;
+        $this->security = $security;
     }
 
     /**
@@ -57,25 +61,22 @@ class PurchaseController extends Controller
      **/
     public function showIndex()
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_INTRO')) {
             throw $this->createAccessDeniedException();
         }
 
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
-        $draft = $repo_typeStocks->returnType('Draft');
+        $draft = $repo_typeStocks->returnType('Fût');
         $bottle = $repo_typeStocks->returnType('Bouteille');
         $article = $repo_typeStocks->returnType('Nourriture ou autre');
 
         /* futs */ $selected_drafts = $repo_stocks->loadStocksForSaleByType($draft);
 
-
         /* bouteilles */ $selected_bottles = $repo_stocks->loadStocksForSaleByType($bottle);
 
-
         /* articles */ $selected_articles = $repo_stocks->loadStocksForSaleByType($article);
-
 
         $data=[];
         $data['selected_drafts'] = $selected_drafts;
@@ -91,6 +92,8 @@ class PurchaseController extends Controller
 
     /**
      * @Route("/purchase/validation", name="purchaseValidation")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Exception
      */
     public function validateTransaction(Request $request){
@@ -100,7 +103,7 @@ class PurchaseController extends Controller
          * if $request->isMethod('POST') ?
          */
       
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_INTRO')) {
             throw $this->createAccessDeniedException();
         }
       
@@ -108,7 +111,6 @@ class PurchaseController extends Controller
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_users = $this->getDoctrine()->getRepository('AppBundle:Users');
         $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
-        $session = $request->getSession();
 
         $commande = new Transactions();
 
@@ -123,13 +125,8 @@ class PurchaseController extends Controller
         $form['bottles'] = $request->request->get('bottles');
         $form['articles'] = $request->request->get('articles');
         $form['compte'] = $request->request->get('accountPseudo');
-        
-        /**
-         * TODO SUR LA CLASSE :
-         * - EMPECHER DE FAIRE QUOI QUE CE SOIT SI LA COMMANDE EST VIDE (qte nulles OU total nul OU mode de paiement nul)
-         * - METTRE DES TESTS UN PEU PARTOUT POUR POUVOIR RENDER LA PAGE AVEC DES STATUTS D'ERREUR
-         *   (implémenter les Flashbags)
-        */
+        $form['withdrawReason'] = $request->request->get('withdrawReason');
+        $form['total'] = $request->request->get('total');
 
         // Insertion de la méthode de paiement dans l'entité Transactions
         $commande->setMethode($form['methode']);
@@ -137,63 +134,82 @@ class PurchaseController extends Controller
         // Insertions des articles et de leur quantité (si non nulle) dans des entités DetailsTransactions
         // et calul du montant de la commande (car possibilité d'injecter une fausse valeur en html)
         $montant = 0;
-        foreach ($form['drafts'] as $item) {
-            if ($item['quantite'] != 0) {
-                $detail = new DetailsTransactions();
-                $article = $repo_stocks->find($item['id']);
 
-                $montant += $item['quantite'] * $article->getPrixVente();
+        if ($form['withdrawReason'] == 1 && $this->security->isGranted('ROLE_BUREAU')) {
+            $this->redirectToRoute('homepage');
+            $detail = new DetailsTransactions();
+            $article = $repo_stocks->findOneBy(array('nom' => 'Ecocup'));
 
-                $detail->setArticle($article);
-                $detail->setQuantite($item['quantite']);
-                $detail->setTransaction($commande);
+            $montant = -1;
 
-                $em->persist($detail);
-            }
-        }
-        foreach ($form['bottles'] as $item) {
-            if ($item['quantite'] != 0) {
-                $detail = new DetailsTransactions();
-                $article = $repo_stocks->find($item['id']);
+            $detail->setArticle($article);
+            $detail->setQuantite(1);
+            $detail->setTransaction($commande);
+            $article->setQuantite($article->getQuantite() + 1);
 
-                $montant += $item['quantite'] * $article->getPrixVente();
+            $em->persist($detail);
+            $em->persist($article);
+        } elseif ($form['withdrawReason'] == 2 && $this->security->isGranted('ROLE_BUREAU')) {
+            $montant = $form['total'];
+        } else {
+            foreach ($form['drafts'] as $item) {
+                if ($item['quantite'] != 0) {
+                    $detail = new DetailsTransactions();
+                    $article = $repo_stocks->find($item['id']);
 
-                $detail->setArticle($article);
-                $detail->setQuantite($item['quantite']);
-                $detail->setTransaction($commande);
-                $article->setQuantite($article->getQuantite() - $item['quantite']);
+                    $montant += $item['quantite'] * $article->getPrixVente();
 
-                if ($article->getQuantite() == 0){
-                  $article->setIsForSale(false);
+                    $detail->setArticle($article);
+                    $detail->setQuantite($item['quantite']);
+                    $detail->setTransaction($commande);
+
+                    $em->persist($detail);
                 }
-
-                $em->persist($detail);
-                $em->persist($article);
             }
-        }
-        foreach ($form['articles'] as $item) {
-            if ($item['quantite'] != 0) {
-                $detail = new DetailsTransactions();
-                $article = $repo_stocks->find($item['id']);
+            foreach ($form['bottles'] as $item) {
+                if ($item['quantite'] != 0) {
+                    $detail = new DetailsTransactions();
+                    $article = $repo_stocks->find($item['id']);
 
-                $montant += $item['quantite'] * $article->getPrixVente();
+                    $montant += $item['quantite'] * $article->getPrixVente();
 
-                $detail->setArticle($article);
-                $detail->setQuantite($item['quantite']);
-                $detail->setTransaction($commande);
-                $article->setQuantite($article->getQuantite() - $item['quantite']);
+                    $detail->setArticle($article);
+                    $detail->setQuantite($item['quantite']);
+                    $detail->setTransaction($commande);
+                    $article->setQuantite($article->getQuantite() - $item['quantite']);
 
-                if ($article->getQuantite() == 0){
-                    $article->setIsForSale(false);
+                    if ($article->getQuantite() == 0){
+                        $article->setIsForSale(false);
+                    }
+
+                    $em->persist($detail);
+                    $em->persist($article);
                 }
+            }
+            foreach ($form['articles'] as $item) {
+                if ($item['quantite'] != 0) {
+                    $detail = new DetailsTransactions();
+                    $article = $repo_stocks->find($item['id']);
 
-                $em->persist($detail);
-                $em->persist($article);
+                    $montant += $item['quantite'] * $article->getPrixVente();
+
+                    $detail->setArticle($article);
+                    $detail->setQuantite($item['quantite']);
+                    $detail->setTransaction($commande);
+                    $article->setQuantite($article->getQuantite() - $item['quantite']);
+
+                    if ($article->getQuantite() == 0){
+                        $article->setIsForSale(false);
+                    }
+
+                    $em->persist($detail);
+                    $em->persist($article);
+                }
             }
         }
       
-        if ($montant <= 0) {
-            $session->getFlashbag()->add(
+        if (($montant < 0 && $form['withdrawReason'] == 0) || $montant == 0) {
+            $this->addFlash(
                 'erreur',
                 "Le montant de la commande semble incorrecte, merci de la renvoyer."
             );
@@ -209,14 +225,12 @@ class PurchaseController extends Controller
         if ($form['methode'] == "account") {
             $compte = $repo_comptes->findOneBy(['pseudo' => $form['compte']]);
             $solde = $compte->getSolde();
-            //$diff  = $montant - $solde;
 
-            if ( $user->getRoles() == "ROLE_INTRO" &&  $solde < $montant) {
+            if ( $this->security->isGranted('ROLE_BUREAU') &&  $solde < $montant) {
 
-                $session->getFlashbag()->add(
+                $this->addFlash(
                     'erreur',
-                    "Le solde du compte de ".$compte->getPrenom()." ".$compte->getNom()." est insuffisant pour valider la commande.</br>
-                     Il manque ". $montant - $solde ."€."
+                    "Le solde du compte de " . $compte->getPrenom() . " " . $compte->getNom() . " est insuffisant pour valider la commande.</br>Il manque " . $montant - $solde . "€."
                 );
                 return $this->redirectToRoute('purchase');            
             } else {
@@ -232,13 +246,13 @@ class PurchaseController extends Controller
         }
         // Paiement par cash : Contrôle de la caisse
         elseif ($form['methode'] == "cash") {
-            $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+            /*$connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
             $printer = new Printer($connector);
             try {
                 $printer->pulse();
             } finally {
                 $printer->close();
-            }
+            }*/
         }
         
         // Insertion de l'user ayant validé la commande dans l'entité Transactions
@@ -250,25 +264,51 @@ class PurchaseController extends Controller
         // Envoie de flashbags
         switch ($form['methode']) {
             case 'account':
-                $session->getFlashbag()->add(
-                    'info',
-                    $commande->getMontant()."€ ont été débités du compte de ".$compte->getPrenom()." ".$compte->getNom()."."
-                );
+                if ($form['withdrawReason'] != "0" && $this->security->isGranted('ROLE_BUREAU')) {
+                    $this->addFlash(
+                        'info',
+                        -$commande->getMontant() . "€ ont été ajoutés au compte de ".$compte->getPrenom()." ".$compte->getNom()."."
+                    );
+                } elseif ($form['withdrawReason'] != "0") {
+                    $this->addFlash(
+                        'erreur',
+                        "Cette fonctionnalité n'est pas autorisée pour cet utilisateur"
+                    );
+                    return $this->redirectToRoute('purchase');
+                } else {
+                    $this->addFlash(
+                        'info',
+                        $commande->getMontant() . "€ ont été débités du compte de " . $compte->getPrenom()." ".$compte->getNom()."."
+                    );
+                }
                 break;
             case 'cash':
-                $session->getFlashbag()->add(
-                    'info', 
-                    $commande->getMontant()."€ ont été payés en liquide."
-                );
+                if ($form['withdrawReason'] != "0" && $this->security->isGranted('ROLE_BUREAU')) {
+                    $this->addFlash(
+                        'info',
+                        -$commande->getMontant() . "€ ont été retirés de la caisse."
+                    );
+                } elseif ($form['withdrawReason'] != "0") {
+                    $this->addFlash(
+                        'erreur',
+                        "Cette fonctionnalité n'est pas autorisée pour cet utilisateur"
+                    );
+                    return $this->redirectToRoute('purchase');
+                } else {
+                    $this->addFlash(
+                        'info',
+                        $commande->getMontant() . "€ ont bien été ajoutés à la caisse."
+                    );
+                }
                 break;
             case 'pumpkin':
-                $session->getFlashbag()->add(
-                    'info', 
+                $this->addFlash(
+                    'info',
                     $commande->getMontant()."€ ont été payés par Pumpkin."
                 );
                 break;
             default:
-                $session->getFlashbag()->add(
+                $this->addFlash(
                     'erreur', 
                     "La méthode de paiement n'a pas été reconnue."
                 );
@@ -283,5 +323,28 @@ class PurchaseController extends Controller
 
         return $this->redirectToRoute('purchase');
     }
-    
+
+    /**
+     * @Route("/purchase/open", name="openCashier")
+     * @throws \Exception
+     */
+    public function openCashier(Request $request){
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+        $printer = new Printer($connector);
+        try {
+            $printer->pulse();
+            $this->addFlash(
+                'info',
+                "L'ouverture de la caisse a été effectuée."
+            );
+        } finally {
+            $printer->close();
+        }
+
+        return $this->redirectToRoute("purchase");
+    }
 }

@@ -10,10 +10,6 @@
 {% endblock %}
 
 {% block body %}
-    {#
-        TODO:
-        Implémenter ça : https://stackoverflow.com/questions/36430816/bootstrap-4-card-deck-with-number-of-columns-based-on-viewport
-    #}
     {% for message in app.session.flashbag.get('info') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fa fa-save"></i> Information : {{message}}
@@ -174,36 +170,46 @@
         </div>
 
         <div class="collapse show" id="collapsePayer">
+            <!-- Prix total -->
             <div class="d-flex justify-content-center w-75 mx-auto mb-2">
                 <div class="display-4">Total :</div>
                 <div class="display-4">&nbsp;<span id="totalTxt">0</span>€</div>
-                <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" hidden>
+                <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" required hidden>
             </div>
 
+            <!-- Moyens de paiements -->
             <div class="input-group w-100 mb-2">
                 <div class="btn-group btn-group-md btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
-
                     {#<label class="btn btn-success" onclick="choixPaiement('cb')">
                         <input type="radio" id="option1">
                         <i class="fa fa-credit-card"></i> Carte Bleue
                     </label>#}
 
-                    <label class="btn btn-success active" onclick="choixPaiement('cash')">
+                    <label class="btn btn-success active" id="methodCash" onclick="choixPaiement('cash')">
                         <input class="choix-paiement" type="radio" id="option1">
                         <i class="fa fa-money-bill-alt"></i> Liquide
                     </label>
 
-                    <label class="btn btn-success" onclick="choixPaiement('account')" id="showAccount">
+                    <label class="btn btn-success" id="methodAccount" onclick="choixPaiement('account')">
                         <input class="choix-paiement" type="radio" id="option2">
                         <i class="fa fa-id-badge"></i> Compte
                     </label>
 
-                    <label class="btn btn-success" onclick="choixPaiement('pumpkin')">
+                    <label class="btn btn-success" id="methodPumpkin" onclick="choixPaiement('pumpkin')">
                         <input class="choix-paiement" type="radio" id="option3">
                         <i class="fa fa-mobile-alt"></i> Pumpkin
                     </label>
+
+                    {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                    <label class="btn btn-success" data-toggle="modal" data-target="#modalWithdraw">
+                        <input class="choix-paiement" type="radio" id="option">
+                        <i class="fas fa-minus-square"></i> Retrait
+                    </label>
+                    {% endif %}
                 </div>
             </div>
+
+            <!-- Compte sélectionné -->
             <div class="d-flex justify-content-center mb-3">
                 <div class="collapse" id="collapseSelectedAccount">
                     <div class="input-group">
@@ -213,15 +219,73 @@
                         </div>
                     </div>
                 </div>
-
-                <input id="methode-paiement" name="methode" value="cash" hidden>
             </div>
-            <input type="hidden" name="userId" value="{{ app.user.id }}">
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-            <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
+
+            <!-- Variables du formulaire -->
+            <input id="methode-paiement" name="methode" value="cash" required hidden>
+            <input name="withdrawReason" id="withdrawReason" value="0" required hidden>
+            <input type="hidden" name="userId" value="{{ app.user.id }}" required>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" required>
+
+            <!-- Boutons de validation -->
+            <div class="btn-group d-lg-flex justify-content-center">
+                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                <button type="submit" class="btn btn-success btn-lg">Valider la commande</button>
+                <span class="btn btn-secondary btn-lg ml-lg-1" onclick="window.location.href='{{ path('openCashier') }}'">Ouvrir la caisse</span>
+                {% else %}
+                <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
+                {% endif %}
+            </div>
         </div>
     </form>
 
+    <div class="modal fade" tabindex="-1" role="dialog" id="modalWithdraw">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalWithdrawLabel">Remboursement</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle rounded-left" type="button" id="reasonDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Type de remboursement
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="reasonDropdown">
+                                        <a class="dropdown-item" id="withdraw1" href="javascript:void(0);">Retour d'écocup</a>
+                                        <a class="dropdown-item" id="withdraw2" href="javascript:void(0);">Autre</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <input name="amount" lang="en" min="0" step="0.01" type="number" class="form-control form-control-sm" id="amount" aria-describedby="amount-prefix" autocomplete="off" value="0" readonly="">
+                        </div>
+                    </div>
+                    <div class="collapse" id="collapseRefundMethod">
+                        <div class="btn-group btn-group-md btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-success active" onclick="$('#selectedRefundMethod').attr('value', 'cash')">
+                                <input class="choix-paiement" type="radio" id="option1">
+                                <i class="fa fa-money-bill-alt"></i> Liquide
+                            </label>
+                            <label class="btn btn-success" onclick="$('#selectedRefundMethod').attr('value', 'account')">
+                                <input class="choix-paiement" type="radio" id="option2">
+                                <i class="fa fa-id-badge"></i> Compte
+                            </label>
+                        </div>
+                    </div>
+                    <input id="selectedRefundMethod" value="" hidden>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button id="validate" type="button" class="btn btn-success" onclick="saveWithdraw()">Valider</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" tabindex="-1" role="dialog" id="modalAccount">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -247,8 +311,10 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script src="{{ asset('js/operationsSpeciales.js') }}"></script>
     <script src="{{ asset('js/qteChecker.js') }}"></script>
     <script src="{{ asset('js/methode-paiement.js') }}"></script>
+    <script src="{{ asset('js/openAndFocusModal.js') }}"></script>
 
     <!-- Include AlgoliaSearch JS Client and autocomplete.js library -->
     <script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>

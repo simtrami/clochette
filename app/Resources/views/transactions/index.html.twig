@@ -72,11 +72,33 @@
                     <td class="table-action">
                         <div class="d-flex justify-content-center">
                             {% if transaction.montant<0 %}
+                                {% if transaction.methode == "account" %}
+                                    {% if transaction.details is empty %}
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Rechargement">
                                         <i class="fas fa-gas-pump"></i>
                                     </button>
                                 </div>
+                                    {% else %}
+                                        <div class="btn-group dropleft">
+                                            <button type="button" class="btn btn-secondary dropdown-toggle no-arrow" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-gas-pump"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <h6 class="dropdown-header">Articles retournés</h6>
+                                                {% for detail in transaction.details %}
+                                                    <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% elseif transaction.methode == "cash" %}
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Sortie de caisse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
                             {% else %}
                                 <div class="btn-group dropleft">
                                     <button type="button" class="btn btn-secondary dropdown-toggle no-arrow" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

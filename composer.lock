@@ -59,16 +59,16 @@
         },
         {
             "name": "algolia/search-bundle",
-            "version": "3.3.0",
+            "version": "3.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/algolia/search-bundle.git",
-                "reference": "af07217884658d088e50e815c79bf0c0bf9a9af7"
+                "reference": "14b4b9d952376cfaa6c346cb2aee7f153d4a0f3a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/algolia/search-bundle/zipball/af07217884658d088e50e815c79bf0c0bf9a9af7",
-                "reference": "af07217884658d088e50e815c79bf0c0bf9a9af7",
+                "url": "https://api.github.com/repos/algolia/search-bundle/zipball/14b4b9d952376cfaa6c346cb2aee7f153d4a0f3a",
+                "reference": "14b4b9d952376cfaa6c346cb2aee7f153d4a0f3a",
                 "shasum": ""
             },
             "require": {
@@ -115,7 +115,7 @@
                     "email": "julien@sigerr.org"
                 }
             ],
-            "time": "2018-08-28T13:10:42+00:00"
+            "time": "2018-09-04T11:53:19+00:00"
         },
         {
             "name": "composer/ca-bundle",

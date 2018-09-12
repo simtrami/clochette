@@ -22,7 +22,7 @@ class PreparerTenueController extends Controller{
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
-        $draft = $repo_typeStocks->returnType('Draft');
+        $draft = $repo_typeStocks->returnType('Fût');
         $bottle = $repo_typeStocks->returnType('Bouteille');
         $article = $repo_typeStocks->returnType('Nourriture ou autre');
 

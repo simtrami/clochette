@@ -65,12 +65,12 @@ security:
     - { path: ^/comptes/recharge, roles: ROLE_BUREAU }
     - { path: ^/comptes, roles: ROLE_BUREAU }
     - { path: ^/preparation, roles: ROLE_BUREAU }
+    - { path: ^/purchase/open, roles: ROLE_BUREAU }
     - { path: ^/purchase, roles: ROLE_INTRO }
     - { path: ^/stock/ajout, roles: ROLE_STOCK }
     - { path: ^/stock/modifier, roles: ROLE_STOCK }
     - { path: ^/stock/supprimer, roles: ROLE_STOCK }
     - { path: ^/stock, roles: ROLE_BUREAU }
-    - { path: ^/transactions, roles: ROLE_BUREAU }
     - { path: ^/transactions, roles: ROLE_BUREAU }
     - { path: ^/utilisateurs/modifier, roles: ROLE_SUPER_ADMIN}
     - { path: ^/utilisateurs/nouveau, roles: ROLE_ADMIN}

@@ -5,9 +5,10 @@ namespace AppBundle\Controller;
 use AppBundle\Form\StocksType;
 use AppBundle\Entity\Stocks;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Annotation\Route;
 
 class StockController extends Controller {
 
@@ -23,7 +24,7 @@ class StockController extends Controller {
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
-        $typeDraft = $repo_typeStocks->returnType('Draft');
+        $typeDraft = $repo_typeStocks->returnType('Fût');
         $typeBottle = $repo_typeStocks->returnType('Bouteille');
         $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
 
