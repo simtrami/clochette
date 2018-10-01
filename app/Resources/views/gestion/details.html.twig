@@ -1,11 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Historique des transactions{% endblock %}
+{% block title %}Tenue fermée : {{ zreport.timestamp|date('d/m/Y H:i:s') }}{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
-    {# <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"> #}
     <link rel="stylesheet" href="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.css') }}">
 {% endblock %}
 
@@ -20,25 +19,67 @@
 
 {% block body %}
     <div class="alert alert-light">
-        <h1 class="display-4">Historique des transactions</h1>
+        <h1 class="display-4">Détails de la tenue : {{ zreport.timestamp|date('d/m/Y H:i:s') }}</h1>
     </div>
 
+    <h2>Bilan de la tenue</h2>
+    <div class="table-responsive mb-2">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Validée par</th>
+                <th>Ventes</th>
+                <th>Rechargements</th>
+                <th>Remboursements</th>
+                <th>Total</th>
+                <th>Contenu de la caisse</th>
+                <th>Contenu du coffre</th>
+                <th>Nombre de transactions</th>
+                <th class="table-actions"></th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">{{ zreport.id }}</th>
+                    <td>{{ zreport.user.username }}</td>
+                    <td>{{ zreport.totalCommand }}€</td>
+                    <td>{{ zreport.totalRefill }}€</td>
+                    <td>{{ zreport.totalRefund }}€</td>
+                    <td>{{ zreport.total }}€</td>
+                    <td>{{ zreport.treasury.caisse }}€</td>
+                    <td>{{ zreport.treasury.coffre }}€</td>
+                    <td>{{ zreport.transactions|length }}</td>
+                    <td class="table-actions">
+                        <div class="d-flex">
+                            <div class="input-group justify-content-around mx-auto">
+                                <a class="btn btn-secondary mt-1" href="{{ path('modif_cloture', { 'id_treasury': zreport.treasury.id }) }}">
+                                    <i class="fas fa-edit"></i> Trésorerie</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Transactions de la tenue</h2>
     <div class="table-responsive mb-3">
         <table id="table" class="table table-striped table-bordered">
             <thead class="thead-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Utilisateur</th>
-                    <th>Compte</th>
-                    <th>Montant</th>
-                    <th>Méthode</th>
-                    <th>Horodatage</th>
-                    <th class="table-action">Détails</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th>Utilisateur</th>
+                <th>Compte</th>
+                <th>Montant</th>
+                <th>Méthode</th>
+                <th>Horodatage</th>
+                <th class="table-action">Détails</th>
+            </tr>
             </thead>
 
             <tbody>
-            {% for transaction in transactions %}
+            {% for transaction in zreport.transactions %}
                 <tr>
                     <th>{{ transaction.id }}</th>
                     <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>

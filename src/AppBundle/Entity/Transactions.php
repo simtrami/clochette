@@ -9,8 +9,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Transactions
  *
- * @ORM\Table(name="transactions", indexes={@ORM\Index(name="compte", columns={"compte"}), @ORM\Index(name="user", columns={"user"})})
- * @ORM\Entity
+ * @ORM\Table(name="transactions", indexes={
+ *     @ORM\Index(name="compte", columns={"compte"}),
+ *     @ORM\Index(name="user", columns={"user"}),
+ *     @ORM\Index(name="zreport", columns={"zreport"}),
+ *     })
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\TransactionsRepository")
  */
 class Transactions
 {
@@ -31,7 +35,7 @@ class Transactions
     private $timestamp;
 
     /**
-     * @var \AppBundle\Entity\Comptes
+     * @var Comptes
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comptes")
      * @ORM\JoinColumns({
@@ -41,7 +45,7 @@ class Transactions
     private $compte;
   
     /**
-     * @var \AppBundle\Entity\Users
+     * @var Users
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Users")
      * @ORM\JoinColumns({
@@ -61,14 +65,35 @@ class Transactions
     /**
      * @var string
      *
-     * @ORM\Column(name="methode", type="string", length=10)
+     * @ORM\Column(name="methode", type="string", length=7)
      */
     private $methode;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="type", type="smallint")
+     *
+     * @Assert\Range(
+     *     min=1,
+     *     max=3,
+     *     invalidMessage="Type de transaction inconnu"
+     * )
+     */
+    private $type;
   
     /**
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\DetailsTransactions", mappedBy="transaction")
      */
     private $details;
+
+    /**
+     * @var Zreport
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Zreport", inversedBy="transactions")
+     * @ORM\JoinColumn(name="zreport", referencedColumnName="id")
+     */
+    private $zreport;
 
     ## Fonctions
 
@@ -114,11 +139,10 @@ class Transactions
     /**
      * Set compte
      *
-     * @param \AppBundle\Entity\Comptes $id
-     *
+     * @param Comptes|null $compte
      * @return Transactions
      */
-    public function setCompte(\AppBundle\Entity\Comptes $compte = null)
+    public function setCompte(Comptes $compte = null)
     {
         $this->compte = $compte;
 
@@ -128,7 +152,7 @@ class Transactions
     /**
      * Get compte
      *
-     * @return \AppBundle\Entity\Comptes
+     * @return Comptes
      */
     public function getCompte()
     {
@@ -138,11 +162,10 @@ class Transactions
     /**
      * Set user
      *
-     * @param \AppBundle\Entity\Users $id
-     *
+     * @param Users|null $user
      * @return Transactions
      */
-    public function setUser(\AppBundle\Entity\Users $user = null)
+    public function setUser(Users $user = null)
     {
         $this->user = $user;
 
@@ -152,7 +175,7 @@ class Transactions
     /**
      * Get user
      *
-     * @return \AppBundle\Entity\Users
+     * @return Users
      */
     public function getUser()
     {
@@ -206,6 +229,30 @@ class Transactions
     {
         return $this->methode;
     }
+
+    /**
+     * Set type
+     *
+     * @param integer $type
+     *
+     * @return Transactions
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return integer
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
   
     /**
      * Get details
@@ -215,5 +262,28 @@ class Transactions
     public function getDetails()
     {
         return $this->details;
+    }
+
+    /**
+     * Set zreport
+     *
+     * @param Zreport $zreport
+     * @return Transactions
+     */
+    public function setZreport(Zreport $zreport)
+    {
+        $this->zreport = $zreport;
+
+        return $this;
+    }
+
+    /**
+     * Get zreport
+     *
+     * @return \AppBundle\Entity\Zreport
+     */
+    public function getZreport()
+    {
+        return $this->zreport;
     }
 }

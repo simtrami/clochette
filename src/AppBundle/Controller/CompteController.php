@@ -167,6 +167,8 @@ class CompteController extends Controller {
             $timestamp = date_create(date("Y-m-d H:i:s"));
             $transaction->setTimestamp($timestamp);
 
+            $transaction->setType(3);
+
             $em = $this->getDoctrine()->getManager();
             $repo_comptes = $em->getRepository('AppBundle:Comptes');
             $repo_users = $em->getRepository('AppBundle:Users');
@@ -182,7 +184,7 @@ class CompteController extends Controller {
             $transaction->setCompte($compte);
             $transaction->setUser($user);
             $transaction->setMethode($methode);
-            $transaction->setMontant(-$montant);
+            $transaction->setMontant($montant);
 
             $solde = $compte->getSolde();
             $newSolde = $solde + $montant;

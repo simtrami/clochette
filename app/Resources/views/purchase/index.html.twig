@@ -200,12 +200,10 @@
                         <i class="fa fa-mobile-alt"></i> Pumpkin
                     </label>
 
-                    {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <label class="btn btn-success" data-toggle="modal" data-target="#modalWithdraw">
+                    <label class="btn btn-success" onclick="openModalWithdraw()">
                         <input class="choix-paiement" type="radio" id="option">
                         <i class="fas fa-minus-square"></i> Retrait
                     </label>
-                    {% endif %}
                 </div>
             </div>
 
@@ -228,14 +226,14 @@
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" required>
 
             <!-- Boutons de validation -->
-            <div class="btn-group d-lg-flex justify-content-center">
                 {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                <button type="submit" class="btn btn-success btn-lg">Valider la commande</button>
-                <span class="btn btn-secondary btn-lg ml-lg-1" onclick="window.location.href='{{ path('openCashier') }}'">Ouvrir la caisse</span>
+                <div class="btn-group d-flex justify-content-center">
+                    <button type="submit" class="btn btn-success btn-lg">Valider la commande</button>
+                    <span class="btn btn-secondary btn-lg ml-lg-1" onclick="window.location.href='{{ path('openCashier') }}'">Ouvrir la caisse</span>
+                </div>
                 {% else %}
                 <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
                 {% endif %}
-            </div>
         </div>
     </form>
 
@@ -254,28 +252,28 @@
                             <div class="input-group-prepend">
                                 <div class="dropdown">
                                     <button class="btn btn-secondary dropdown-toggle rounded-left" type="button" id="reasonDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Type de remboursement
+                                        Retour d'écocup(s)
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="reasonDropdown">
-                                        <a class="dropdown-item" id="withdraw1" href="javascript:void(0);">Retour d'écocup</a>
+                                        {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                                         <a class="dropdown-item" id="withdraw2" href="javascript:void(0);">Autre</a>
+                                        {% endif %}
+                                        <a class="dropdown-item" id="withdraw1" href="javascript:void(0);">Retour d'écocup(s)</a>
                                     </div>
                                 </div>
                             </div>
-                            <input name="amount" lang="en" min="0" step="0.01" type="number" class="form-control form-control-sm" id="amount" aria-describedby="amount-prefix" autocomplete="off" value="0" readonly="">
+                            <input name="amount" id="amount" lang="en" min="0" step="1" type="number" class="form-control form-control-sm" aria-describedby="amount-prefix" autocomplete="off" value="1">
                         </div>
                     </div>
-                    <div class="collapse" id="collapseRefundMethod">
-                        <div class="btn-group btn-group-md btn-group-toggle" data-toggle="buttons">
-                            <label class="btn btn-success active" onclick="$('#selectedRefundMethod').attr('value', 'cash')">
-                                <input class="choix-paiement" type="radio" id="option1">
-                                <i class="fa fa-money-bill-alt"></i> Liquide
-                            </label>
-                            <label class="btn btn-success" onclick="$('#selectedRefundMethod').attr('value', 'account')">
-                                <input class="choix-paiement" type="radio" id="option2">
-                                <i class="fa fa-id-badge"></i> Compte
-                            </label>
-                        </div>
+                    <div class="btn-group btn-group-md btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-success active" onclick="$('#selectedRefundMethod').attr('value', 'cash')">
+                            <input class="choix-paiement" type="radio" id="option1">
+                            <i class="fa fa-money-bill-alt"></i> Liquide
+                        </label>
+                        <label class="btn btn-success" onclick="$('#selectedRefundMethod').attr('value', 'account')">
+                            <input class="choix-paiement" type="radio" id="option2">
+                            <i class="fa fa-id-badge"></i> Compte
+                        </label>
                     </div>
                     <input id="selectedRefundMethod" value="" hidden>
                 </div>

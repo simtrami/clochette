@@ -39,8 +39,8 @@ class DetailsTransactions
     /**
      * @var integer
      * 
-     * @ORM\Column(name="quantite", type="integer")
-     * @Assert\GreaterThanOrEqual(0)
+     * @ORM\Column(name="quantite", type="smallint")
+     * @Assert\GreaterThan(0)
      */
     private $quantite;
 
@@ -49,11 +49,10 @@ class DetailsTransactions
     /**
      * Set transaction
      *
-     * @param \AppBundle\Entity\Transactions $id
-     *
+     * @param Transactions $transaction
      * @return DetailsTransactions
      */
-    public function setTransaction(\AppBundle\Entity\Transactions $transaction)
+    public function setTransaction(Transactions $transaction)
     {
         $this->transaction = $transaction;
 
@@ -69,15 +68,14 @@ class DetailsTransactions
     {
         return $this->transaction;
     }
-    
+
     /**
      * Set article
      *
-     * @param \AppBundle\Entity\Stocks $id
-     *
+     * @param Stocks $article
      * @return DetailsTransactions
      */
-    public function setArticle(\AppBundle\Entity\Stocks $article)
+    public function setArticle(Stocks $article)
     {
         $this->article = $article;
 

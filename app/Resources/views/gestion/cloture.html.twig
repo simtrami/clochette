@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Clôture du bar{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block body %}
+    {% for message in app.session.flashbag.get('info') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-double"></i> Information : {{message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+
+    <div class="alert alert-light">
+        <h1 class="display-4">Clôture du bar</h1>
+    </div>
+
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        <div class="form-group">
+            <label for="mvt-coffre" class="required">Mouvement dans le coffre</label>
+            <div class="input-group">
+                <input id="mvt-coffre" name="mvt-coffre" required="required" class="form-control" type="text">
+                <div class="input-group-append">
+                    <span class="input-group-text"> €</span>
+                </div>
+            </div>
+        </div>
+        {{ form_row(form.caisse) }}
+        {{ form_rest(form) }}
+        <button type="submit" class="btn btn-success btn-lg btn-block">Valider</button>
+    {{ form_end(form) }}
+{% endblock %}

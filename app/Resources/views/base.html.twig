@@ -56,9 +56,9 @@
                     {% endif %}
 
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                        <li class="nav-item{{ "preparation" in current_path ? " active" : "" }}">
-                            <a class="nav-link" href="{{ path('preparation') }}">
-                                <i class="fa fa-check-double" aria-hidden="true"></i> Mise en vente</a>
+                        <li class="nav-item{{ "gestion" in current_path ? " active" : "" }}">
+                            <a class="nav-link" href="{{ path('gestion-tenue') }}">
+                                <i class="fa fa-check-double" aria-hidden="true"></i> Gestion des ventes</a>
                         </li>
                     {% endif %}
 
@@ -113,7 +113,13 @@
     {% block body %}{% endblock %}
     </div>
 
-    <footer>{% block footer %}{% endblock %}</footer>
+    <div class="spacer"></div>
+    <footer class="mx-auto mt-4">
+        <div id="copyright" class="mt-2">
+            <p>&copy; {{ date('Y')|date('Y') }} <a href="{{ developer_url }}" target="_blank">{{ developer_username }}</a> &centerdot; Clochette <a href="{{ project_url }}" target="_blank" class="badge badge-light">v{{ project_version }}</a></p>
+        </div>
+        {% block footer %}{% endblock %}
+    </footer>
     {# <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> #}
     <script src="{{ asset('lib/jquery-3.3.1.slim.min.js') }}"></script>
     {# <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> #}

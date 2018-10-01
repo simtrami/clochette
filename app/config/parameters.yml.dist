@@ -15,15 +15,25 @@ parameters:
     mailer_user: ~
     mailer_password: ~
 
+    # E-mail address to use while in development mode
+    env(dev_mail_address): ~
+    env(mailing_list_address): ~
+
     # IDs for Algolia, Can be found on the Dashboard. The API key is the Admin one.
     env(ALGOLIA_APP_ID): XXXXXXXXXX
     env(ALGOLIA_API_KEY): indicateYourAdminApiKeyHere
-    env(ALGOLIA_API_SEARCH_KEY): indicateYourSearchOnlyKeyHere
-    env(ALGOLIA_INDEX): indexToSearchFrom
+    env(algolia_api_search_key): indicateYourSearchOnlyKeyHere
+    env(algolia_index): indexToSearchFrom
 
     # Printer's properties for using Escpos by Mike42
-    env(ESCPOS_PRINTER_IP): 127.0.0.1
-    env(ESCPOS_PRINTER_PORT): 7777
+    env(escpos_printer_ip): ~
+    env(escpos_printer_port): ~
+
+    # Project's and developer's infos to display at bottom of pages
+    env(developer_url): ~
+    env(developer_username): ~
+    env(project_url): ~
+    env(project_version): 1.0
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt

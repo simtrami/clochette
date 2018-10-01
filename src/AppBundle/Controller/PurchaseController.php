@@ -97,16 +97,11 @@ class PurchaseController extends Controller
      * @throws \Exception
      */
     public function validateTransaction(Request $request){
-        /**
-         * TODO
-         * VERIFIER QUE LE FORMULAIRE A BIEN ETE PASSE ET QU'ON N'A PAS JUSTE ECRIT L'URL
-         * if $request->isMethod('POST') ?
-         */
       
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_INTRO')) {
             throw $this->createAccessDeniedException();
         }
-      
+
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_users = $this->getDoctrine()->getRepository('AppBundle:Users');
@@ -136,22 +131,27 @@ class PurchaseController extends Controller
         $montant = 0;
 
         if ($form['withdrawReason'] == 1 && $this->security->isGranted('ROLE_BUREAU')) {
-            $this->redirectToRoute('homepage');
+            $commande->setType(2);
+
             $detail = new DetailsTransactions();
             $article = $repo_stocks->findOneBy(array('nom' => 'Ecocup'));
 
-            $montant = -1;
+            $montant = -$form['total'];
 
             $detail->setArticle($article);
-            $detail->setQuantite(1);
+            $detail->setQuantite(-$form['total']);
             $detail->setTransaction($commande);
-            $article->setQuantite($article->getQuantite() + 1);
+            $article->setQuantite($article->getQuantite() - $form['total']);
 
             $em->persist($detail);
             $em->persist($article);
         } elseif ($form['withdrawReason'] == 2 && $this->security->isGranted('ROLE_BUREAU')) {
-            $montant = $form['total'];
+            $commande->setType(2);
+
+            $montant = -$form['total'];
         } else {
+            $commande->setType(1);
+
             foreach ($form['drafts'] as $item) {
                 if ($item['quantite'] != 0) {
                     $detail = new DetailsTransactions();
@@ -246,13 +246,13 @@ class PurchaseController extends Controller
         }
         // Paiement par cash : Contrôle de la caisse
         elseif ($form['methode'] == "cash") {
-            /*$connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+            $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
             $printer = new Printer($connector);
             try {
                 $printer->pulse();
             } finally {
                 $printer->close();
-            }*/
+            }
         }
         
         // Insertion de l'user ayant validé la commande dans l'entité Transactions
@@ -264,10 +264,15 @@ class PurchaseController extends Controller
         // Envoie de flashbags
         switch ($form['methode']) {
             case 'account':
-                if ($form['withdrawReason'] != "0" && $this->security->isGranted('ROLE_BUREAU')) {
+                if ($form['withdrawReason'] == "1" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        -$commande->getMontant() . "€ ont été ajoutés au compte de ".$compte->getPrenom()." ".$compte->getNom()."."
+                        $commande->getMontant() . "€ ont été ajoutés au compte de ".$compte->getPrenom()." ".$compte->getNom()." pour le retour de.". $commande->getMontant() ." écocup(s)."
+                    );
+                } elseif ($form['withdrawReason'] == "2" && $this->security->isGranted('ROLE_BUREAU')) {
+                    $this->addFlash(
+                        'info',
+                        $commande->getMontant() . "€ ont été ajoutés au compte de ".$compte->getPrenom()." ".$compte->getNom()."."
                     );
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
@@ -283,10 +288,15 @@ class PurchaseController extends Controller
                 }
                 break;
             case 'cash':
-                if ($form['withdrawReason'] != "0" && $this->security->isGranted('ROLE_BUREAU')) {
+                if ($form['withdrawReason'] == "1" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        -$commande->getMontant() . "€ ont été retirés de la caisse."
+                        $commande->getMontant() . "€ ont été retirés de la caisse pour le retour de ". $commande->getMontant() ." écocup(s)."
+                    );
+                } elseif ($form['withdrawReason'] == "2" && $this->security->isGranted('ROLE_BUREAU')) {
+                    $this->addFlash(
+                        'info',
+                        $commande->getMontant() . "€ ont été retirés de la caisse."
                     );
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
@@ -326,7 +336,8 @@ class PurchaseController extends Controller
 
     /**
      * @Route("/purchase/open", name="openCashier")
-     * @throws \Exception
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function openCashier(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {

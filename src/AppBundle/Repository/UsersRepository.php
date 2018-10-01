@@ -2,7 +2,7 @@
 
 namespace AppBundle\Repository;
 
-use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -13,15 +13,18 @@ use Doctrine\ORM\EntityRepository;
  * 
  * https://symfony.com/doc/3.4/security/entity_provider.html#using-a-custom-query-to-load-the-user
  */
-class UsersRepository extends \Doctrine\ORM\EntityRepository
+class UsersRepository extends EntityRepository
 {
     public function loadUserByUsername($username)
     {
-        return $this->createQueryBuilder('u')
-            ->where('u.username = :username OR u.email = :email')
-            ->setParameter('username', $username)
-            ->setParameter('email', $username)
-            ->getQuery()
-            ->getOneOrNullResult();
+        try {
+            return $this->createQueryBuilder('u')
+                ->where('u.username = :username OR u.email = :email')
+                ->setParameter('username', $username)
+                ->setParameter('email', $username)
+                ->getQuery()
+                ->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+        }
     }
 }

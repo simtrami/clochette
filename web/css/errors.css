@@ -1,0 +1,8 @@
+.jumbotron {
+    background-color: var(--danger);
+    color: var(--light);
+}
+
+.jumbotron.container h2 {
+    font-size: 2rem !important;
+}

@@ -1,27 +1,31 @@
+function openModalWithdraw() {
+    $('#withdrawReason').attr('value', '1');
+    $('#modalWithdraw').modal('show');
+}
+
 $('#withdraw1').on('click', function () {
     const amount = $('#amount');
     amount.attr('value', '1');
     amount.val(1);
-    amount.prop('readonly', true);
+    amount.attr('step', 1);
+    amount.attr('min', 1);
     $('#withdrawReason').attr('value', '1');
-    $('#reasonDropdown').html("Retour d'écocup");
-    $('#collapseRefundMethod').collapse('show');
+    $('#reasonDropdown').html("Retour d'écocup(s)");
 });
 $('#withdraw2').on('click', function () {
     const amount = $('#amount');
     amount.attr('value', '0');
     amount.val(0);
-    amount.prop('readonly', false);
+    amount.attr('step', 0.01);
+    amount.attr('min', 0);
     $('#withdrawReason').attr('value', '2');
     $('#reasonDropdown').html('Autre');
-    $('#collapseRefundMethod').collapse('show');
 });
 
 function saveWithdraw() {
-    const qte = $('.qte');
-    qte.each(function () {
-        qte.attr('value', '0');
-        qte.val('0');
+    $('.qte').each(function () {
+        $(this).attr('value', '0');
+        $(this).val('0');
     });
     const amount = $('#amount');
     $('#totalForm').attr('value', -parseFloat(amount.val()));

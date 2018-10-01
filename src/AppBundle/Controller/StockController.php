@@ -19,8 +19,7 @@ class StockController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
-      
-        $em = $this->getDoctrine()->getManager();
+
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
@@ -52,13 +51,12 @@ class StockController extends Controller {
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function modifArticleAction(Request $request, $id_article){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
             throw $this->createAccessDeniedException();
         }
 
         // 1) Récupérer l'Article et construire le form
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
-        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
         $article = $repo_stocks->find($id_article);
         $type = $article->getType()->getName();
@@ -78,7 +76,7 @@ class StockController extends Controller {
 
             // ... autres actions
 
-            $request->getSession()->getFlashbag()->add('info', 'l\'article ' .$article->getNom(). ' ('.$article->getType()->getName(). ') a bien été modifié.');
+            $this->addFlash('info', "l'article " . $article->getNom() . " (" . $article->getType()->getName() . ") a bien été modifié.");
 
             return $this->redirectToRoute('stock');
         }
@@ -119,7 +117,7 @@ class StockController extends Controller {
 
             // ... autres actions
 
-            $request->getSession()->getFlashbag()->add('info', 'Un nouvel article a été ajouté.');
+            $this->addFlash('info', 'Un nouvel article a été ajouté.');
 
             return $this->redirectToRoute('stock');
         }
@@ -143,15 +141,13 @@ class StockController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-        $session = $request->getSession();
-
         $idarticle = $request->query->get('idarticle');
 
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $article = $em->getRepository('AppBundle:Stocks')->find($idarticle);
 
         if (!$article) {
-            throw $this->createNotFoundException("Article non trouvé pour l'id ".$idarticle);
+            throw $this->createNotFoundException("Article non trouvé pour l'id " . $idarticle);
         }
 
         $transactions = $em->getRepository('AppBundle:DetailsTransactions')->findByArticle($idarticle);
@@ -163,8 +159,8 @@ class StockController extends Controller {
 
         $em->flush();
         
-        $session->getFlashBag()->add(
-            'info', 'l\'article ' .$article->getNom(). ' a bien été supprimé.'
+        $this->addFlash(
+            'info', "l'article " . $article->getNom() . " a bien été supprimé."
         );
 
         return $this->redirectToRoute('stock');
