@@ -147,9 +147,10 @@
 
 
     <div class="alert alert-light mt-3">
-        <h1 class="display-4">Autre</h1>
+        <h1 class="display-4">Gestion des tenues</h1>
     </div>
 
+    <a class="btn btn-success btn-lg btn-block" href="{{ path('historique_tenues') }}">Historique</a>
     <a class="btn btn-warning btn-lg btn-block" href="{{ path('print-z') }}"
             onclick="return confirm('Cette action effectue le bilan des ventes depuis la dernière clôture et imprime le ticket Z.\nLe bar doit être entièrement fermé pour effectuer cette action !')"
             data-toggle="tooltip" title="Fait le bilan des ventes depuis la dernière clôture et imprime le ticket Z">

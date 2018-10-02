@@ -1,38 +1,60 @@
 /****** Couleurs ******/
 :root {
-    --blue: #0E55F4;
-    --indigo: #6235FF;
-    --purple: #8624E8;
-    --pink: #CE28FF;
-    --red: #A81D01;
-    --orange: #DB7117;
-    --yellow: #FFC107;
-    --green: #01A867;
-    --teal: #3AE4D2;
-    --cyan: #4DDEFB;
-    --white: #FFF;
-    --gray: #525A5F;
+    --blue:#0E55F4;
+    --indigo:#6235FF;
+    --purple:#8624E8;
+    --pink:#CE28FF;
+    --red:#A81D01;
+    --orange:#DB7117;
+    --yellow:#FFC107;
+    --green:#01A867;
+    --teal:#3AE4D2;
+    --cyan:#4DDEFB;
+    --white:#FFF;
+    --gray:#525A5F;
 
-    --primary: #0E55F4;
-    --secondary: #5D666C;
-    --success: #01A867;
-    --info: #4DDEFB;
-    --warning: #FFC107;
-    --danger: #A81D01;
-    --light: #F8F9FA;
-    --dark: #212426;
+    --primary:#0E55F4;
+    --secondary:#5D666C;
+    --success:#01A867;
+    --info:#4DDEFB;
+    --warning:#FFC107;
+    --danger:#A81D01;
+    --light:#F8F9FA;
+    --dark:#212426;
 
     --blue-light:#5889F6;
     --green-light:#01F496;
     --red-light:#F4674B;
     --gray-light:#94A2AB;
     --blue-dark:#0A3FB5;
-    --green-dark:#01955b;
+    --green-dark:#01955B;
     --red-dark:#5B0F00;
-    --gray-dark: #2C3033;
+    --yellow-dark: #e2aa07;
+    --gray-dark:#2C3033;
     --blue-darker:#072975;
-    --green-darker: #01814f;
+    --green-darker:#01814F;
     --black:#121314;
+}
+
+/****** Loading ******/
+#loading {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: block;
+    opacity: 0.7;
+    background-color: #000;
+    z-index: 99;
+    text-align: center;
+}
+
+#loading-image {
+    position: absolute;
+    top: calc(50% - 100px);
+    left: calc(50% - 100px);
+    z-index: 100;
 }
 
 /****** Elements ******/
@@ -204,13 +226,16 @@ footer #copyright {
     text-align: center;
 }
 
-footer #copyright a {
+footer a, footer .badge-light[href] {
     color: var(--green);
     transition: all 0.15s ease 0s;
 }
 
-footer #copyright a:hover {
+footer a:hover, footer .badge-light[href]:hover, footer .badge-light[href]:focus {
     color: var(--green-dark);
+}
+
+footer a:hover {
     text-decoration: none;
 }
 

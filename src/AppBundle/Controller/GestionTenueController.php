@@ -102,11 +102,10 @@ class GestionTenueController extends Controller{
 
     /**
      * @Route("/gestion/z", name="print-z")
-     * @param Request $request
-     * @param \Swift_Mailer $mailer
      * @return string
+     * @throws \Exception
      */
-    public function printZ(Request $request, \Swift_Mailer $mailer)
+    public function printZ()
     {
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
             throw $this->createAccessDeniedException();
@@ -317,6 +316,14 @@ class GestionTenueController extends Controller{
         $bottles = $repo_stocks->findByType($typeBottle);
         $others = $repo_stocks->findByType($typeArticle);
 
+        // Génération de l'entité Zreport
+        $zReport->setUser($this->getUser());
+        $timestamp = date_create(date("Y-m-d H:i:s"));
+        $zReport->setTimestamp($timestamp);
+        $zReport->setTotalCommand($totCom);
+        $zReport->setTotalRefund($totRemb);
+        $zReport->setTotalRefill($totRech);
+        $zReport->setTotal($tot);
 
         // Génération du mail
         $message = (new \Swift_Message('Ticket Z du ' . $date . ' à ' . $time))
@@ -692,14 +699,6 @@ LA CAISSE
             $printer->close();
         }
 
-        $zReport->setUser($user);
-        $timestamp = date_create(date("Y-m-d H:i:s"));
-        $zReport->setTimestamp($timestamp);
-        $zReport->setTotalCommand($totCom);
-        $zReport->setTotalRefund($totRemb);
-        $zReport->setTotalRefill($totRech);
-        $zReport->setTotal($tot);
-
         $em = $this->getDoctrine()->getManager();
         $em->persist($zReport);
         $em->flush();
@@ -714,10 +713,10 @@ LA CAISSE
     /**
      * @Route("/gestion/cloture/{id_zreport}", name="cloture")
      * @param Request $request
-     * @param id_zreport
+     * @param int $id_zreport
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function closeBar(Request $request, $id_zreport=null)
+    public function closeBar(Request $request,int $id_zreport)
     {
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
             throw $this->createAccessDeniedException();

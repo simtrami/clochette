@@ -1,8 +1,38 @@
-.jumbotron {
-    background-color: var(--danger);
-    color: var(--light);
+.navbar {
+    background-color: var(--warning);
 }
 
-.jumbotron.container h2 {
+header {
+    background-color: var(--warning) !important;
+}
+
+footer a, footer .badge-light[href] {
+    color: var(--warning);
+}
+
+footer a:hover, footer .badge-light[href]:hover, footer .badge-light[href]:focus {
+    color: var(--yellow-dark);
+}
+
+.jumbotron {
+    background-color: var(--warning);
+    color: var(--dark);
+}
+
+.jumbotron .container h1 {
+}
+
+.jumbotron .container h2 {
+    color: var(--red) !important;
     font-size: 2rem !important;
+}
+
+a {
+    color: var(--red);
+    transition: all 0.15s ease 0s;
+}
+
+a:hover {
+    color: var(--red-dark);
+    text-decoration: none;
 }

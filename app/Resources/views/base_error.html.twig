@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr_FR">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel='shortcut icon' type='image/x-icon' href="{{ asset('images/logo.ico') }}" />
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {# <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous"> #}
+    <link rel="stylesheet" href="{{ asset('lib/Bootstrap-4.1.2/bootstrap.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ asset('css/all.css') }}">
+    {% block stylesheet %}{% endblock %}
+
+</head>
+
+<body>
+<header class="mb-3">
+    <nav class="navbar navbar-expand-lg navbar-dark mx-auto">
+        <a class="navbar-brand" href="{{ path('homepage') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo">
+        </a>
+
+        <button id="header-toggler" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('homepage') }}">
+                        <i class="fa fa-home" aria-hidden="true"></i>
+                        Accueil</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('purchase') }}">
+                        <i class="fa fa-money-bill-wave"></i> Caisse</a>
+                </li>
+
+                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('stock') }}">
+                            <i class="fa fa-boxes" aria-hidden="true"></i> Stock</a>
+                    </li>
+                {% endif %}
+
+                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('comptes') }}">
+                            <i class="fa fa-id-badge" aria-hidden="true"></i> Comptes</a>
+                    </li>
+                {% endif %}
+
+                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('gestion-tenue') }}">
+                            <i class="fa fa-check-double" aria-hidden="true"></i> Gestion des ventes</a>
+                    </li>
+                {% endif %}
+
+                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            {%  if is_granted(expression('"ROLE_ADMIN" in roles')) %}
+                                <a class="dropdown-item" href="{{ path('modif_utilisateur', {id : app.user.id}) }}">
+                                    <i class="fa fa-user-cog"></i> {{ app.user.username }}</a>
+                                <div class="dropdown-divider"></div>
+                            {% endif %}
+                            <a class="dropdown-item" href="{{ path('logout') }}">
+                                <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
+                        </div>
+                    </li>
+                {% elseif is_granted(expression('"ROLE_INTRO" in roles')) %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('logout') }}">
+                            <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('login') }}">
+                            <i class="fa fa-sign-in-alt" aria-hidden="true"></i> Se connecter</a>
+                    </li>
+                {% endif %}
+
+                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="{{ path('transactions') }}">
+                                <i class="fa fa-history"></i> Historique des transactions</a>
+                            {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
+                                <a class="dropdown-item" href="{{ path('utilisateurs') }}">
+                                    <i class="fa fa-users-cog"></i> Gestion des utilisateurs</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<div class="container-fluid">
+    {% block body %}{% endblock %}
+</div>
+
+<div class="spacer"></div>
+<footer class="mx-auto mt-4">
+    <div id="copyright" class="mt-2">
+        <p>&copy; {{ date('Y')|date('Y') }} <a href="{{ developer_url }}" target="_blank">{{ developer_username }}</a> &centerdot; Clochette <a href="{{ project_url }}" target="_blank" class="badge badge-light">v{{ project_version }}</a></p>
+    </div>
+    {% block footer %}{% endblock %}
+</footer>
+{# <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> #}
+<script src="{{ asset('lib/jquery-3.3.1.slim.min.js') }}"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> #}
+<script src="{{ asset('lib/popper.min.js') }}"></script>
+{# <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script> #}
+<script src="{{ asset('lib/Bootstrap-4.1.2/bootstrap.js') }}"></script>
+{% block javascripts %}{% endblock %}
+
+</body>
+
+</html>

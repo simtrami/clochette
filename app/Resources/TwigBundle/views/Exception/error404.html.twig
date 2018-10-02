@@ -1,0 +1,22 @@
+{% extends 'base_error.html.twig' %}
+
+{% block title %}{{ status_code }} {{ status_text }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/errors.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-3 mb-4">Page inconnue :(</h1>
+            <h2 class="lead mb-4"><i class="fas fa-exclamation-triangle"></i> {{ status_code }} {{ status_text }}</h2>
+            <p class="lead mb-2 text-justify">La page que vous cherchez n'existe pas ou a été déplacée.<br/>
+                Vérifiez que vous n'avez pas trop bu et que l'URL est correct...</p>
+            <p class="lead mb-0 text-justify">Vous pouvez <a href="mailto:{{ admin_mail }}">contacter</a> l'administrateur du site si ce problème vous semble anormal.</p>
+        </div>
+    </div>
+{% endblock %}
