@@ -58,9 +58,9 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Quantité</span>
                         </div>
-                        <input type="number" min="0" step="1" class="qte form-control" autocomplete="off" name="drafts[{{ loop.index }}][quantite]" value="0">
+                        <input type="number" min="0" step="1" max="99" class="qte form-control" autocomplete="off" name="drafts[{{ loop.index }}][quantite]" value="0">
                         <div class="input-group-append">
-                            <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
+                            <input type="text" class="qteStock" value="99" hidden>
                             <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
                             <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                         </div>

@@ -70,8 +70,11 @@ class PurchaseController extends Controller
         // Réduction sur le cidre
         if (date('H') == 22 && $repo_stocks->findOneBy(['nom' => 'Cidre'])->getPrixVente() == 2.5) {
             $repo_stocks->findOneBy(['nom' => 'Cidre'])->setPrixVente(2);
-        } else {
+        } elseif (date('H') != 22) {
             $repo_stocks->findOneBy(['nom' => 'Cidre'])->setPrixVente(2.5);
+        } else {
+            $this->addFlash('erreur', "Un problème concernant le Cidre est survenu !");
+            $this->redirectToRoute('purchase');
         }
 
         $draft = $repo_typeStocks->returnType('Fût');
