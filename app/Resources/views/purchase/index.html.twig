@@ -30,11 +30,11 @@
 
 
     <form action="{{ path('purchaseValidation') }}" method="post">
-        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseDrafts" aria-expanded="false" aria-controls="collapseDrafts">
+        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseDrafts" aria-expanded="true" aria-controls="collapseDrafts">
             <i class="fas fa-beer"></i> Pressions
         </button>
 
-        <div class="collapse" id="collapseDrafts">
+        <div class="collapse show" id="collapseDrafts">
         {% for article in selected_drafts %}
             {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
                 <div class="card-columns mb-1">
@@ -75,11 +75,11 @@
         {% endfor %}
         </div>
 
-        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseBottles" aria-expanded="false" aria-controls="collapseBottles">
+        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseBottles" aria-expanded="true" aria-controls="collapseBottles">
             <img src="{{ asset('svg/si-glyph-fridge.svg') }}" style="height: 1.8rem;vertical-align: bottom;margin-left: -5px;"/>Bouteilles
         </button>
 
-        <div class="collapse" id="collapseBottles">
+        <div class="collapse show" id="collapseBottles">
         {% for article in selected_bottles %}
             {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
                 <div class="card-columns mb-1">
@@ -120,11 +120,11 @@
         {% endfor %}
         </div>
 
-        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseArticles" aria-expanded="false" aria-controls="collapseArticles">
+        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseArticles" aria-expanded="true" aria-controls="collapseArticles">
             <i class="fas fa-cookie-bite"></i> Nourriture et autres
         </button>
 
-        <div class="collapse" id="collapseArticles">
+        <div class="collapse show" id="collapseArticles">
         {% for article in selected_articles %}
             {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
             <div class="card-columns mb-1">

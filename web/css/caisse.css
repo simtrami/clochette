@@ -80,13 +80,3 @@ a.dropdown-item {
 #modalAccount .modal-footer {
     justify-content: space-between;
 }
-
-/*.algolia-autocomplete input {
-    width: 100% !important;
-}*/
-
-@media (min-width: 800px), (min-device-width: 800px) {
-    #collapseDrafts, #collapseBottles, #collapseArticles, #collapsePayer {
-        display: block;
-    }
-}
