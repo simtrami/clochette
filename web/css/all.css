@@ -250,13 +250,13 @@ footer a:hover {
 
 /** Desktop specific **/
 
-@media (max-width: var(--breakpoint-md)), (max-device-width: var(--breakpoint-md)) {
+@media (max-width: 800px), (max-device-width: 800px) {
     nav.navbar {
         width: 100%;
     }
 }
 
-@media (max-width: var(--breakpoint-md)), (max-device-width: var(--breakpoint-md)) {
+@media (max-width: 800px), (max-device-width: 800px) {
     .container-fluid {
         width: 100%;
     }
@@ -264,7 +264,7 @@ footer a:hover {
 
 /** Mobile specific **/
 
-@media (max-width: var(--breakpoint-md)), (max-device-width: var(--breakpoint-md)) {
+@media (max-width: 800px), (max-device-width: 800px) {
     .navbar-brand img {
         width: 6.5rem;
     }
