@@ -119,7 +119,7 @@ class StockController extends Controller {
 
             $this->addFlash('info', 'Un nouvel article a été ajouté.');
 
-            return $this->redirectToRoute('stock');
+            return $this->redirectToRoute('ajout_article');
         }
 
         return $this->render(

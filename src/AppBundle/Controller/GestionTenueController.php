@@ -9,7 +9,6 @@ use AppBundle\Entity\Zreport;
 use AppBundle\Form\GestionTenueType;
 use AppBundle\Form\TreasuryType;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
 use Swift_Image;
 use Symfony\Component\Routing\Annotation\Route;

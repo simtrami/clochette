@@ -5,6 +5,8 @@ namespace AppBundle\Controller;
 use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Comptes;
 use AppBundle\Form\CompteType;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\Printer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +17,21 @@ class CompteController extends Controller {
 
     private $indexManager;
 
-    public function __construct(IndexManagerInterface $indexingManager)
+    /*
+     * @var string
+     */
+    protected $escposPrinterIP;
+
+    /*
+     * @var int
+     */
+    protected $escposPrinterPort;
+
+    public function __construct(IndexManagerInterface $indexingManager, $escposPrinterIP, $escposPrinterPort)
     {
         $this->indexManager = $indexingManager;
+        $this->escposPrinterIP = $escposPrinterIP;
+        $this->escposPrinterPort = $escposPrinterPort;
     }
 
     /**
@@ -51,16 +65,16 @@ class CompteController extends Controller {
 
         $form->handleRequest($request);
 
-        $checkAccount = $this->container->get('appbundle.checkaccount');
+        //$checkAccount = $this->container->get('appbundle.checkaccount');
 
         if($form->isSubmitted() && $form->isValid()) {
             /*if ($checkAccount->anneeNotValid($compte)){
                 throw new \Exception('Une année doit au moins être égale à 1');
             }*/
 
-            if (!$checkAccount->namesValid($compte)){
+            /*if (!$checkAccount->namesValid($compte)){
                 throw new \Exception('Les nom, prénom et pseudo ne peuvent contenir que des lettres.');
-            }
+            }*/
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($compte);
@@ -69,9 +83,9 @@ class CompteController extends Controller {
 
             $this->indexManager->index($compte, $em);
 
-            $request->getSession()->getFlashbag()->add('info', 'Un nouveau compte a été créé.');
+            $this->addFlash('info', 'Un nouveau compte a été créé.');
         
-            return $this->redirectToRoute('comptes');
+            return $this->redirectToRoute('ajout_compte');
         }
       
         return $this->render(
@@ -101,15 +115,15 @@ class CompteController extends Controller {
         
         $form = $this->createForm(CompteType::class, $compte);
 
-        $checkAccount = $this->container->get('appbundle.checkaccount');
+        //$checkAccount = $this->container->get('appbundle.checkaccount');
 
         // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($checkAccount->anneeNotValid($compte)){
+            /*if ($checkAccount->anneeNotValid($compte)){
                 throw new \Exception('Une année doit au moins être égale à 1');
-            }
+            }*/
 
             // 3) Enregistrer le compte!
             $em = $this->getDoctrine()->getManager();
@@ -121,7 +135,7 @@ class CompteController extends Controller {
 
             // ... autres actions
 
-            $request->getSession()->getFlashbag()->add('info', 'Le compte de ' .$compte->getPrenom(). ' ' .$compte->getNom(). ' a bien été modifié.');
+            $this->addFlash('info', 'Le compte de ' .$compte->getPrenom(). ' ' .$compte->getNom(). ' a bien été modifié.');
 
             return $this->redirectToRoute('comptes');
         }
@@ -142,6 +156,7 @@ class CompteController extends Controller {
      * @param Request $request
      * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function rechargeCompte(Request $request, $id){
 
@@ -199,12 +214,26 @@ class CompteController extends Controller {
 
             $this->indexManager->index($compte, $em);
 
-            $session->getFlashbag()->add('info', 
+            $this->addFlash('info',
                 $form['montant']->getData().
                 '€ ont été ajoutés au compte de '.$compte->getPrenom(). 
                 ' '.$compte->getNom().
                 '. Son solde est désormais de '.$newSolde.'€.'
             );
+
+            if ($methode=='cash') {
+                $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+                $printer = new Printer($connector);
+                try {
+                    $printer->pulse();
+                    $this->addFlash(
+                        'info',
+                        "L'ouverture de la caisse a été effectuée."
+                    );
+                } finally {
+                    $printer->close();
+                }
+            }
 
             return $this->redirectToRoute('comptes');
         }

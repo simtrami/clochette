@@ -2,7 +2,7 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # https://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host: 127.0.0.1
+    database_host: '127.0.0.1'
     database_port: ~
     database_name: symfony
     database_user: root
@@ -11,7 +11,7 @@ parameters:
     #database_path: '%kernel.project_dir%/var/data/data.sqlite'
 
     mailer_transport: smtp
-    mailer_host: 127.0.0.1
+    mailer_host: '127.0.0.1'
     mailer_user: ~
     mailer_password: ~
 
@@ -33,7 +33,7 @@ parameters:
     env(developer_url): ~
     env(developer_username): ~
     env(project_url): ~
-    env(project_version): 1.0
+    env(project_version): '1.1'
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt

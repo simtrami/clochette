@@ -38,7 +38,11 @@ class UserController extends Controller{
 
     /**
      * @Route("/utilisateurs/modifier/{id}", name="modif_utilisateur")
-    **/
+     * @param Request $request
+     * @param $id
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function modifyAction(Request $request, $id, UserPasswordEncoderInterface $passwordEncoder){
 
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -128,6 +132,9 @@ class UserController extends Controller{
 
     /**
      * @Route("/utilisateurs/nouveau", name="ajout_utilisateur")
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
@@ -158,7 +165,7 @@ class UserController extends Controller{
             // ... do any other work - like sending them an email, etc
             // maybe set a "flash" success message for the user
 
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('ajout_utilisateur');
         }
 
         return $this->render(

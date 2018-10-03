@@ -1,3 +1,8 @@
+button.alert {
+    width: 100%;
+    text-align: left;
+}
+
 .affichage-articles {
     margin-bottom: 16px;
 }
@@ -22,8 +27,31 @@
     margin-bottom: 1rem !important;
 }
 
+.algolia-autocomplete {
+    width: 100%;
+}
+
 .algolia-autocomplete span {
     top:80% !important;
+    width: 100%;
+}
+
+.algolia-autocomplete span div {
+    width: 100%;
+}
+
+.aa-dropdown-menu::after {
+
+}
+
+#algolia-brand {
+    text-align: right;
+    opacity: 0.2;
+    transition: all 0.1s ease-in;
+}
+
+#algolia-brand:hover {
+    opacity: 1;
 }
 
 .input-group-prepend .custom-select, .input-group-append .custom-select {
@@ -47,6 +75,10 @@
 
 a.dropdown-item {
     color: inherit;
+}
+
+#modalAccount .modal-footer {
+    justify-content: space-between;
 }
 
 /*.algolia-autocomplete input {

@@ -21,7 +21,7 @@
 
     {% for message in app.session.flashbag.get('erreur') %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fa fa-times-circle"></i> Information : {{message}}
+            <i class="fa fa-times-circle"></i> Erreur : {{message}}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -30,9 +30,9 @@
 
 
     <form action="{{ path('purchaseValidation') }}" method="post">
-        <div class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseDrafts" aria-expanded="false" aria-controls="collapseDrafts">
+        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseDrafts" aria-expanded="false" aria-controls="collapseDrafts">
             <i class="fas fa-beer"></i> Pressions
-        </div>
+        </button>
 
         <div class="collapse" id="collapseDrafts">
         {% for article in selected_drafts %}
@@ -75,9 +75,9 @@
         {% endfor %}
         </div>
 
-        <div class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseBottles" aria-expanded="false" aria-controls="collapseBottles">
+        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseBottles" aria-expanded="false" aria-controls="collapseBottles">
             <img src="{{ asset('svg/si-glyph-fridge.svg') }}" style="height: 1.8rem;vertical-align: bottom;margin-left: -5px;"/>Bouteilles
-        </div>
+        </button>
 
         <div class="collapse" id="collapseBottles">
         {% for article in selected_bottles %}
@@ -120,9 +120,9 @@
         {% endfor %}
         </div>
 
-        <div class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseArticles" aria-expanded="false" aria-controls="collapseArticles">
+        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseArticles" aria-expanded="false" aria-controls="collapseArticles">
             <i class="fas fa-cookie-bite"></i> Nourriture et autres
-        </div>
+        </button>
 
         <div class="collapse" id="collapseArticles">
         {% for article in selected_articles %}
@@ -165,9 +165,9 @@
         {% endfor %}
         </div>
 
-        <div class="alert alert-success h4" data-toggle="collapse" data-target="#collapsePayer" aria-expanded="true" aria-controls="collapsePayer">
+        <button type="button" class="alert alert-success h4" data-toggle="collapse" data-target="#collapsePayer" aria-expanded="true" aria-controls="collapsePayer">
             <i class="far fa-credit-card"></i> Paiement
-        </div>
+        </button>
 
         <div class="collapse show" id="collapsePayer">
             <!-- Prix total -->
@@ -262,7 +262,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <input name="amount" id="amount" lang="en" min="0" step="1" type="number" class="form-control form-control-sm" aria-describedby="amount-prefix" autocomplete="off" value="1">
+                            <input name="amount" id="amount" lang="en" min="0" step="1" type="number" class="form-control form-control-sm amount-withdraw" aria-describedby="amount-prefix" autocomplete="off" value="1">
                         </div>
                     </div>
                     <div class="btn-group btn-group-md btn-group-toggle" data-toggle="buttons">
@@ -270,16 +270,18 @@
                             <input class="choix-paiement" type="radio" id="option1">
                             <i class="fa fa-money-bill-alt"></i> Liquide
                         </label>
+                        {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <label class="btn btn-success" onclick="$('#selectedRefundMethod').attr('value', 'account')">
                             <input class="choix-paiement" type="radio" id="option2">
                             <i class="fa fa-id-badge"></i> Compte
                         </label>
+                        {% endif %}
                     </div>
                     <input id="selectedRefundMethod" value="" hidden>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                    <button id="validate" type="button" class="btn btn-success" onclick="saveWithdraw()">Valider</button>
+                    <button id="validate" type="button" class="btn btn-success validate-withdraw" onclick="saveWithdraw()">Valider</button>
                 </div>
             </div>
         </div>
@@ -288,20 +290,23 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalAccountLabel">Paiement par compte</h5>
+                    <h5 class="modal-title" id="modalAccountLabel">Compte à débiter</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="form-control-label" for="search-input">Compte à débiter</label><br/>
-                        <input type="search" id="paying-account" class="form-control form-control-md" placeholder="Rechercher un compte..." autocomplete="off" />
+                        <!-- <label class="form-control-label" for="search-input">Compte à débiter</label> -->
+                        <input type="search" id="paying-account" class="form-control form-control-md" placeholder="Rechercher un compte..." autocomplete="off">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                    <button id="validate" type="button" class="btn btn-success" onclick="saveAccount()">Valider</button>
+                    <a id="algolia-brand" href="https://algolia.com" target="_blank"><img src="{{ asset('images/search-by-algolia-light-background-8762ce8b.svg') }}"></a>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button id="validate" type="button" class="btn btn-success validate-account" onclick="saveAccount()">Valider</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -334,7 +339,7 @@
                 suggestion: function(suggestion) {
                   return suggestion._highlightResult.pseudo.value + ' <small>(' +
                     suggestion._highlightResult.prenom.value + ' <span class="text-uppercase">' +
-                    suggestion._highlightResult.nom.value + '</span>)</small> - <strong>' +
+                    suggestion._highlightResult.nom.value + '</span>)</small> : <strong>' +
                     suggestion.solde + '€</strong>';
                 }
             }
@@ -345,8 +350,12 @@
     <script>
         $(document).ready(function(){
             $('#paying-account').keypress(function(e){
-                if(e.keyCode==13)
-                    $('#validate').click();
+                if(e.keyCode===13)
+                    $('.validate-account').click();
+            });
+            $('.amount-withdraw').keypress(function(e){
+                if(e.keyCode===13)
+                    $('.validate-withdraw').click();
             });
         });
     </script>

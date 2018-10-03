@@ -22,10 +22,10 @@ class StocksType extends AbstractType
     {
         $builder
             ->add('prixAchat', MoneyType::class, array(
-                'label' => "Prix à l'achat",
+                'label' => "Prix à l'achat (TTC+accise, hors consigne)",
             ))
             ->add('prixVente', MoneyType::class, array(
-                'label' => "Prix à la vente",
+                'label' => "Prix à la vente (/unité)",
             ))
             ->add('quantite', IntegerType::class, array(
                 'label' => "Quantité",
@@ -51,13 +51,13 @@ class StocksType extends AbstractType
                         'class' => 'AppBundle:TypeStocks'
                     ))
                     ->add('volume', NumberType::class, array(
-                        'label' => "Volume à l'unité",
+                        'label' => "Volume à l'unité (L)",
                         'required' => false,
                     ));
             } else if ($article->getType() != "Nourriture ou autre") {
                 $form
                     ->add('volume', NumberType::class, array(
-                        'label' => "Volume à l'unité",
+                        'label' => "Volume à l'unité (L)",
                         'required' => false,
                     ));
             }

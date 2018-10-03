@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,6 +66,13 @@ class PurchaseController extends Controller
 
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
+
+        // Réduction sur le cidre
+        if (date('H') == 22 && $repo_stocks->findOneBy(['nom' => 'Cidre'])->getPrixVente() == 2.5) {
+            $repo_stocks->findOneBy(['nom' => 'Cidre'])->setPrixVente(2);
+        } else {
+            $repo_stocks->findOneBy(['nom' => 'Cidre'])->setPrixVente(2.5);
+        }
 
         $draft = $repo_typeStocks->returnType('Fût');
         $bottle = $repo_typeStocks->returnType('Bouteille');
@@ -130,7 +136,7 @@ class PurchaseController extends Controller
         // et calul du montant de la commande (car possibilité d'injecter une fausse valeur en html)
         $montant = 0;
 
-        if ($form['withdrawReason'] == 1 && $this->security->isGranted('ROLE_BUREAU')) {
+        if ($form['withdrawReason'] == 1 && $this->security->isGranted('ROLE_INTRO')) {
             $commande->setType(2);
 
             $detail = new DetailsTransactions();
@@ -149,7 +155,7 @@ class PurchaseController extends Controller
             $commande->setType(2);
 
             $montant = -$form['total'];
-        } else {
+        } elseif ($form['withdrawReason'] == 0) {
             $commande->setType(1);
 
             foreach ($form['drafts'] as $item) {
@@ -206,6 +212,12 @@ class PurchaseController extends Controller
                     $em->persist($article);
                 }
             }
+        } else {
+            $this->addFlash(
+                'erreur',
+                "L'utilisateur" . $this->getUser()->getUsername() . " n'a pas le droit d'effectuer cette transaction !"
+            );
+            return $this->redirectToRoute('purchase');
         }
       
         if (($montant < 0 && $form['withdrawReason'] == 0) || $montant == 0) {
@@ -224,13 +236,13 @@ class PurchaseController extends Controller
         // Paiement par compte : Validation de la commande en fonction de l'utilisateur et du solde du compte
         if ($form['methode'] == "account") {
             $compte = $repo_comptes->findOneBy(['pseudo' => $form['compte']]);
-            $solde = $compte->getSolde();
+            $solde = floatval($compte->getSolde());
 
-            if ( $this->security->isGranted('ROLE_BUREAU') &&  $solde < $montant) {
+            if (!$this->security->isGranted('ROLE_BUREAU') && ($solde - $montant < 0)) {
 
                 $this->addFlash(
                     'erreur',
-                    "Le solde du compte de " . $compte->getPrenom() . " " . $compte->getNom() . " est insuffisant pour valider la commande.</br>Il manque " . $montant - $solde . "€."
+                    "Le solde du compte de " . $compte->getPrenom() . " " . $compte->getNom() . " est insuffisant pour valider la commande : Il manque " . (-$solde + $montant) . "€."
                 );
                 return $this->redirectToRoute('purchase');            
             } else {
@@ -288,7 +300,7 @@ class PurchaseController extends Controller
                 }
                 break;
             case 'cash':
-                if ($form['withdrawReason'] == "1" && $this->security->isGranted('ROLE_BUREAU')) {
+                if ($form['withdrawReason'] == "1" && $this->security->isGranted('ROLE_INTRO')) {
                     $this->addFlash(
                         'info',
                         $commande->getMontant() . "€ ont été retirés de la caisse pour le retour de ". $commande->getMontant() ." écocup(s)."
@@ -320,7 +332,7 @@ class PurchaseController extends Controller
             default:
                 $this->addFlash(
                     'erreur', 
-                    "La méthode de paiement n'a pas été reconnue."
+                    "La méthode de paiement n'a pas été reconnue !"
                 );
                 return $this->redirectToRoute('purchase');
         }
@@ -336,10 +348,10 @@ class PurchaseController extends Controller
 
     /**
      * @Route("/purchase/open", name="openCashier")
-     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
-    public function openCashier(Request $request){
+    public function openCashier(){
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
             throw $this->createAccessDeniedException();
         }
