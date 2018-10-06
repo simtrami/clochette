@@ -23,4 +23,13 @@ class TransactionsRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function returnNotRegisteredTransactions(){
+        $qb = $this->createQueryBuilder('t');
+
+        $qb
+            ->where('t.zreport IS NULL');
+
+        return $qb->getQuery()->getResult();
+    }
 }

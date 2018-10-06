@@ -53,15 +53,15 @@ class GestionTenueController extends Controller{
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
-        $draft = $repo_typeStocks->returnType('Fût');
-        $bottle = $repo_typeStocks->returnType('Bouteille');
-        $article = $repo_typeStocks->returnType('Nourriture ou autre');
+        $typeDraft = $repo_typeStocks->returnType('Fût');
+        $typeBottle = $repo_typeStocks->returnType('Bouteille');
+        $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
 
         $gestion = new GestionTenue();
 
-        $drafts = $repo_stocks->findByType($draft);
-        $bottles = $repo_stocks->findByType($bottle);
-        $articles = $repo_stocks->findByType($article);
+        $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
+        $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
+        $articles = $repo_stocks->findBy(['type' => $typeArticle]);
 
         foreach ($drafts as $draft){
             $gestion->getDrafts()->add($draft);
@@ -100,13 +100,13 @@ class GestionTenueController extends Controller{
     }
 
     /**
-     * @Route("/gestion/z", name="print-z")
+     * @Route("/gestion/z", name="generate-z")
      * @return string
      * @throws \Exception
      */
-    public function printZ()
+    public function generateZ()
     {
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -302,8 +302,7 @@ class GestionTenueController extends Controller{
         $totRech = $totRechCash + $totRechPumpkin + $totRechCard;
 
         // Calcul du bilan
-        $totEntrees = $totCom + $totRech;
-        $tot = $totEntrees - $totRemb;
+        $tot = $totCom - $totRemb;
 
         // Bilan des stocks
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
@@ -311,9 +310,9 @@ class GestionTenueController extends Controller{
         $typeDraft = $repo_typeStocks->returnType('Fût');
         $typeBottle = $repo_typeStocks->returnType('Bouteille');
         $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
-        $drafts = $repo_stocks->findByType($typeDraft);
-        $bottles = $repo_stocks->findByType($typeBottle);
-        $others = $repo_stocks->findByType($typeArticle);
+        $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
+        $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
+        $others = $repo_stocks->findBy(['type' => $typeArticle]);
 
         // Génération de l'entité Zreport
         $zReport->setUser($this->getUser());
@@ -324,400 +323,69 @@ class GestionTenueController extends Controller{
         $zReport->setTotalRefill($totRech);
         $zReport->setTotal($tot);
 
-        // Génération du mail
-        $message = (new \Swift_Message('Ticket Z du ' . $date . ' à ' . $time))
-            ->setFrom($this->sendingAddress)
-            ->setTo($this->mailingListAddress);
-        $logo = $message->embed(Swift_Image::fromPath('images/logo.ico'));
-        $message->setBody(
-            $this->renderView(
-                'emails/z.html.twig',
-                array(
-                    'user' => $username,
-                    'logo' => $logo,
-                    'date' => $date,
-                    'time' => $time,
-                    'commandes' => $commandes,
-                    'totComCash' => $totComCash,
-                    'totComAccount' => $totComAccount,
-                    'totComPumpkin' => $totComPumpkin,
-                    'totComCard' => $totComCard,
-                    'totCom' => $totCom,
-                    'rechargements' => $rechargements,
-                    'totRechCash' => $totRechCash,
-                    'totRechPumpkin' => $totRechPumpkin,
-                    'totRechCard' => $totRechCard,
-                    'totRech' => $totRech,
-                    'nbRembCash' => $nbRembCash,
-                    'totEcoCash' => $totEcoCash,
-                    'totRembCash' => $totRembCash,
-                    'nbRembAccount' => $nbRembAccount,
-                    'totEcoAccount' => $totEcoAccount,
-                    'totRembAccount' => $totRembAccount,
-                    'totRemb' => $totRemb,
-                    'totEntrees' => $totEntrees,
-                    'tot' => $tot,
-                    'users' => $users,
-                    'nbTransactions' => $nbTransactions,
-                    'drafts' => $drafts,
-                    'bottles' => $bottles,
-                    'others' => $others
-                )
-            ),
-            'text/html'
-        )/*
-             * If you also want to include a plaintext version of the message
-            ->addPart(
-                $this->renderView(
-                    'Emails/registration.txt.twig',
-                    array('name' => $name)
-                ),
-                'text/plain'
-            )
-            */
-        ;
-
-        //$mailer->send($message);
-
-        // or, you can also fetch the mailer service this way
-        $this->get('mailer')->send($message);
-
-        $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
-        $printer = new Printer($connector);
-        try {
-            // En-tete
-            $printer->feed(3);
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->setTextSize(3,3);
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->setReverseColors(true);
-            $printer->text('AbsINThe
-');
-            $printer->setReverseColors(false);
-            $printer->feed();
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text('Récapitulatif de tenue
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->text('Émis le ' . $date . ' à ' . $time . '
-par ' . $username . '
-');
-            $printer->feed();
-
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->text('================================');
-            $printer->feed(2);
-
-            // ENTREES
-            $printer->initialize();
-            $printer->setTextSize(2,2);
-            $printer->text('ENTRÉES
-');
-            $printer->feed();
-
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-            $printer->text('COMMANDES
-');
-
-            // Liquide
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-            $printer->text('LIQUIDE
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            foreach ($commandes["cash"] as $article => $data) {
-                $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $data["qty"] . '
-');
-                $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($data["price"] . '
-');
-            }
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total liquide
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totComCash . '
-');
-            $printer->feed();
-
-            // Compte
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-            $printer->text('COMPTE
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            foreach ($commandes["account"] as $article => $data) {
-                $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $data["qty"] . '
-');
-                $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($data["price"] . '
-');
-            }
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total compte
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totComAccount . '
-');
-            $printer->feed();
-
-            // Pumpkin
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-            $printer->text('PUMPKIN
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            foreach ($commandes["pumpkin"] as $article => $data) {
-                $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $data["qty"] . '
-');
-                $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($data["price"] . '
-');
-            }
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total Pumpkin
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totComPumpkin . '
-');
-            $printer->feed();
-
-            // Carte
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-            $printer->text('CARTE
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            foreach ($commandes["card"] as $article => $data) {
-                $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $data["qty"] . '
-');
-                $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($data["price"] . '
-');
-            }
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total carte
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totComCard . '
-');
-            $printer->feed();
-
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totCom . '
-');
-            $printer->feed();
-
-            // Rechargements
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-            $printer->text('RECHARGEMENTS
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            foreach ($rechargements as $compte => $rechargement) {
-                $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($compte . ' (' . $rechargement["methode"] . ')
-');
-                $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($rechargement["montant"] . '
-');
-            }
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total liquide
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totRechCash . '
-');
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total Pumpkin
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totRechPumpkin . '
-');
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total Carte
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totRechCard . '
-');
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totRech . '
-');
-            $printer->feed();
-
-            // SORTIES
-            $printer->initialize();
-            $printer->setTextSize(2,2);
-            $printer->text('SORTIES
-');
-            $printer->feed();
-
-            // Remboursements
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-            $printer->text('REMBOURSEMENTS
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->text('Liquide : ' . $nbRembCash . '
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_B);
-            $printer->text('Ecocups ramenées : ' . $totEcoCash . '
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totRembCash . '
-');
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->text('Compte : ' . $nbRembAccount . '
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_B);
-            $printer->text('Ecocups ramenées : ' . $totEcoAccount . '
-');
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totRembAccount . '
-');
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total remboursements
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($totRemb . '
-');
-            $printer->feed();
-
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->text('================================');
-            $printer->feed(2);
-
-            // Total transactions
-            $printer->initialize();
-            $printer->setTextSize(2,2);
-            $printer->text('TOTAL
-');
-            $printer->feed();
-            $printer->initialize();
-
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total entrées
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text('+ ' . $totEntrees . '
-');
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total sorties
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text('- ' . $totRemb . '
-');
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Total
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($tot . '
-');
-            $printer->feed();
-
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->text('================================');
-            $printer->feed(2);
-
-            // Activité appli
-            $printer->initialize();
-            $printer->setTextSize(2,2);
-            $printer->text('Transactions
-');
-            $printer->feed();
-
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_FONT_A);
-            foreach ($users as $user => $nb) {
-                $printer->text($user . ' : ' . $nb . '
-');
-            }
-            $printer->feed();
-
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text('Nombre total de transactions
-');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($nbTransactions . '
-');
-            $printer->feed();
-
-            $printer->initialize();
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
-            $printer->text('================================');
-            $printer->feed(2);
-
-            // Rappel
-            $printer->feed();
-            $printer->setTextSize(2,2);
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text('RESTE A COMPTER
-LA CAISSE
-');
-            $printer->initialize();
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text('Au revoir :-)
-');
-            $printer->feed();
-            $printer->selectPrintMode(Printer::MODE_FONT_B);
-            $printer->text('Ticket magique fabriqué par Clochette');
-
-            $printer->feed(8);
-        } finally {
-            $printer->close();
-        }
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($zReport);
-        $em->flush();
-
-        $this->addFlash(
-            'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
+        $data = array(
+            'user' => $username,
+            'date' => $date,
+            'time' => $time,
+            'commandes' => $commandes,
+            'totComCash' => $totComCash,
+            'totComAccount' => $totComAccount,
+            'totComPumpkin' => $totComPumpkin,
+            'totComCard' => $totComCard,
+            'totCom' => $totCom,
+            'rechargements' => $rechargements,
+            'totRechCash' => $totRechCash,
+            'totRechPumpkin' => $totRechPumpkin,
+            'totRechCard' => $totRechCard,
+            'totRech' => $totRech,
+            'nbRembCash' => $nbRembCash,
+            'totEcoCash' => $totEcoCash,
+            'totRembCash' => $totRembCash,
+            'nbRembAccount' => $nbRembAccount,
+            'totEcoAccount' => $totEcoAccount,
+            'totRembAccount' => $totRembAccount,
+            'totRemb' => $totRemb,
+            'tot' => $tot,
+            'users' => $users,
+            'nbTransactions' => $nbTransactions,
         );
 
-        return $this->redirectToRoute('cloture', ['id_zreport' => $zReport->getId()]);
+        try {
+            // Print Z report
+            //$this->printZ($data);
+            // Add stock balance sheet and send e-mail report
+            $data['drafts'] = $drafts;
+            $data['bottles'] = $bottles;
+            $data['others'] = $others;
+            $this->sendZ($data);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($zReport);
+            $em->flush();
+
+            $this->addFlash(
+                'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
+            );
+
+            return $this->redirectToRoute('cloture', ['id_zreport' => $zReport->getId()]);
+        } catch (\Exception $e) {
+            // If it fails, does nothing and goes back
+            $this->addFlash(
+                'error', "Une erreur est survenue dans l'impression du ticket ou l'envoi du mail !"
+            );
+            return $this->render('gestion/index.html.twig', array($e));
+        }
     }
 
     /**
      * @Route("/gestion/cloture/{id_zreport}", name="cloture")
      * @param Request $request
-     * @param int $id_zreport
+     * @param $id_zreport
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function closeBar(Request $request,int $id_zreport)
+    public function closeBar(Request $request, $id_zreport)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -760,7 +428,7 @@ LA CAISSE
      */
     public function history()
     {
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -777,7 +445,7 @@ LA CAISSE
      */
     public function modifCloture(Request $request, $id_treasury)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -814,7 +482,7 @@ LA CAISSE
      */
     public function details($id_zreport)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -826,5 +494,361 @@ LA CAISSE
                 'zreport' => $zreport
             )
         );
+    }
+
+    protected function sendZ(array $data) {
+        // Génération du mail
+        $message = (new \Swift_Message('Ticket Z du ' . $data['date'] . ' à ' . $data['time']))
+            ->setFrom($this->sendingAddress)
+            ->setTo($this->mailingListAddress);
+        $data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
+        $message->setBody(
+            $this->renderView(
+                'emails/z.html.twig',
+                $data
+            ),
+            'text/html'
+        )/*
+             * If you also want to include a plaintext version of the message
+            ->addPart(
+                $this->renderView(
+                    'Emails/registration.txt.twig',
+                    array('name' => $name)
+                ),
+                'text/plain'
+            )
+            */
+        ;
+
+        //$mailer->send($message);
+
+        // or, you can also fetch the mailer service this way
+        $this->get('mailer')->send($message);
+    }
+
+    /**
+     * @param array $data
+     * @throws \Exception
+     */
+    protected function printZ(array $data) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+        $printer = new Printer($connector);
+        try {
+            // En-tete
+            $printer->feed(3);
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            $printer->setTextSize(3,3);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->setReverseColors(true);
+            $printer->text('AbsINThe
+');
+            $printer->setReverseColors(false);
+            $printer->feed();
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text('Récapitulatif de tenue
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            $printer->text('Émis le ' . $data['date'] . ' à ' . $data['time'] . '
+par ' . $data['username'] . '
+');
+            $printer->feed();
+
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->text('================================');
+            $printer->feed(2);
+
+            // ENTREES
+            $printer->initialize();
+            $printer->setTextSize(2,2);
+            $printer->text('ENTRÉES
+');
+            $printer->feed();
+
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text('COMMANDES
+');
+
+            // Liquide
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text('LIQUIDE
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            foreach ($data['commandes']['cash'] as $article => $details) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text($article . ' : ' . $details['qty'] . '
+');
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                $printer->text($details['price'] . '
+');
+            }
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total liquide
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totComCash'] . '
+');
+            $printer->feed();
+
+            // Compte
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text('COMPTE
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            foreach ($data['commandes']['account'] as $article => $details) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text($article . ' : ' . $details['qty'] . '
+');
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                $printer->text($details['price'] . '
+');
+            }
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total compte
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totComAccount'] . '
+');
+            $printer->feed();
+
+            // Pumpkin
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text('PUMPKIN
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            foreach ($data['commandes']['pumpkin'] as $article => $details) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text($article . ' : ' . $details['qty'] . '
+');
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                $printer->text($details['price'] . '
+');
+            }
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total Pumpkin
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totComPumpkin'] . '
+');
+            $printer->feed();
+
+            // Carte
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text('CARTE
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            foreach ($data['commandes']['card'] as $article => $details) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text($article . ' : ' . $details['qty'] . '
+');
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                $printer->text($details['price'] . '
+');
+            }
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total carte
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totComCard'] . '
+');
+            $printer->feed();
+
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totCom'] . '
+');
+            $printer->feed();
+
+            // Rechargements
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text('RECHARGEMENTS
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            foreach ($data['rechargements'] as $compte => $rechargement) {
+                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text($compte . ' (' . $rechargement["methode"] . ')
+');
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                $printer->text($rechargement["montant"] . '
+');
+            }
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total liquide
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totRechCash'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total Pumpkin
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totRechPumpkin'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total Carte
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totRechCard'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totRech'] . '
+');
+            $printer->feed();
+
+            // SORTIES
+            $printer->initialize();
+            $printer->setTextSize(2,2);
+            $printer->text('SORTIES
+');
+            $printer->feed();
+
+            // Remboursements
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer->text('REMBOURSEMENTS
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            $printer->text('Liquide : ' . $data['nbRembCash'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_B);
+            $printer->text('Ecocups ramenées : ' . $data['totEcoCash'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totRembCash'] . '
+');
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            $printer->text('Compte : ' . $data['nbRembAccount'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_B);
+            $printer->text('Ecocups ramenées : ' . $data['totEcoAccount'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totRembAccount'] . '
+');
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total remboursements
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['totRemb'] . '
+');
+            $printer->feed();
+
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->text('================================');
+            $printer->feed(2);
+
+            // Total transactions
+            $printer->initialize();
+            $printer->setTextSize(2,2);
+            $printer->text('TOTAL
+');
+            $printer->feed();
+            $printer->initialize();
+
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total entrées
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text('+ ' . $data['totCom'] . '
+');
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total sorties
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text('- ' . $data['totRemb'] . '
+');
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Total
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['tot'] . '
+');
+            $printer->feed();
+
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->text('================================');
+            $printer->feed(2);
+
+            // Activité appli
+            $printer->initialize();
+            $printer->setTextSize(2,2);
+            $printer->text('Transactions
+');
+            $printer->feed();
+
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_FONT_A);
+            foreach ($data['users'] as $user => $nb) {
+                $printer->text($user . ' : ' . $nb . '
+');
+            }
+            $printer->feed();
+
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text('Nombre total de transactions
+');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text($data['nbTransactions'] . '
+');
+            $printer->feed();
+
+            $printer->initialize();
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->text('================================');
+            $printer->feed(2);
+
+            // Rappel
+            $printer->feed();
+            $printer->setTextSize(2,2);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text('RESTE A COMPTER
+LA CAISSE
+');
+            $printer->initialize();
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text('Au revoir :-)
+');
+            $printer->feed();
+            $printer->selectPrintMode(Printer::MODE_FONT_B);
+            $printer->text('Ticket magique fabriqué par Clochette');
+
+            $printer->feed(8);
+        } finally {
+            $printer->close();
+        }
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Clôture du bar{% endblock %}
+{% block title %}Historique des tenues{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
@@ -10,8 +10,12 @@
 {% block javascripts %}
     <script src=" https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{{ asset('lib/moment.min.js') }}"></script>
+    <script src="{{ asset('lib/DataTables-1.10.19/datetime-moment.js') }}"></script>
     <script>
         $(document).ready(function() {
+            $.fn.dataTable.moment( 'HH:mm:ss DD/MM/YYYY' );
+
             $('#table').DataTable( {
                 "language": {
                     "decimal":        ".",
@@ -69,7 +73,7 @@
                 <th>Ventes</th>
                 <th>Rechargements</th>
                 <th>Remboursements</th>
-                <th>Total</th>
+                <th>Total <small>(hors remb.)</small></th>
                 <th>Caisse</th>
                 <th>Coffre</th>
                 <th>Nb transactions</th>

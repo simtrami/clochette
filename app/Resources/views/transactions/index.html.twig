@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Historique des transactions{% endblock %}
+{% block title %}{{ current_path == "/transactions/all" ? "Historique des transactions" : "Transactions non clôturées" }}{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/index.css') }}">
@@ -20,7 +20,7 @@
 
 {% block body %}
     <div class="alert alert-light">
-        <h1 class="display-4">Historique des transactions</h1>
+        <h1 class="display-4">{{ current_path == "/transactions/all" ? "Historique des transactions" : "Transactions non clôturées" }}</h1>
     </div>
 
     <div class="table-responsive mb-3">
@@ -122,5 +122,15 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <div class="input-group mt-3">
+            {% if current_path == "/transactions/all" %}
+                <a class="btn btn-success btn-lg btn-block" href="{{ path('transactions') }}">
+                    <i class="fas fa-minus-square"></i> Charger les transactions non clôturées</a>
+            {% else %}
+                <a class="btn btn-success btn-lg btn-block" href="{{ path('all_transactions') }}">
+                    <i class="fas fa-plus-square"></i> Charger toutes les transactions</a>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

@@ -121,13 +121,14 @@
         <small>Ecocups ramenées : <em>{{ totEcoAccount }}</em></small><br/>
         <strong>Total : {{ totRembAccount }}€</strong></p>
 
-    <p><strong>Total des remboursements : {{ totRemb }}€</strong></p>
+    <p><strong>Total des remboursements : {{ totRemb }}€</strong><br/>
+    <em>Remarque : Les rechargements ne sont pas comptés dans le total étant donné que l'argent ajoutée est utilisée pour commander des articles, cela ferait doublon.</em></p>
 
     <hr width="40%"/>
 
     <h2>Total</h2>
 
-    <p><strong>Total entrées : <span style="color: darkgreen">+ {{ totEntrees }}€</span></strong></p>
+    <p><strong>Total entrées : <span style="color: darkgreen">+ {{ totCom }}€</span></strong></p>
     <p><strong>Total sorties : <span style="color: red">- {{ totRemb }}€</span></strong></p>
     <p style="text-align: center"><strong>Total : {{ tot }}€</strong></p>
 
@@ -149,9 +150,9 @@
 
     <ul>
         {% for article in drafts %}
-            {% if article.quantite < 3 %}
+            {% if article.quantite <= 2 %}
                 <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
-            {% elseif article.quantite > 6 %}
+            {% elseif article.quantite >= 7 %}
                 <li>{{ article.nom }} : {{ article.quantite }}</li>
             {% else %}
                 <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
@@ -163,9 +164,9 @@
 
     <ul>
         {% for article in bottles %}
-            {% if article.quantite < 13 %}
+            {% if article.quantite <= 6 %}
                 <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
-            {% elseif article.quantite > 29 %}
+            {% elseif article.quantite >= 20 %}
                 <li>{{ article.nom }} : {{ article.quantite }}</li>
             {% else %}
                 <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
@@ -177,9 +178,9 @@
 
     <ul>
         {% for article in others %}
-            {% if article.quantite < 7 %}
+            {% if article.quantite <= 6 %}
                 <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
-            {% elseif article.quantite > 14 %}
+            {% elseif article.quantite >= 13 %}
                 <li>{{ article.nom }} : {{ article.quantite }}</li>
             {% else %}
                 <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
