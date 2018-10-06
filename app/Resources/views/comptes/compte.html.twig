@@ -29,12 +29,12 @@
         {{ form_rest(form) }}
 
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
-            <button type="submit" class="btn btn-success col-8">
+            <button type="submit" class="btn btn-success btn-lg col-8">
                 {{ mode == 'new_account' ? '<i class="fas fa-plus-circle"></i> Créer le compte' : '<i class="fas fa-save"></i> Enregister les modifications' }}</button>
         {{ form_end(form) }}
 
-        <button class="btn btn-danger col-3" href="{{ path('comptes') }}">
+        <a class="btn btn-danger btn-lg col-3" href="{{ path('comptes') }}">
             <i class="fas fa-times"></i> Annuler
-        </button>
+        </a>
     </div>
 {% endblock %}

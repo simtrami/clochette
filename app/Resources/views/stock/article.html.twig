@@ -52,8 +52,8 @@
                 {{ mode == 'new_article' ? '<i class="fas fa-plus-circle"></i> Ajouter' : '<i class="fas fa-save"></i> Modifier' }}</button>
     {{ form_end(form) }}
 
-            <button class="btn btn-danger btn-lg col-md-3" href="{{path('stock')}}">
+            <a class="btn btn-danger btn-lg col-md-3" href="{{path('stock')}}">
                 <i class="fas fa-times"></i> {{ mode == 'new_article' ? 'Annuler l\'ajout' : 'Annuler la modification' }}
-            </button>
+            </a>
         </div>
 {% endblock %}

@@ -6,6 +6,7 @@ use AppBundle\Entity\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use AppBundle\Form\SuperUserType;
 use AppBundle\Form\UserType;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -21,11 +22,9 @@ class UserController extends Controller{
     **/
 
     public function indexAction(){
-
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
-
 
         $repo_users = $this->getDoctrine()->getManager()->getRepository('AppBundle:Users');
 
@@ -137,15 +136,18 @@ class UserController extends Controller{
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')) {
+            // 1) build the form
+            $user = new Users();
+            $form = $this->createForm(SuperUserType::class, $user);
+        } elseif ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            // 1) build the form
+            $user = new Users();
+            $form = $this->createForm(UserType::class, $user);
+        } else {
             throw $this->createAccessDeniedException();
         }
-
-        $session = $request->getSession();
-      
-        // 1) build the form
-        $user = new Users();
-        $form = $this->createForm(UserType::class, $user);
 
         // 2) handle the submit (will only happen on POST)
         $form->handleRequest($request);
@@ -160,7 +162,7 @@ class UserController extends Controller{
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $session->getFlashbag()->add('info', $user->getusername().', votre compte a bien été créé. Connectez-vous dès maintenant.');
+            $this->addFlash('info', $user->getusername().', votre compte a bien été créé. Connectez-vous dès maintenant.');
 
             // ... do any other work - like sending them an email, etc
             // maybe set a "flash" success message for the user

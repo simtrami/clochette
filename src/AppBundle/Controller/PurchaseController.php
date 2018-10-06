@@ -68,13 +68,19 @@ class PurchaseController extends Controller
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
         // Réduction sur le cidre
-        if (date('H') == 22 && $repo_stocks->findOneBy(['nom' => 'Cidre'])->getPrixVente() == 2.5) {
-            $repo_stocks->findOneBy(['nom' => 'Cidre'])->setPrixVente(2);
-        } elseif (date('H') != 22) {
-            $repo_stocks->findOneBy(['nom' => 'Cidre'])->setPrixVente(2.5);
-        } else {
+	$heure = date('H');
+        $cidre = $repo_stocks->findOneBy(['nom' => 'Cidre']);
+        $em = $this->getDoctrine()->getManager();
+        if ($heure == 22 && $cidre->getPrixVente() == 2.5) {
+            $cidre->setPrixVente(2);
+            $em->persist($cidre);
+            $em->flush();
+        } elseif ($heure != 22 && $cidre->getPrixVente() == 2) {
+            $cidre->setPrixVente(2.5);
+            $em->persist($cidre);
+            $em->flush();
+        } elseif (!(($heure == 22 && $cidre->getPrixVente() == 2) or ($heure != 22 && $cidre->getPrixVente() == 2.5))) {
             $this->addFlash('erreur', "Un problème concernant le Cidre est survenu !");
-            $this->redirectToRoute('purchase');
         }
 
         $draft = $repo_typeStocks->returnType('Fût');

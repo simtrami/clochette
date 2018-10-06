@@ -7,7 +7,6 @@ use AppBundle\Entity\Stocks;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Annotation\Route;
 
 class StockController extends Controller {
@@ -31,9 +30,9 @@ class StockController extends Controller {
         et non des tableaux contenant des instances de TypeStocks, 
         ceci grâce à returnType() */
 
-        $drafts = $repo_stocks->findByType($typeDraft);
-        $bottles = $repo_stocks->findByType($typeBottle);
-        $article = $repo_stocks->findByType($typeArticle);
+        $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
+        $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
+        $article = $repo_stocks->findBy(['type' => $typeArticle]);
 
         $data=[];
         $data['drafts'] = $drafts;
@@ -51,7 +50,7 @@ class StockController extends Controller {
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function modifArticleAction(Request $request, $id_article){
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -150,7 +149,7 @@ class StockController extends Controller {
             throw $this->createNotFoundException("Article non trouvé pour l'id " . $idarticle);
         }
 
-        $transactions = $em->getRepository('AppBundle:DetailsTransactions')->findByArticle($idarticle);
+        $transactions = $em->getRepository('AppBundle:DetailsTransactions')->findOneBy(['article' => $idarticle]);
         foreach ($transactions as $elt_commande) {
             $em->remove($elt_commande);
         }

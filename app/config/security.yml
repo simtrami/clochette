@@ -68,13 +68,12 @@ security:
     - { path: ^/gestion, roles: ROLE_BUREAU }
     - { path: ^/purchase/open, roles: ROLE_BUREAU }
     - { path: ^/purchase, roles: ROLE_INTRO }
-    - { path: ^/stock/ajout, roles: ROLE_STOCK }
-    - { path: ^/stock/modifier, roles: ROLE_STOCK }
+    - { path: ^/stock/ajout, roles: [ROLE_STOCK, ROLE_TRESO] }
+    - { path: ^/stock/modifier, roles: [ROLE_STOCK, ROLE_TRESO] }
     - { path: ^/stock/supprimer, roles: ROLE_STOCK }
     - { path: ^/stock, roles: ROLE_BUREAU }
     - { path: ^/transactions, roles: ROLE_BUREAU }
     - { path: ^/utilisateurs/modifier, roles: ROLE_SUPER_ADMIN}
-    - { path: ^/utilisateurs/nouveau, roles: ROLE_ADMIN}
     - { path: ^/utilisateurs, roles: ROLE_ADMIN}
 
     role_hierarchy:
