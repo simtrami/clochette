@@ -73,8 +73,8 @@ security:
     - { path: ^/stock/supprimer, roles: ROLE_STOCK }
     - { path: ^/stock, roles: ROLE_BUREAU }
     - { path: ^/transactions, roles: ROLE_BUREAU }
-    - { path: ^/utilisateurs/modifier, roles: ROLE_SUPER_ADMIN}
-    - { path: ^/utilisateurs, roles: ROLE_ADMIN}
+    - { path: ^/users/modifier, roles: ROLE_SUPER_ADMIN}
+    - { path: ^/users, roles: ROLE_ADMIN}
 
     role_hierarchy:
         ROLE_BUREAU:        ROLE_INTRO

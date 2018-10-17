@@ -18,7 +18,8 @@ class TreasuryType extends AbstractType
     {
         $builder
             ->add('caisse', MoneyType::class, array(
-                'label' => 'Contenu de la caisse'
+                'label' => 'Contenu de la caisse',
+                'required' => true
             ))
         ;
 

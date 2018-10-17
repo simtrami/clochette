@@ -72,7 +72,7 @@
                             <a class="dropdown-item" href="{{ path('all_transactions') }}">
                                 <i class="fa fa-history"></i> Toutes les transactions</a>
                             {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
-                                <a class="dropdown-item" href="{{ path('utilisateurs') }}">
+                                <a class="dropdown-item" href="{{ path('users') }}">
                                     <i class="fa fa-users-cog"></i> Gestion des utilisateurs</a>
                             {% endif %}
                         </div>
@@ -82,13 +82,13 @@
 
             <ul class="navbar-nav ml-auto d-none d-flex">
                 {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item{{ "utilisateurs" in current_path ? " active" : "" }} dropdown">
+                    <li class="nav-item{{ "users" in current_path ? " active" : "" }} dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-user" aria-hidden="true"></i> {{ app.user.username }}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             {%  if is_granted(expression('"ROLE_ADMIN" in roles')) %}
-                                <a class="dropdown-item" href="{{ path('modif_utilisateur', {id : app.user.id}) }}">
+                                <a class="dropdown-item" href="{{ path('modify_user', {id : app.user.id}) }}">
                                     <i class="fa fa-user-cog"></i> Paramètres</a>
                                 <div class="dropdown-divider"></div>
                             {% endif %}

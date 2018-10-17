@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Users;
+use Swift_Image;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,12 +17,19 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class UserController extends Controller{
+    protected $sendingAddress;
+
+    public function __construct($sendingAddress)
+    {
+        $this->sendingAddress = $sendingAddress;
+    }
 
     /**
-     * @Route("/utilisateurs", name="utilisateurs")
+     * @Route("/users", name="users")
     **/
 
-    public function indexAction(){
+    public function indexAction()
+    {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
@@ -30,20 +38,20 @@ class UserController extends Controller{
 
         $listUsers = $repo_users->findAll();
 
-        return $this->render('utilisateurs/index.html.twig', array(
+        return $this->render('users/index.html.twig', array(
             'users' => $listUsers
         ));
     }
 
     /**
-     * @Route("/utilisateurs/modifier/{id}", name="modif_utilisateur")
+     * @Route("/users/modify/{id}", name="modify_user")
      * @param Request $request
      * @param $id
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function modifyAction(Request $request, $id, UserPasswordEncoderInterface $passwordEncoder){
-
+    public function modifyAction(Request $request, $id, UserPasswordEncoderInterface $passwordEncoder)
+    {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
@@ -53,7 +61,6 @@ class UserController extends Controller{
         }
 
         $em = $this->getDoctrine()->getManager();
-        $session = $request->getSession();
         $repo_users = $em->getRepository('AppBundle:Users');
 
         $user = $repo_users->find($id);
@@ -72,7 +79,7 @@ class UserController extends Controller{
                 'label' => 'Nom d\'utilisateur'
             ))
             ->add('save', SubmitType::class, array(
-                'label' => 'Enregistrer'
+                'label' => 'Mettre à jour'
             ))
             ->getForm()
         ;
@@ -84,7 +91,7 @@ class UserController extends Controller{
                 'second_options' => array('label' => 'Confirmer le mot de passe')
             ))
             ->add('save', SubmitType::class, array(
-                'label' => 'Enregistrer'
+                'label' => 'Modifier'
             ))
             ->getForm()
         ;
@@ -97,15 +104,15 @@ class UserController extends Controller{
             $em->persist($user);
             $em->flush();
 
-            if ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')){
+            if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')){
 
-                $session->getFlashbag()->add('info', $user->getUsername(). ', votre compte a bien été modifié');
+                $this->addFlash('info', 'Le compte "' . $user->getUsername() . '" a bien été modifié');
 
                 return $this->redirectToRoute('users');
             }
             else{
 
-                $session->getFlashbag()->add('info', $user->getUsername(). ', votre compte a bien été modifié');
+                $this->addFlash('info', $user->getUsername(). ', votre compte a bien été modifié');
                 
                 return $this->redirectToRoute('homepage');
             }
@@ -122,7 +129,7 @@ class UserController extends Controller{
             return $this->redirectToRoute('users');
         }
 
-        return $this->render('utilisateurs/modifier.html.twig', array(
+        return $this->render('users/modify.html.twig', array(
             'form' => $form->createView(),
             'form_pw' => $form_pw->createView(),
             'user' => $user
@@ -130,13 +137,13 @@ class UserController extends Controller{
     }
 
     /**
-     * @Route("/utilisateurs/nouveau", name="ajout_utilisateur")
+     * @Route("/users/add", name="add_user")
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder){
-
+    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    {
         if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')) {
             // 1) build the form
             $user = new Users();
@@ -162,17 +169,66 @@ class UserController extends Controller{
             $entityManager->persist($user);
             $entityManager->flush();
 
+            // Génération du mail
+            $message = (new \Swift_Message('Confirmation de création du compte utilisateur'))
+                ->setFrom($this->sendingAddress)
+                ->setTo($user->getEmail());
+            $data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
+            $data['username'] = $user->getUsername();
+            $data['roles'] = $user->getRoles();
+            $message->setBody(
+                $this->renderView(
+                    'emails/newUser.html.twig',
+                    $data
+                ),
+                'text/html'
+            )/*
+             * If you also want to include a plaintext version of the message
+            ->addPart(
+                $this->renderView(
+                    'Emails/registration.txt.twig',
+                    array('name' => $name)
+                ),
+                'text/plain'
+            )
+            */
+            ;
+            $this->get('mailer')->send($message);
+
             $this->addFlash('info', $user->getusername().', votre compte a bien été créé. Connectez-vous dès maintenant.');
 
-            // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the user
-
-            return $this->redirectToRoute('ajout_utilisateur');
+            return $this->redirectToRoute('add_user');
         }
 
         return $this->render(
-            'utilisateurs/ajouter.html.twig',
+            'users/add.html.twig',
             array('form' => $form->createView())
         );
+    }
+
+    /**
+     * @Route("/users/toggle/{id}", name="toggle_user")
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function disableAction($id)
+    {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $user = $this->getDoctrine()->getRepository(Users::class)->find($id);
+
+        if ($user->getIsActive()) {
+            $user->setIsActive(false);
+        } else {
+            $user->setIsActive(true);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('users');
     }
 }

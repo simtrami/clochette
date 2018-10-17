@@ -114,6 +114,34 @@
     border-color: var(--danger);
 }
 
+.btn-warning {
+    background-color: var(--warning);
+    border-color: var(--warning);
+    color: var(--white);
+}
+
+.btn-warning:hover {
+    background-color: var(--yellow-dark);
+    border-color: var(--yellow-dark);
+    color: var(--white);
+}
+
+.btn-warning:active {
+    color: var(--white);
+}
+
+.btn-outline-warning {
+    color: var(--warning);
+    background: transparent none;
+    border-color: var(--warning);
+}
+
+.btn-outline-warning:hover {
+    color: var(--white);
+    background-color: var(--warning);
+    border-color: var(--warning);
+}
+
 /**** Dropdowns ****/
 
 .dropdown-toggle.no-arrow::before {

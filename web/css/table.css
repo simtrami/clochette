@@ -16,6 +16,18 @@
     box-shadow: 0 0 0 0.2rem rgba(1,168,103, 0.5);
 }
 
+table tr, table td {
+    width: fit-content !important;
+}
+
 .table-action {
     width: 1rem !important;
+}
+
+.table-actions {
+    width: -moz-min-content !important;
+}
+
+td.table-actions {
+    padding-top: 0.5rem;
 }

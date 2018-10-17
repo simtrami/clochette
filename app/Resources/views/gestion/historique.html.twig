@@ -98,7 +98,7 @@
                     <td class="table-actions">
                         <div class="d-flex">
                             <div class="input-group justify-content-around mx-auto">
-                                <a class="btn btn-secondary mt-1" href="{{ path('modif_cloture', { 'id_treasury': zreport.treasury.id }) }}">
+                                <a class="btn btn-secondary mt-1 {{ is_granted(expression('"ROLE_TRESO" in roles'))==true ? "" : "disabled" }}" href="{{ path('modif_cloture', { 'id_treasury': zreport.treasury.id }) }}">
                                     <i class="fas fa-edit"></i> Trésorerie</a>
                                 <a class="btn btn-success mt-1" href="{{ path('details_z', {'id_zreport': zreport.id}) }}">
                                     <i class="fas fa-plus"></i> Détails</a>

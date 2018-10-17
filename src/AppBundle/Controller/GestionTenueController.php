@@ -115,242 +115,241 @@ class GestionTenueController extends Controller{
 
         $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions');
 
-        $date = date("d/m/Y");
-        $time = date("H:i:s");
-        $user = $this->getUser();
-        $username = $user->getUsername();
-
-        if (!empty($lastZTimestamp)) {
-            $transactions = $repo_transactions->returnTransactionsSince($lastZTimestamp);
-        } else {
-            $transactions = $repo_transactions->findAll();
-        }
-
-        $zReport = new Zreport();
-
-        // Total transactions
-        $nbTransactions = count($transactions);
-
-        // Types de transactions
-        $commandes = [
-            "cash" => array(),
-            "account" => array(),
-            "pumpkin" => array(),
-            "card" => array()
-        ];
-        //$remboursements = array();
-        $rechargements = array();
-
-        // Totaux des commandes par méthode de paiement
-        $totComCash = 0;
-        $totComAccount = 0;
-        $totComPumpkin = 0;
-        $totComCard = 0;
-
-        // Totaux des remboursements par méthode de paiement
-        $totRembCash = 0;
-        $totRembAccount = 0;
-        // Nb écocups rendues par méthode de paiement
-        $totEcoCash = 0;
-        $totEcoAccount = 0;
-
-        // Totaux des rechargements par méthode de paiement
-        $totRechCash = 0;
-        $totRechPumpkin = 0;
-        $totRechCard = 0;
-
-        // Nombre de remboursement par méthode de paiement
-        $nbRembCash = 0;
-        $nbRembAccount = 0;
-
-        // Utilisateurs (staff) ayant effectués des transactions
-        $users = array();
-
-        // Transactions présentant une exception (peut apparaître plusieurs fois)
-        $erreurs = array();
-
-        foreach ($transactions as $transaction) {
-            // Tri par type
-            switch ($transaction->getType()) {
-                case 1:
-                    switch ($transaction->getMethode()) {
-                        case "cash":
-                            $totComCash += $transaction->getMontant();
-                            foreach ($transaction->getDetails() as $detail) {
-                                if (!isset($commandes["cash"][$detail->getArticle()->getNom()])) {
-                                    $commandes["cash"][$detail->getArticle()->getNom()] = array();
-                                    $commandes["cash"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                    $commandes["cash"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                } else {
-                                    $commandes["cash"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                    $commandes["cash"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                }
-                            }
-                            break;
-                        case "account":
-                            $totComAccount += $transaction->getMontant();
-                            foreach ($transaction->getDetails() as $detail) {
-                                if (!isset($commandes["account"][$detail->getArticle()->getNom()])) {
-                                    $commandes["account"][$detail->getArticle()->getNom()] = array();
-                                    $commandes["account"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                    $commandes["account"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                } else {
-                                    $commandes["account"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                    $commandes["account"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                }
-                            }
-                            break;
-                        case "pumpkin":
-                            $totComPumpkin += $transaction->getMontant();
-                            foreach ($transaction->getDetails() as $detail) {
-                                if (!isset($commandes["pumpkin"][$detail->getArticle()->getNom()])) {
-                                    $commandes["pumpkin"][$detail->getArticle()->getNom()] = array();
-                                    $commandes["pumpkin"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                    $commandes["pumpkin"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                } else {
-                                    $commandes["pumpkin"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                    $commandes["pumpkin"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                }
-                            }
-                            break;
-                        case "card":
-                            $totComCard += $transaction->getMontant();
-                            foreach ($transaction->getDetails() as $detail) {
-                                if (!isset($commandes["card"][$detail->getArticle()->getNom()])) {
-                                    $commandes["card"][$detail->getArticle()->getNom()] = array();
-                                    $commandes["card"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                    $commandes["card"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                } else {
-                                    $commandes["card"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                    $commandes["card"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                }
-                            }
-                            break;
-                        default:
-                            array_push($erreurs, $transaction);
-                            break;
-                    }
-                    break;
-                case 2:
-                    //array_push($remboursements, $transaction);
-                    if ($transaction->getMethode() == "cash") {
-                        $nbRembCash++;
-                        $totRembCash += $transaction->getMontant();
-                        // Récupération du nb d'écocup
-                        if (!$transaction->getDetails()->isEmpty()) {
-                            foreach ($transaction->getDetails() as $detail) {
-                                $totEcoCash += $detail->getQuantite();
-                            }
-                        }
-                    } elseif ($transaction->getMethode() == "account") {
-                        $nbRembAccount++;
-                        $totRembAccount += $transaction->getMontant();
-                        // Récupération du nb d'écocup
-                        if (!$transaction->getDetails()->isEmpty()) {
-                            foreach ($transaction->getDetails() as $detail) {
-                                $totEcoAccount += $detail->getQuantite();
-                            }
-                        }
-                    } else {
-                        array_push($erreurs, $transaction);
-                    }
-                    break;
-                case 3:
-                    if ($transaction->getMethode() == "cash") {
-                        $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
-                            "methode" => "Liquide",
-                            "montant" => $transaction->getMontant()
-                        ];
-                        $totRechCash += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
-                    } elseif ($transaction->getMethode() == "pumpkin") {
-                        $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
-                            "methode" => "Pumpkin",
-                            "montant" => $transaction->getMontant()
-                        ];
-                        $totRechPumpkin += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
-                    } elseif ($transaction->getMethode() == "card") {
-                        $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
-                            "methode" => "Carte Bleue",
-                            "montant" => $transaction->getMontant()
-                        ];
-                        $totRechCard += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
-                    } else {
-                        array_push($erreurs, $transaction);
-                    }
-                    break;
-                default:
-                    array_push($erreurs, $transaction);
-                    break;
-            }
-
-
-            // Récupération des transactions par utilisateur (staff)
-            if (is_null($transaction->getUser())) {
-                array_push($erreurs, $transaction);
-            } elseif (!isset($users[$transaction->getUser()->getUsername()])) {
-                $users[$transaction->getUser()->getUsername()] = 1;
-            } else {
-                $users[$transaction->getUser()->getUsername()]++;
-            }
-
-            $transaction->setZreport($zReport);
-        }
-
-        // Calcul du montant total des transactions par type
-        $totCom = $totComCash + $totComAccount + $totComPumpkin + $totComCard;
-        $totRemb = $totRembCash + $totRembAccount;
-        $totRech = $totRechCash + $totRechPumpkin + $totRechCard;
-
-        // Calcul du bilan
-        $tot = $totCom - $totRemb;
-
-        // Bilan des stocks
-        $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
-        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
-        $typeDraft = $repo_typeStocks->returnType('Fût');
-        $typeBottle = $repo_typeStocks->returnType('Bouteille');
-        $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
-        $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
-        $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
-        $others = $repo_stocks->findBy(['type' => $typeArticle]);
-
-        // Génération de l'entité Zreport
-        $zReport->setUser($this->getUser());
-        $timestamp = date_create(date("Y-m-d H:i:s"));
-        $zReport->setTimestamp($timestamp);
-        $zReport->setTotalCommand($totCom);
-        $zReport->setTotalRefund($totRemb);
-        $zReport->setTotalRefill($totRech);
-        $zReport->setTotal($tot);
-
-        $data = array(
-            'user' => $username,
-            'date' => $date,
-            'time' => $time,
-            'commandes' => $commandes,
-            'totComCash' => $totComCash,
-            'totComAccount' => $totComAccount,
-            'totComPumpkin' => $totComPumpkin,
-            'totComCard' => $totComCard,
-            'totCom' => $totCom,
-            'rechargements' => $rechargements,
-            'totRechCash' => $totRechCash,
-            'totRechPumpkin' => $totRechPumpkin,
-            'totRechCard' => $totRechCard,
-            'totRech' => $totRech,
-            'nbRembCash' => $nbRembCash,
-            'totEcoCash' => $totEcoCash,
-            'totRembCash' => $totRembCash,
-            'nbRembAccount' => $nbRembAccount,
-            'totEcoAccount' => $totEcoAccount,
-            'totRembAccount' => $totRembAccount,
-            'totRemb' => $totRemb,
-            'tot' => $tot,
-            'users' => $users,
-            'nbTransactions' => $nbTransactions,
-        );
-
         try {
+            $date = date("d/m/Y");
+            $time = date("H:i:s");
+            $user = $this->getUser();
+            $username = $user->getUsername();
+
+            if (!empty($lastZTimestamp)) {
+                $transactions = $repo_transactions->returnTransactionsSince($lastZTimestamp);
+            } else {
+                $transactions = $repo_transactions->findAll();
+            }
+
+            $zReport = new Zreport();
+
+            // Total transactions
+            $nbTransactions = count($transactions);
+
+            // Types de transactions
+            $commandes = [
+                "cash" => array(),
+                "account" => array(),
+                "pumpkin" => array(),
+                "card" => array()
+            ];
+            //$remboursements = array();
+            $rechargements = array();
+
+            // Totaux des commandes par méthode de paiement
+            $totComCash = 0;
+            $totComAccount = 0;
+            $totComPumpkin = 0;
+            $totComCard = 0;
+
+            // Totaux des remboursements par méthode de paiement
+            $totRembCash = 0;
+            $totRembAccount = 0;
+            // Nb écocups rendues par méthode de paiement
+            $totEcoCash = 0;
+            $totEcoAccount = 0;
+
+            // Totaux des rechargements par méthode de paiement
+            $totRechCash = 0;
+            $totRechPumpkin = 0;
+            $totRechCard = 0;
+
+            // Nombre de remboursement par méthode de paiement
+            $nbRembCash = 0;
+            $nbRembAccount = 0;
+
+            // Utilisateurs (staff) ayant effectués des transactions
+            $users = array();
+
+            // Transactions présentant une exception (peut apparaître plusieurs fois)
+            $erreurs = array();
+
+            foreach ($transactions as $transaction) {
+                // Tri par type
+                switch ($transaction->getType()) {
+                    case 1:
+                        switch ($transaction->getMethode()) {
+                            case "cash":
+                                $totComCash += $transaction->getMontant();
+                                foreach ($transaction->getDetails() as $detail) {
+                                    if (!isset($commandes["cash"][$detail->getArticle()->getNom()])) {
+                                        $commandes["cash"][$detail->getArticle()->getNom()] = array();
+                                        $commandes["cash"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
+                                        $commandes["cash"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    } else {
+                                        $commandes["cash"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
+                                        $commandes["cash"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    }
+                                }
+                                break;
+                            case "account":
+                                $totComAccount += $transaction->getMontant();
+                                foreach ($transaction->getDetails() as $detail) {
+                                    if (!isset($commandes["account"][$detail->getArticle()->getNom()])) {
+                                        $commandes["account"][$detail->getArticle()->getNom()] = array();
+                                        $commandes["account"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
+                                        $commandes["account"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    } else {
+                                        $commandes["account"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
+                                        $commandes["account"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    }
+                                }
+                                break;
+                            case "pumpkin":
+                                $totComPumpkin += $transaction->getMontant();
+                                foreach ($transaction->getDetails() as $detail) {
+                                    if (!isset($commandes["pumpkin"][$detail->getArticle()->getNom()])) {
+                                        $commandes["pumpkin"][$detail->getArticle()->getNom()] = array();
+                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
+                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    } else {
+                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
+                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    }
+                                }
+                                break;
+                            case "card":
+                                $totComCard += $transaction->getMontant();
+                                foreach ($transaction->getDetails() as $detail) {
+                                    if (!isset($commandes["card"][$detail->getArticle()->getNom()])) {
+                                        $commandes["card"][$detail->getArticle()->getNom()] = array();
+                                        $commandes["card"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
+                                        $commandes["card"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    } else {
+                                        $commandes["card"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
+                                        $commandes["card"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
+                                    }
+                                }
+                                break;
+                            default:
+                                array_push($erreurs, $transaction);
+                                break;
+                        }
+                        break;
+                    case 2:
+                        //array_push($remboursements, $transaction);
+                        if ($transaction->getMethode() == "cash") {
+                            $nbRembCash++;
+                            $totRembCash += $transaction->getMontant();
+                            // Récupération du nb d'écocup
+                            if (!$transaction->getDetails()->isEmpty()) {
+                                foreach ($transaction->getDetails() as $detail) {
+                                    $totEcoCash += $detail->getQuantite();
+                                }
+                            }
+                        } elseif ($transaction->getMethode() == "account") {
+                            $nbRembAccount++;
+                            $totRembAccount += $transaction->getMontant();
+                            // Récupération du nb d'écocup
+                            if (!$transaction->getDetails()->isEmpty()) {
+                                foreach ($transaction->getDetails() as $detail) {
+                                    $totEcoAccount += $detail->getQuantite();
+                                }
+                            }
+                        } else {
+                            array_push($erreurs, $transaction);
+                        }
+                        break;
+                    case 3:
+                        if ($transaction->getMethode() == "cash") {
+                            $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
+                                "methode" => "Liquide",
+                                "montant" => $transaction->getMontant()
+                            ];
+                            $totRechCash += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
+                        } elseif ($transaction->getMethode() == "pumpkin") {
+                            $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
+                                "methode" => "Pumpkin",
+                                "montant" => $transaction->getMontant()
+                            ];
+                            $totRechPumpkin += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
+                        } elseif ($transaction->getMethode() == "card") {
+                            $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
+                                "methode" => "Carte Bleue",
+                                "montant" => $transaction->getMontant()
+                            ];
+                            $totRechCard += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
+                        } else {
+                            array_push($erreurs, $transaction);
+                        }
+                        break;
+                    default:
+                        array_push($erreurs, $transaction);
+                        break;
+                }
+
+
+                // Récupération des transactions par utilisateur (staff)
+                if (is_null($transaction->getUser())) {
+                    array_push($erreurs, $transaction);
+                } elseif (!isset($users[$transaction->getUser()->getUsername()])) {
+                    $users[$transaction->getUser()->getUsername()] = 1;
+                } else {
+                    $users[$transaction->getUser()->getUsername()]++;
+                }
+
+                $transaction->setZreport($zReport);
+            }
+
+            // Calcul du montant total des transactions par type
+            $totCom = $totComCash + $totComAccount + $totComPumpkin + $totComCard;
+            $totRemb = $totRembCash + $totRembAccount;
+            $totRech = $totRechCash + $totRechPumpkin + $totRechCard;
+
+            // Calcul du bilan
+            $tot = $totCom - $totRemb;
+
+            // Bilan des stocks
+            $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
+            $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
+            $typeDraft = $repo_typeStocks->returnType('Fût');
+            $typeBottle = $repo_typeStocks->returnType('Bouteille');
+            $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
+            $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
+            $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
+            $others = $repo_stocks->findBy(['type' => $typeArticle]);
+
+            // Génération de l'entité Zreport
+            $zReport->setUser($this->getUser());
+            $timestamp = date_create(date("Y-m-d H:i:s"));
+            $zReport->setTimestamp($timestamp);
+            $zReport->setTotalCommand($totCom);
+            $zReport->setTotalRefund($totRemb);
+            $zReport->setTotalRefill($totRech);
+            $zReport->setTotal($tot);
+
+            $data = array(
+                'user' => $username,
+                'date' => $date,
+                'time' => $time,
+                'commandes' => $commandes,
+                'totComCash' => $totComCash,
+                'totComAccount' => $totComAccount,
+                'totComPumpkin' => $totComPumpkin,
+                'totComCard' => $totComCard,
+                'totCom' => $totCom,
+                'rechargements' => $rechargements,
+                'totRechCash' => $totRechCash,
+                'totRechPumpkin' => $totRechPumpkin,
+                'totRechCard' => $totRechCard,
+                'totRech' => $totRech,
+                'nbRembCash' => $nbRembCash,
+                'totEcoCash' => $totEcoCash,
+                'totRembCash' => $totRembCash,
+                'nbRembAccount' => $nbRembAccount,
+                'totEcoAccount' => $totEcoAccount,
+                'totRembAccount' => $totRembAccount,
+                'totRemb' => $totRemb,
+                'tot' => $tot,
+                'users' => $users,
+                'nbTransactions' => $nbTransactions,
+            );
             // Print Z report
             //$this->printZ($data);
             // Add stock balance sheet and send e-mail report

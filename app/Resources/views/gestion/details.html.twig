@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tenue fermée : {{ zreport.timestamp|date('d/m/Y H:i:s') }}{% endblock %}
+{% block title %}Tenue du {{ zreport.timestamp|date('d/m/Y H:i:s') }}{% endblock %}
 
 {% block stylesheet %}
     <link rel="stylesheet" href="{{ asset('css/index.css') }}">
