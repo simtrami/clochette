@@ -116,6 +116,27 @@ class GestionTenueController extends Controller{
         $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions');
 
         try {
+            // Trying to open the cash-drawer before doing anything
+            try {
+                $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+                $printer = new Printer($connector);
+                try {
+                    $printer->pulse();
+                    $this->addFlash(
+                        'info',
+                        "L'ouverture de la caisse a été effectuée."
+                    );
+                } finally {
+                    $printer->close();
+                }
+            } catch(\Exception $e) {
+                $this->addFlash(
+                    'error',
+                    "Impossible de se connecter à la caisse : veuillez vérifier les branchements"
+                );
+                return $this->redirectToRoute('gestion-tenue');
+            }
+
             $date = date("d/m/Y");
             $time = date("H:i:s");
             $user = $this->getUser();
@@ -351,7 +372,7 @@ class GestionTenueController extends Controller{
                 'nbTransactions' => $nbTransactions,
             );
             // Print Z report
-            //$this->printZ($data);
+            $this->printZ($data);
             // Add stock balance sheet and send e-mail report
             $data['drafts'] = $drafts;
             $data['bottles'] = $bottles;
