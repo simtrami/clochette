@@ -10,9 +10,17 @@
 {% endblock %}
 
 {% block body %}
+    {% for message in app.session.flashbag.get('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-double"></i> Information : {{message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
     {% for message in app.session.flashbag.get('info') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-double"></i> Information : {{message}}
+            <i class="fa fa-times-circle"></i> Erreur : {{message}}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
