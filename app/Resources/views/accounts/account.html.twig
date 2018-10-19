@@ -1,9 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ mode == 'new_account' ? 'Créer un compte' : "Modifier " ~ prenom ~ " " ~ nom }}{% endblock %}
+{% block title %}{{ mode == 'new_account' ? 'Créer un compte' : "Modifier " ~ firstName ~ " " ~ lastName }}{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
 {% endblock %}
 
 {% block javascripts %}
@@ -11,20 +10,20 @@
 
 {% block body %}
     <div class="alert alert-light">
-        <h1 class="display-4">{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ prenom ~ " " ~ nom }}</h1>
+        <h1 class="display-4">{{ mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ firstName ~ " " ~ lastName }}</h1>
     </div>
 
     {{ form_start(form) }}
         {{ form_errors(form) }}
         {% if mode == 'modify_account' %}
-            {{ form_row(form.nomStaff) }}
+            {{ form_row(form.staffName) }}
         {% endif %}
-        {{ form_row(form.nom) }}
-        {{ form_row(form.prenom) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
         {{ form_row(form.pseudo) }}
         {% if mode == 'new_account' %}
-          {{ form_row(form.solde, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
-          {{ form_row(form.annee, { 'attr' : {'placeholder' : '1', 'value' : '1'} }) }}
+          {{ form_row(form.balance, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
+          {{ form_row(form.year, { 'attr' : {'placeholder' : '1', 'value' : '1'} }) }}
       {% endif %}
         {{ form_rest(form) }}
 
@@ -33,7 +32,7 @@
                 {{ mode == 'new_account' ? '<i class="fas fa-plus-circle"></i> Créer le compte' : '<i class="fas fa-save"></i> Enregister les modifications' }}</button>
         {{ form_end(form) }}
 
-        <a class="btn btn-danger btn-lg col-3" href="{{ path('comptes') }}">
+        <a class="btn btn-danger btn-lg col-3" href="{{ path('accounts') }}">
             <i class="fas fa-times"></i> Annuler
         </a>
     </div>

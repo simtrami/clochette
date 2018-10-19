@@ -1,10 +1,9 @@
 <?php
-// src/AppBundle/Controller/ComptesController.php
 namespace AppBundle\Controller;
 
 use Algolia\SearchBundle\IndexManagerInterface;
-use AppBundle\Entity\Comptes;
-use AppBundle\Form\CompteType;
+use AppBundle\Entity\Account;
+use AppBundle\Form\AccountType;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -13,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use AppBundle\Entity\Transactions;
 
-class CompteController extends Controller {
+class AccountController extends Controller {
 
     private $indexManager;
 
@@ -35,61 +34,61 @@ class CompteController extends Controller {
     }
 
     /**
-     * @Route("/comptes", name="comptes")
+     * @Route("/accounts", name="accounts")
      */
     public function showIndex(){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
-        $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes')->findAll();
-        $data['comptes']=$repo_comptes;
+        $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account')->findAll();
+        $data['accounts']=$repo_account;
 
-        return $this->render("comptes/index.html.twig", $data);
+        return $this->render("accounts/index.html.twig", $data);
         
     }
 
     /**
-     * @Route("/comptes/nouveau", name="ajout_compte")
+     * @Route("/accounts/new", name="create_account")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function createCompte(Request $request){
+    public function createAccount(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
-        $compte=new Comptes();
-        $form=$this->createForm(CompteType::class, $compte);
+        $account=new Account();
+        $form=$this->createForm(AccountType::class, $account);
 
         $form->handleRequest($request);
 
         //$checkAccount = $this->container->get('appbundle.checkaccount');
 
         if($form->isSubmitted() && $form->isValid()) {
-            /*if ($checkAccount->anneeNotValid($compte)){
+            /*if ($checkAccount->anneeNotValid($account)){
                 throw new \Exception('Une année doit au moins être égale à 1');
             }*/
 
-            /*if (!$checkAccount->namesValid($compte)){
+            /*if (!$checkAccount->namesValid($account)){
                 throw new \Exception('Les nom, prénom et pseudo ne peuvent contenir que des lettres.');
             }*/
 
             $em = $this->getDoctrine()->getManager();
-            $em->persist($compte);
+            $em->persist($account);
 
             $em->flush();
 
-            $this->indexManager->index($compte, $em);
+            $this->indexManager->index($account, $em);
 
             $this->addFlash('info', 'Un nouveau compte a été créé.');
         
-            return $this->redirectToRoute('ajout_compte');
+            return $this->redirectToRoute('create_account');
         }
       
         return $this->render(
-          'comptes/compte.html.twig',
+          'accounts/account.html.twig',
           array(
             'form' => $form->createView(),
             'mode' => 'new_account',
@@ -98,22 +97,22 @@ class CompteController extends Controller {
     }
 
     /**
-     * @Route("/comptes/modifier/{id}", name="modif_compte")
+     * @Route("/accounts/modify/{id}", name="modify_account")
      * @param Request $request
      * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function modifyCompte(Request $request, $id){
+    public function modifyAccount(Request $request, $id){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
       
         // 1) Récupérer le compte et construire le form
-        $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
-        $compte = $repo_comptes->find($id);
+        $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account');
+        $account = $repo_account->find($id);
         
-        $form = $this->createForm(CompteType::class, $compte);
+        $form = $this->createForm(AccountType::class, $account);
 
         //$checkAccount = $this->container->get('appbundle.checkaccount');
 
@@ -121,51 +120,50 @@ class CompteController extends Controller {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /*if ($checkAccount->anneeNotValid($compte)){
+            /*if ($checkAccount->anneeNotValid($account)){
                 throw new \Exception('Une année doit au moins être égale à 1');
             }*/
 
             // 3) Enregistrer le compte!
             $em = $this->getDoctrine()->getManager();
-            $em->persist($compte);
+            $em->persist($account);
 
             $em->flush();
 
-            $this->indexManager->index($compte, $em);
+            $this->indexManager->index($account, $em);
 
             // ... autres actions
 
-            $this->addFlash('info', 'Le compte de ' .$compte->getPrenom(). ' ' .$compte->getNom(). ' a bien été modifié.');
+            $this->addFlash('info', 'Le compte de ' .$account->getFirstName(). ' ' .$account->getLastName(). ' a bien été modifié.');
 
-            return $this->redirectToRoute('comptes');
+            return $this->redirectToRoute('accounts');
         }
 
         return $this->render(
-            'comptes/compte.html.twig',
+            'accounts/account.html.twig',
             array(
                 'form' => $form->createView(),
                 'mode' => 'modify_account',
-                'prenom' => $compte->getPrenom(),
-                'nom' => $compte->getNom()
+                'firstName' => $account->getFirstName(),
+                'lastName' => $account->getLastName()
             )
         );
     }
 
     /**
-     * @Route("/comptes/recharger/{id}", name="recharger_compte")
+     * @Route("/accounts/refill/{id}", name="refill_account")
      * @param Request $request
      * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function rechargeCompte(Request $request, $id){
+    public function refillAccount(Request $request, $id){
 
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
-        $compte = $this->getDoctrine()->getManager()->getRepository('AppBundle:Comptes')->find($id);
-        $session = $request->getSession();
+        $account = $this->getDoctrine()->getManager()->getRepository('AppBundle:Account')->find($id);
 
         $montant = array('message' => 'Montant du rechargement');
         $form = $this->createFormBuilder($montant)
@@ -185,10 +183,10 @@ class CompteController extends Controller {
             $transaction->setType(3);
 
             $em = $this->getDoctrine()->getManager();
-            $repo_comptes = $em->getRepository('AppBundle:Comptes');
+            $repo_account = $em->getRepository('AppBundle:Account');
             $repo_users = $em->getRepository('AppBundle:Users');
 
-            $compte = $repo_comptes->find($id);
+            $account = $repo_account->find($id);
 
             $user = $repo_users->find($this->getUser()->getId());
 
@@ -196,29 +194,27 @@ class CompteController extends Controller {
 
             $montant = $form->getData()['montant'];
 
-            $transaction->setCompte($compte);
+            $transaction->setAccount($account);
             $transaction->setUser($user);
             $transaction->setMethode($methode);
             $transaction->setMontant($montant);
 
-            $solde = $compte->getSolde();
-            $newSolde = $solde + $montant;
+            $balance = $account->getBalance();
+            $newBalance = $balance + $montant;
 
-            $compte->setSolde($newSolde);
+            $account->setBalance($newBalance);
 
-            $em->persist($compte);
+            $em->persist($account);
 
             $em->persist($transaction);
 
             $em->flush();
 
-            $this->indexManager->index($compte, $em);
+            $this->indexManager->index($account, $em);
 
             $this->addFlash('info',
                 $form['montant']->getData().
-                '€ ont été ajoutés au compte de '.$compte->getPrenom(). 
-                ' '.$compte->getNom().
-                '. Son solde est désormais de '.$newSolde.'€.'
+                '€ ont été ajoutés au compte de '.$account->getFirstName().' '.$account->getLastName().'. Son solde est désormais de '.$newBalance.'€.'
             );
 
             if ($methode=='cash') {
@@ -235,11 +231,11 @@ class CompteController extends Controller {
                 }
             }
 
-            return $this->redirectToRoute('comptes');
+            return $this->redirectToRoute('accounts');
         }
 
-        return $this->render('comptes/recharger.html.twig', array(
-            'pseudo' => $compte->getPseudo(),
+        return $this->render('accounts/refill.html.twig', array(
+            'pseudo' => $account->getPseudo(),
             'form' => $form->createView()
         ));
     }

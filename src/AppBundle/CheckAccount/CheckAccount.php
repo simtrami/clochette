@@ -2,18 +2,18 @@
 
 namespace AppBundle\CheckAccount;
 
-use Appbundle\Entity\Comptes;
+use Appbundle\Entity\Account;
 
 class CheckAccount{
 
-    public function anneeNotValid(Comptes $compte){
+    public function anneeNotValid(Account $compte){
 
-        return $compte->getAnnee()<1;
+        return $compte->getYear()<1;
     } 
 
-    public function namesValid(Comptes $compte){
-        return (ctype_alpha($compte->getNom()) && 
-        ctype_alpha($compte->getPrenom()) && 
+    public function namesValid(Account $compte){
+        return (ctype_alpha($compte->getLastName()) &&
+        ctype_alpha($compte->getFirstName()) &&
         ctype_alpha($compte->getPseudo() 
         /* ne prend pas en compte 
         les accents et cédilles */

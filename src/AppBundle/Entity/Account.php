@@ -7,12 +7,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Comptes
+ * Account
  *
- * @ORM\Table(name="comptes")
+ * @ORM\Table(name="account")
  * @ORM\Entity
  */
-class Comptes
+class Account
 {
     /**
      * @var integer
@@ -26,7 +26,7 @@ class Comptes
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=30)
+     * @ORM\Column(name="last_name", type="string", length=30)
      * @Assert\Length(
      *      min = 2,
      *      max = 30,
@@ -34,12 +34,12 @@ class Comptes
      *      maxMessage = "Votre nom ne peut pas faire plus de {{ limit }} caractères"
      * )
      */
-    private $nom;
+    private $lastName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="prenom", type="string", length=30)
+     * @ORM\Column(name="first_name", type="string", length=30)
      * @Assert\Length(
      *      min = 2,
      *      max = 30,
@@ -47,7 +47,7 @@ class Comptes
      *      maxMessage = "Votre prénom ne peut pas faire plus de {{ limit }} caractères"
      * )
      */
-    private $prenom;
+    private $firstName;
 
     /**
      * @var string
@@ -65,23 +65,23 @@ class Comptes
     /**
      * @var string
      *
-     * @ORM\Column(name="solde", type="decimal", precision=8, scale=2, options={"default" : "0.00"})
+     * @ORM\Column(name="balance", type="decimal", precision=8, scale=2, options={"default" : "0.00"})
      * @Assert\GreaterThanOrEqual(-10)
      */
-    private $solde;
+    private $balance;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="annee", type="integer", options={"default" : 1})
+     * @ORM\Column(name="year", type="integer", options={"default" : 1})
      * @Assert\GreaterThanOrEqual(1)
      */
-    private $annee;
+    private $year;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nomStaff", type="string", length=30, nullable=true)
+     * @ORM\Column(name="staff_name", type="string", length=30, nullable=true)
      * @Assert\Length(
      *      min = 2,
      *      max = 30,
@@ -89,14 +89,14 @@ class Comptes
      *      maxMessage = "Le nom de staff ne peut pas faire plus de {{ limit }} caractères"
      * )
      */
-    private $nomstaff;
+    private $staffName;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_intro", type="boolean", options={"default" : false})
+     * @ORM\Column(name="is_inducted", type="boolean", options={"default" : false})
      */
-    private $isIntro;
+    private $isInducted;
 
 
     /**
@@ -112,55 +112,55 @@ class Comptes
     }
 
     /**
-     * Set nom
+     * Set lastName
      *
-     * @param string $nom
+     * @param string $lastName
      *
-     * @return Comptes
+     * @return Account
      */
-    public function setNom($nom)
+    public function setLastName($lastName)
     {
-        $this->nom = $nom;
+        $this->lastName = $lastName;
 
         return $this;
     }
 
     /**
-     * Get nom
+     * Get lastName
      *
      * @Groups({"searchable"})
      * 
      * @return string
      */
-    public function getNom()
+    public function getLastName()
     {
-        return $this->nom;
+        return $this->lastName;
     }
 
     /**
-     * Set prenom
+     * Set firstName
      *
-     * @param string $prenom
+     * @param string $firstName
      *
-     * @return Comptes
+     * @return Account
      */
-    public function setPrenom($prenom)
+    public function setFirstName($firstName)
     {
-        $this->prenom = $prenom;
+        $this->firstName = $firstName;
 
         return $this;
     }
 
     /**
-     * Get prenom
+     * Get firstName
      *
      * @Groups({"searchable"})
      * 
      * @return string
      */
-    public function getPrenom()
+    public function getFirstName()
     {
-        return $this->prenom;
+        return $this->firstName;
     }
 
     /**
@@ -168,7 +168,7 @@ class Comptes
      *
      * @param string $pseudo
      *
-     * @return Comptes
+     * @return Account
      */
     public function setPseudo($pseudo)
     {
@@ -190,106 +190,102 @@ class Comptes
     }
 
     /**
-     * Set solde
+     * Set balance
      *
-     * @param string $solde
+     * @param string $balance
      *
-     * @return Comptes
+     * @return Account
      */
-    public function setSolde($solde)
+    public function setBalance($balance)
     {
-        $this->solde = $solde;
+        $this->balance = $balance;
 
         return $this;
     }
 
     /**
-     * Get solde
+     * Get balance
      *
      * @Groups({"searchable"})
      * 
      * @return string
      */
-    public function getSolde()
+    public function getBalance()
     {
-        return $this->solde;
+        return $this->balance;
     }
 
     /**
-     * Set annee
+     * Set year
      *
-     * @param integer $annee
+     * @param integer $year
      *
-     * @return Comptes
+     * @return Account
      */
-    public function setAnnee($annee)
+    public function setYear($year)
     {
-        $this->annee = $annee;
+        $this->year = $year;
 
         return $this;
     }
 
     /**
-     * Get annee
-     *
-     * @Groups({"searchable"})
+     * Get year
      * 
      * @return integer
      */
-    public function getAnnee()
+    public function getYear()
     {
-        return $this->annee;
+        return $this->year;
     }
 
     /**
-     * Set nomstaff
+     * Set staffNalme
      *
-     * @param string $nomstaff
+     * @param string $staffName
      *
-     * @return Comptes
+     * @return Account
      */
-    public function setNomstaff($nomstaff)
+    public function setStaffName($staffName)
     {
-        $this->nomstaff = $nomstaff;
+        $this->staffName = $staffName;
 
         return $this;
     }
 
     /**
-     * Get nomstaff
+     * Get staffName
      *
      * @Groups({"searchable"})
      * 
      * @return string
      */
-    public function getNomstaff()
+    public function getStaffName()
     {
-        return $this->nomstaff;
+        return $this->staffName;
     }
 
     /**
-     * Set isIntro
+     * Set isInducted
      *
-     * @param boolean $isIntro
+     * @param boolean $isInducted
      *
-     * @return Comptes
+     * @return Account
      */
-    public function setIsIntro($isIntro)
+    public function setIsInducted($isInducted)
     {
-        $this->isIntro = $isIntro;
+        $this->isInducted = $isInducted;
 
         return $this;
     }
 
     /**
-     * Get isIntro
-     *
-     * @Groups({"searchable"})
+     * Get isInducted
      * 
      * @return boolean
      */
-    public function getIsIntro()
+    public function getIsInducted()
     {
-        return $this->isIntro;
+        return $this->isInducted;
     }
 }

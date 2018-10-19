@@ -3,7 +3,7 @@
 {% block title %}Gestion des ventes{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/preparation.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/management.css') }}">
 {% endblock %}
 
 {% block javascripts %}
@@ -158,8 +158,8 @@
         <h1 class="display-4">Gestion des tenues</h1>
     </div>
 
-    <a class="btn btn-success btn-lg btn-block" href="{{ path('historique_tenues') }}">Historique</a>
-    <a class="btn btn-warning btn-lg btn-block" href="{{ path('generate-z') }}"
+    <a class="btn btn-success btn-lg btn-block" href="{{ path('runs-history') }}">Historique</a>
+    <a class="btn btn-warning btn-lg btn-block" href="{{ path('processing-run') }}"
             onclick="return confirm('Cette action effectue le bilan des ventes depuis la dernière clôture et imprime le ticket Z.\nLe bar doit être entièrement fermé pour effectuer cette action !')"
             data-toggle="tooltip" title="Fait le bilan des ventes depuis la dernière clôture et imprime le ticket Z">
         Clore la tenue</a>

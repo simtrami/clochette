@@ -1,13 +1,10 @@
 <?php
-// src/AppBundle/Controller/GestionTenueController.php
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\GestionTenue;
+use AppBundle\Entity\SellsManagement;
 use AppBundle\Entity\Treasury;
 use AppBundle\Entity\Zreport;
-use AppBundle\Form\GestionTenueType;
-use AppBundle\Form\TreasuryType;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 use Swift_Image;
@@ -15,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class GestionTenueController extends Controller{
+class ManagementController extends Controller{
 
     /*
      * @var string
@@ -40,11 +37,11 @@ class GestionTenueController extends Controller{
     }
 
     /**
-     * @Route("/gestion", name="gestion-tenue")
+     * @Route("/management", name="manage-sells")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function getData(Request $request){
+    public function manageSells(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
@@ -57,23 +54,23 @@ class GestionTenueController extends Controller{
         $typeBottle = $repo_typeStocks->returnType('Bouteille');
         $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
 
-        $gestion = new GestionTenue();
+        $management = new SellsManagement();
 
         $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
         $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
         $articles = $repo_stocks->findBy(['type' => $typeArticle]);
 
         foreach ($drafts as $draft){
-            $gestion->getDrafts()->add($draft);
+            $management->getDrafts()->add($draft);
         }
         foreach ($bottles as $bottle){
-            $gestion->getBottles()->add($bottle);
+            $management->getBottles()->add($bottle);
         }
         foreach ($articles as $article){
-            $gestion->getArticles()->add($article);
+            $management->getArticles()->add($article);
         }
 
-        $form = $this->createForm(GestionTenueType::class, $gestion);
+        $form = $this->createForm('AppBundle\Form\SellsManagementType', $management);
 
         $form->handleRequest($request);
 
@@ -96,15 +93,14 @@ class GestionTenueController extends Controller{
 
         $data['form'] = $form->createView();
 
-        return $this->render("gestion/index.html.twig", $data);
+        return $this->render("management/index.html.twig", $data);
     }
 
     /**
-     * @Route("/gestion/z", name="generate-z")
+     * @Route("/management/runs/processing", name="processing-run")
      * @return string
-     * @throws \Exception
      */
-    public function generateZ()
+    public function registerRun()
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
@@ -134,7 +130,7 @@ class GestionTenueController extends Controller{
                     'error',
                     "Impossible de se connecter à la caisse : veuillez vérifier les branchements"
                 );
-                return $this->redirectToRoute('gestion-tenue');
+                return $this->redirectToRoute('manage-sells');
             }
 
             $date = date("d/m/Y");
@@ -279,23 +275,23 @@ class GestionTenueController extends Controller{
                         break;
                     case 3:
                         if ($transaction->getMethode() == "cash") {
-                            $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
+                            $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
                                 "methode" => "Liquide",
                                 "montant" => $transaction->getMontant()
                             ];
-                            $totRechCash += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
+                            $totRechCash += $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["montant"];
                         } elseif ($transaction->getMethode() == "pumpkin") {
-                            $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
+                            $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
                                 "methode" => "Pumpkin",
                                 "montant" => $transaction->getMontant()
                             ];
-                            $totRechPumpkin += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
+                            $totRechPumpkin += $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["montant"];
                         } elseif ($transaction->getMethode() == "card") {
-                            $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()] = [
+                            $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
                                 "methode" => "Carte Bleue",
                                 "montant" => $transaction->getMontant()
                             ];
-                            $totRechCard += $rechargements[$transaction->getCompte()->getPrenom() . ' ' . $transaction->getCompte()->getNom()]["montant"];
+                            $totRechCard += $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["montant"];
                         } else {
                             array_push($erreurs, $transaction);
                         }
@@ -387,30 +383,30 @@ class GestionTenueController extends Controller{
                 'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
             );
 
-            return $this->redirectToRoute('cloture', ['id_zreport' => $zReport->getId()]);
+            return $this->redirectToRoute('register-treasury', ['id_zreport' => $zReport->getId()]);
         } catch (\Exception $e) {
             // If it fails, does nothing and goes back
             $this->addFlash(
                 'error', "Une erreur est survenue dans l'impression du ticket ou l'envoi du mail !"
             );
-            return $this->render('gestion/index.html.twig', array($e));
+            return $this->redirectToRoute('manage-sells');
         }
     }
 
     /**
-     * @Route("/gestion/cloture/{id_zreport}", name="cloture")
+     * @Route("/management/runs/register/{id_zreport}", name="register-treasury")
      * @param Request $request
      * @param $id_zreport
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function closeBar(Request $request, $id_zreport)
+    public function registerTreasury(Request $request, $id_zreport)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
         $treasury = new Treasury();
-        $form = $this->createForm(TreasuryType::class, $treasury);
+        $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
 
         $form->handleRequest($request);
 
@@ -433,20 +429,20 @@ class GestionTenueController extends Controller{
 
             $this->addFlash('info', 'La trésorerie a bien été mise à jour.');
 
-            return $this->redirectToRoute('historique_tenues');
+            return $this->redirectToRoute('runs-history');
         }
 
         return $this->render(
-            'gestion/cloture.html.twig',
+            'management/treasury.html.twig',
             array(
                 'form' => $form->createView()
             ));
     }
 
     /**
-     * @Route("/gestion/historique", name="historique_tenues")
+     * @Route("/management/runs/history", name="runs-history")
      */
-    public function history()
+    public function runsHistory()
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
@@ -454,16 +450,16 @@ class GestionTenueController extends Controller{
 
         $zreports = $this->getDoctrine()->getRepository('AppBundle:Zreport')->findAll();
 
-        return $this->render('gestion/historique.html.twig', array("zreports" => $zreports));
+        return $this->render('management/history.html.twig', array("zreports" => $zreports));
     }
 
     /**
-     * @Route("/gestion/modifier/{id_treasury}", name="modif_cloture")
+     * @Route("/management/runs/modify/{id_treasury}", name="modify-treasury")
      * @param Request $request
      * @param $id_treasury
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function modifCloture(Request $request, $id_treasury)
+    public function modifyTreasury(Request $request, $id_treasury)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
@@ -473,7 +469,7 @@ class GestionTenueController extends Controller{
 
         $treasury = $repo_treasury->find($id_treasury);
 
-        $form = $this->createForm(TreasuryType::class, $treasury);
+        $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
 
         $form->handleRequest($request);
 
@@ -484,11 +480,11 @@ class GestionTenueController extends Controller{
 
             $this->addFlash('info', "La clôture de la tenue a bien été modifiée.");
 
-            return $this->redirectToRoute("historique_tenues");
+            return $this->redirectToRoute("runs-history");
         }
 
         return $this->render(
-            'gestion/modifier.html.twig',
+            'management/modify.html.twig',
             array(
                 'form' => $form->createView()
             )
@@ -496,11 +492,11 @@ class GestionTenueController extends Controller{
     }
 
     /**
-     * @Route("/gestion/details/{id_zreport}", name="details_z")
+     * @Route("/management/runs/details/{id_zreport}", name="run-details")
      * @param $id_zreport
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function details($id_zreport)
+    public function runDetails($id_zreport)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
@@ -509,13 +505,16 @@ class GestionTenueController extends Controller{
         $zreport = $this->getDoctrine()->getRepository(Zreport::class)->find($id_zreport);
 
         return $this->render(
-            'gestion/details.html.twig',
+            'management/details.html.twig',
             array(
                 'zreport' => $zreport
             )
         );
     }
 
+    /**
+     * @param array $data
+     */
     protected function sendZ(array $data) {
         // Génération du mail
         $message = (new \Swift_Message('Ticket Z du ' . $data['date'] . ' à ' . $data['time']))
@@ -703,9 +702,9 @@ par ' . $data['username'] . '
             $printer->text('RECHARGEMENTS
 ');
             $printer->selectPrintMode(Printer::MODE_FONT_A);
-            foreach ($data['rechargements'] as $compte => $rechargement) {
+            foreach ($data['rechargements'] as $account => $rechargement) {
                 $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($compte . ' (' . $rechargement["methode"] . ')
+                $printer->text($account . ' (' . $rechargement["methode"] . ')
 ');
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
                 $printer->text($rechargement["montant"] . '

@@ -4,7 +4,7 @@
 
 {% block stylesheet %}
     <!--suppress JSUnresolvedLibraryURL, JSUnresolvedVariable -->
-    <link rel="stylesheet" href="{{ asset('css/caisse.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/purchase.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.8.0/dist/instantsearch.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
 {% endblock %}
@@ -19,7 +19,7 @@
          </div>
     {% endfor %}
 
-    {% for message in app.session.flashbag.get('erreur') %}
+    {% for message in app.session.flashbag.get('error') %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="fa fa-times-circle"></i> Erreur : {{message}}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -44,7 +44,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title center">{{ article.nom }} - {{ article.volume|number_format(0) }}L ({{ article.quantite }})</h5>
-                    <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
                         <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
@@ -89,7 +89,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title center">{{ article.nom }} - {{ article.volume*100|number_format(0) }}cL ({{ article.quantite }})</h5>
-                    <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
                         <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
@@ -134,7 +134,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
-                    <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
                         <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
@@ -338,9 +338,9 @@
                 //'suggestion' templating function used to render a single suggestion
                 suggestion: function(suggestion) {
                   return suggestion._highlightResult.pseudo.value + ' <small>(' +
-                    suggestion._highlightResult.prenom.value + ' <span class="text-uppercase">' +
-                    suggestion._highlightResult.nom.value + '</span>)</small> : <strong>' +
-                    suggestion.solde + '€</strong>';
+                    suggestion._highlightResult.firstName.value + ' <span class="text-uppercase">' +
+                    suggestion._highlightResult.lastName.value + '</span>)</small> : <strong>' +
+                    suggestion.balance + '€</strong>';
                 }
             }
         });

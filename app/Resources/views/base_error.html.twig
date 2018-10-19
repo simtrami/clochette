@@ -41,16 +41,16 @@
                 </li>
 
                 {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item{{ "comptes" in current_path ? " active" : "" }}">
-                        <a class="nav-link" href="{{ path('comptes') }}">
+                    <li class="nav-item{{ "accounts" in current_path ? " active" : "" }}">
+                        <a class="nav-link" href="{{ path('accounts') }}">
                             <i class="fa fa-id-badge" aria-hidden="true"></i> Comptes</a>
                     </li>
                 {% endif %}
 
                 {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item{{ "gestion" in current_path ? " active" : "" }}">
-                        <a class="nav-link" href="{{ path('gestion-tenue') }}">
-                            <i class="fa fa-check-double" aria-hidden="true"></i> Gestion des ventes</a>
+                    <li class="nav-item{{ "management" in current_path ? " active" : "" }}">
+                        <a class="nav-link" href="{{ path('manage-sells') }}">
+                            <i class="fa fa-check-double" aria-hidden="true"></i> Gestion</a>
                     </li>
                 {% endif %}
 

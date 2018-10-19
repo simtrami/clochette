@@ -1,5 +1,4 @@
 <?php
-// src/AppBundle/Form/SelectArticleType.php
 // Aller voir https://stackoverflow.com/questions/14638794/build-a-form-having-a-checkbox-for-each-entity-in-a-doctrine-collection
 namespace AppBundle\Form;
 

@@ -3,7 +3,6 @@
 {% block title %}{{ current_path == "/transactions/all" ? "Historique des transactions" : "Transactions non clôturées" }}{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
     <link rel="stylesheet" href="{{ asset('css/table.css') }}">
     {# <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"> #}
     <link rel="stylesheet" href="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.css') }}">
@@ -42,8 +41,8 @@
                 <tr>
                     <th>{{ transaction.id }}</th>
                     <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
-                    <td>{% if transaction.compte != NULL %}
-                            {{ transaction.compte.pseudo }}
+                    <td>{% if transaction.account != NULL %}
+                            {{ transaction.account.pseudo }}
                         {% elseif transaction.methode == "account" or transaction.type == 3 %}
                             Compte supprimé
                         {% else %}

@@ -60,12 +60,12 @@ security:
                 target: /
     
     access_control:
-    - { path: ^/comptes/modify, roles: ROLE_ALL }
-    - { path: ^/comptes/create, roles: ROLE_ALL }
-    - { path: ^/comptes/recharge, roles: ROLE_BUREAU }
-    - { path: ^/comptes, roles: ROLE_BUREAU }
-    - { path: ^/gestion/modifier, roles: ROLE_TRESO }
-    - { path: ^/gestion, roles: ROLE_BUREAU }
+    - { path: ^/accounts/modify, roles: ROLE_ALL }
+    - { path: ^/accounts/create, roles: ROLE_ALL }
+    - { path: ^/accounts/refill, roles: ROLE_BUREAU }
+    - { path: ^/accounts, roles: ROLE_BUREAU }
+    - { path: ^/management/runs/modify, roles: ROLE_TRESO }
+    - { path: ^/management, roles: ROLE_BUREAU }
     - { path: ^/purchase/open, roles: ROLE_BUREAU }
     - { path: ^/purchase, roles: ROLE_INTRO }
     - { path: ^/stock/ajout, roles: [ROLE_STOCK, ROLE_TRESO] }
