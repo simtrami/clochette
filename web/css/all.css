@@ -11,10 +11,10 @@
     --teal:#3AE4D2;
     --cyan:#4DDEFB;
     --white:#FFF;
-    --gray:#525A5F;
+    --gray:#737a7b;
 
     --primary:#0E55F4;
-    --secondary:#5D666C;
+    --secondary: #737a7b;
     --success:#01A867;
     --info:#4DDEFB;
     --warning:#FFC107;
@@ -22,15 +22,16 @@
     --light:#F8F9FA;
     --dark:#212426;
 
+    --gray-lighter: #d9e2df;
     --blue-light:#5889F6;
     --green-light:#01F496;
     --red-light:#F4674B;
-    --gray-light:#94A2AB;
+    --gray-light: #adb9ba;
     --blue-dark:#0A3FB5;
     --green-dark:#01955B;
     --red-dark: #841701;
     --yellow-dark: #e2aa07;
-    --gray-dark:#2C3033;
+    --gray-dark: #515759;
     --blue-darker:#072975;
     --green-darker:#01814F;
     --black:#121314;
@@ -140,6 +141,29 @@
     color: var(--white);
     background-color: var(--warning);
     border-color: var(--warning);
+}
+
+.btn-gray-lighter {
+    background-color: var(--gray-lighter);
+    border-color: var(--gray-lighter);
+    color: var(--black);
+}
+
+.btn-gray-lighter:hover {
+    background-color: var(--gray-light);
+    border-color: var(--gray-light);
+}
+
+.btn-outline-gray-lighter {
+    color: var(--gray-lighter);
+    background: transparent none;
+    border-color: var(--gray-lighter);
+}
+
+.btn-outline-gray-lighter:hover {
+    color: var(--black);
+    background-color: var(--gray-lighter);
+    border-color: var(--gray-lighter);
 }
 
 /**** Dropdowns ****/
