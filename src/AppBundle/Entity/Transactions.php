@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Transactions
  *
  * @ORM\Table(name="transactions", indexes={
- *     @ORM\Index(name="compte", columns={"compte"}),
+ *     @ORM\Index(name="account", columns={"account"}),
  *     @ORM\Index(name="user", columns={"user"}),
  *     @ORM\Index(name="zreport", columns={"zreport"}),
  *     })
@@ -35,15 +35,15 @@ class Transactions
     private $timestamp;
 
     /**
-     * @var Comptes
+     * @var Account
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comptes")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Account")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="compte", referencedColumnName="id", nullable=true)
+     *   @ORM\JoinColumn(name="account", referencedColumnName="id", nullable=true)
      * })
      */
-    private $compte;
-  
+    private $account;
+
     /**
      * @var Users
      *
@@ -137,26 +137,26 @@ class Transactions
     }
 
     /**
-     * Set compte
+     * Set account
      *
-     * @param Comptes|null $compte
+     * @param Account|null $account
      * @return Transactions
      */
-    public function setCompte(Comptes $compte = null)
+    public function setAccount(Account $account = null)
     {
-        $this->compte = $compte;
+        $this->account = $account;
 
         return $this;
     }
 
     /**
-     * Get compte
+     * Get account
      *
-     * @return Comptes
+     * @return Account
      */
-    public function getCompte()
+    public function getAccount()
     {
-        return $this->compte;
+        return $this->account;
     }
 
     /**

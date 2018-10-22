@@ -60,7 +60,7 @@ class PurchaseController extends Controller
      **/
     public function showIndex()
     {
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_INTRO')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -120,7 +120,7 @@ class PurchaseController extends Controller
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_users = $this->getDoctrine()->getRepository('AppBundle:Users');
-        $repo_comptes = $this->getDoctrine()->getRepository('AppBundle:Comptes');
+        $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account');
 
         $commande = new Transactions();
 
@@ -134,7 +134,7 @@ class PurchaseController extends Controller
         $form['drafts'] = $request->request->get('drafts');
         $form['bottles'] = $request->request->get('bottles');
         $form['articles'] = $request->request->get('articles');
-        $form['compte'] = $request->request->get('accountPseudo');
+        $form['account'] = $request->request->get('accountPseudo');
         $form['withdrawReason'] = $request->request->get('withdrawReason');
         $form['total'] = $request->request->get('total');
 
@@ -244,26 +244,26 @@ class PurchaseController extends Controller
       
         // Paiement par compte : Validation de la commande en fonction de l'utilisateur et du solde du compte
         if ($form['methode'] == "account") {
-            $compte = $repo_comptes->findOneBy(['pseudo' => $form['compte']]);
-            $solde = floatval($compte->getSolde());
+            $account = $repo_account->findOneBy(['pseudo' => $form['account']]);
+            $balance = floatval($account->getBalance());
 
-            if (!$this->security->isGranted('ROLE_BUREAU') && ($solde - $montant < 0)) {
+            if (!$this->security->isGranted('ROLE_BUREAU') && ($balance - $montant < 0)) {
 
                 $this->addFlash(
                     'erreur',
-                    "Le solde du compte de " . $compte->getPrenom() . " " . $compte->getNom() . " est insuffisant pour valider la commande : Il manque " . (-$solde + $montant) . "€."
+                    "Le solde du compte de " . $account->getFirstName() . " " . $account->getLastName() . " est insuffisant pour valider la commande : Il manque " . (-$balance + $montant) . "€."
                 );
                 return $this->redirectToRoute('purchase');            
             } else {
-                $newSolde = $solde - $montant;
+                $newBalance = $balance - $montant;
             }
             // Insertion du compte dans l'entité Transactions
-            $commande->setCompte($compte);
+            $commande->setAccount($account);
           
             // Modification du solde du compte
-            $compte->setSolde($newSolde);
+            $account->setBalance($newBalance);
             // Mise à jour du compte dans la base
-            $em->persist($compte);
+            $em->persist($account);
         }
         // Paiement par cash : Contrôle de la caisse
         elseif ($form['methode'] == "cash") {
@@ -288,23 +288,23 @@ class PurchaseController extends Controller
                 if ($form['withdrawReason'] == "1" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été ajoutés au compte de ".$compte->getPrenom()." ".$compte->getNom()." pour le retour de.". $commande->getMontant() ." écocup(s)."
+                        $commande->getMontant() . "€ ont été ajoutés au compte de ".$account->getFirstName()." ".$account->getLastName()." pour le retour de.". $commande->getMontant() ." écocup(s)."
                     );
                 } elseif ($form['withdrawReason'] == "2" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été ajoutés au compte de ".$compte->getPrenom()." ".$compte->getNom()."."
+                        $commande->getMontant() . "€ ont été remboursés sur le compte de ".$account->getFirstName()." ".$account->getLastName()."."
                     );
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
-                        'erreur',
+                        'error',
                         "Cette fonctionnalité n'est pas autorisée pour cet utilisateur"
                     );
                     return $this->redirectToRoute('purchase');
                 } else {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été débités du compte de " . $compte->getPrenom()." ".$compte->getNom()."."
+                        $commande->getMontant() . "€ ont été débités du compte de " . $account->getFirstName()." ".$account->getLastName()."."
                     );
                 }
                 break;
@@ -317,11 +317,11 @@ class PurchaseController extends Controller
                 } elseif ($form['withdrawReason'] == "2" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été retirés de la caisse."
+                        $commande->getMontant() . "€ ont été retirés de la caisse pour un remboursement."
                     );
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
-                        'erreur',
+                        'error',
                         "Cette fonctionnalité n'est pas autorisée pour cet utilisateur"
                     );
                     return $this->redirectToRoute('purchase');
@@ -335,7 +335,7 @@ class PurchaseController extends Controller
             case 'pumpkin':
                 $this->addFlash(
                     'info',
-                    $commande->getMontant()."€ ont été payés par Pumpkin."
+                    $commande->getMontant()."€ ont été encaissés par Pumpkin."
                 );
                 break;
             default:
@@ -348,8 +348,8 @@ class PurchaseController extends Controller
 
         $em->flush();
 
-        if (isset($compte)) {
-            $this->indexManager->index($compte, $em);
+        if (isset($account)) {
+            $this->indexManager->index($account, $em);
         }
 
         return $this->redirectToRoute('purchase');

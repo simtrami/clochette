@@ -1,14 +1,13 @@
 <?php
-// src/AppBundle/Form/Type/GestionTenueType.php
 namespace AppBundle\Form;
 
-use AppBundle\Entity\GestionTenue;
+use AppBundle\Entity\SellsManagement;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
-class GestionTenueType extends AbstractType
+class SellsManagementType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -31,7 +30,7 @@ class GestionTenueType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => GestionTenue::class,
+            'data_class' => SellsManagement::class,
         ));
     }
 }

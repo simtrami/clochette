@@ -93,9 +93,9 @@
             <th style="border:1px solid black; border-collapse: collapse">Moyen de paiement</th>
             <th style="border:1px solid black; border-collapse: collapse">Montant</th>
         </tr>
-        {% for compte, rechargement in rechargements %}
+        {% for account, rechargement in rechargements %}
         <tr>
-            <td style="border:1px solid black; border-collapse: collapse">{{ compte }}</td>
+            <td style="border:1px solid black; border-collapse: collapse">{{ account }}</td>
             <td style="border:1px solid black; border-collapse: collapse">{{ rechargement.methode }}</td>
             <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ rechargement.montant }}€</td>
         </tr>

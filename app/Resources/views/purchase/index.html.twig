@@ -4,7 +4,7 @@
 
 {% block stylesheet %}
     <!--suppress JSUnresolvedLibraryURL, JSUnresolvedVariable -->
-    <link rel="stylesheet" href="{{ asset('css/caisse.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/purchase.css') }}">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.8.0/dist/instantsearch.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/autocomplete.css') }}">
 {% endblock %}
@@ -19,7 +19,7 @@
          </div>
     {% endfor %}
 
-    {% for message in app.session.flashbag.get('erreur') %}
+    {% for message in app.session.flashbag.get('error') %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="fa fa-times-circle"></i> Erreur : {{message}}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -44,7 +44,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title center">{{ article.nom }} - {{ article.volume|number_format(0) }}L ({{ article.quantite }})</h5>
-                    <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
                         <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
@@ -89,7 +89,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title center">{{ article.nom }} - {{ article.volume*100|number_format(0) }}cL ({{ article.quantite }})</h5>
-                    <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
                         <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
@@ -134,7 +134,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
-                    <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="true">
+                    <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
                         <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
@@ -165,75 +165,78 @@
         {% endfor %}
         </div>
 
-        <button type="button" class="alert alert-success h4" data-toggle="collapse" data-target="#collapsePayer" aria-expanded="true" aria-controls="collapsePayer">
-            <i class="fas fa-coins"></i> Paiement
-        </button>
+        <div id="paymentContainer">
+            <button type="button" class="alert alert-success h4 mb-0" data-toggle="collapse" data-target="#collapsePayer" aria-expanded="false" aria-controls="collapsePayer">
+                <i class="fas fa-coins"></i> Paiement
+            </button>
 
-        <div class="collapse show" id="collapsePayer">
-            <!-- Prix total -->
-            <div class="d-flex justify-content-center w-75 mx-auto mb-2">
-                <div class="display-4">Total :&nbsp;</div>
-                <div class="display-4"><span id="totalTxt">0</span>€</div>
-                <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" required hidden>
-            </div>
-
-            <!-- Moyens de paiements -->
-            <div class="input-group w-100 mb-2">
-                <div class="btn-group btn-group-md btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
-                    {#<label class="btn btn-success" onclick="choixPaiement('cb')">
-                        <input type="radio" id="option1">
-                        <i class="fa fa-credit-card"></i> Carte Bleue
-                    </label>#}
-
-                    <label class="btn btn-success active" id="methodCash" onclick="choixPaiement('cash')">
-                        <input class="choix-paiement" type="radio" id="option1">
-                        <i class="fa fa-money-bill-alt"></i> Liquide
-                    </label>
-
-                    <label class="btn btn-success" id="methodAccount" onclick="choixPaiement('account')">
-                        <input class="choix-paiement" type="radio" id="option2">
-                        <i class="fa fa-id-badge"></i> Compte
-                    </label>
-
-                    <label class="btn btn-success" id="methodPumpkin" onclick="choixPaiement('pumpkin')">
-                        <input class="choix-paiement" type="radio" id="option3">
-                        <i class="fa fa-mobile-alt"></i> Pumpkin
-                    </label>
-
-                    <label class="btn btn-success" onclick="openModalWithdraw()">
-                        <input class="choix-paiement" type="radio" id="option">
-                        <i class="fas fa-minus-square"></i> Retrait
-                    </label>
+            <div class="collapse" id="collapsePayer">
+                <!-- Prix total -->
+                <div class="text-center mx-auto mb-2">
+                    <div class="display-4"><span id="totalTxt">0</span></div>
+                    <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" required hidden>
                 </div>
-            </div>
 
-            <!-- Compte sélectionné -->
-            <div class="d-flex justify-content-center mb-3">
-                <div class="collapse" id="collapseSelectedAccount">
-                    <div class="input-group">
-                        <input id="selectedAccount" class="form-control" type="text" name="accountPseudo" value="" autocomplete="off" readonly>
-                        <div class="input-group-append">
-                            <button class="btn btn-secondary" type="button" onclick="openAndFocus('#modalAccount', '#paying-account')">Modifier</button>
+                <!-- Moyens de paiements -->
+                <div class="input-group w-100 mb-2">
+                    <div class="btn-group btn-group-md btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
+                        {#<label class="btn btn-gray-lighter" onclick="choixPaiement('cb')">
+                            <input type="radio" id="option1">
+                            <i class="fa fa-credit-card"></i> Carte Bleue
+                        </label>#}
+
+                        <label class="btn btn-gray-lighter" id="methodCash" onclick="choixPaiement('cash')">
+                            <input class="choix-paiement" type="radio" id="option1">
+                            <i class="fa fa-money-bill-alt"></i> Liquide
+                        </label>
+
+                        <label class="btn btn-gray-lighter" id="methodAccount" onclick="choixPaiement('account')">
+                            <input class="choix-paiement" type="radio" id="option2">
+                            <i class="fa fa-id-badge"></i> Compte
+                        </label>
+
+                        {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                        <label class="btn btn-gray-lighter" id="methodPumpkin" onclick="choixPaiement('pumpkin')">
+                            <input class="choix-paiement" type="radio" id="option3">
+                            <i class="fa fa-mobile-alt"></i> Pumpkin
+                        </label>
+                        {% endif %}
+
+                        <label class="btn btn-gray-lighter" onclick="openModalWithdraw()">
+                            <input class="choix-paiement" type="radio" id="option">
+                            <i class="fas fa-minus-square"></i> Retrait
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Compte sélectionné -->
+                <div class="d-flex justify-content-center">
+                    <div class="collapse mb-2" id="collapseSelectedAccount">
+                        <div class="input-group">
+                            <input id="selectedAccount" class="form-control" type="text" name="accountPseudo" value="" autocomplete="off" readonly>
+                            <div class="input-group-append">
+                                <button class="btn btn-dark" type="button" onclick="openAndFocus('#modalAccount', '#paying-account')">Modifier</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Variables du formulaire -->
+                <input id="methode-paiement" name="methode" value="" required hidden>
+                <input name="withdrawReason" id="withdrawReason" value="0" required hidden>
+                <input type="hidden" name="userId" value="{{ app.user.id }}" required>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" required>
+
+                <!-- Boutons de validation -->
+                    {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                    <div class="btn-group d-flex justify-content-center">
+                        <button type="submit" class="btn btn-dark btn-lg">Valider la commande</button>
+                        <span class="btn btn-gray-lighter btn-lg ml-lg-1" onclick="window.location.href='{{ path('openCashier') }}'">Ouvrir la caisse</span>
+                    </div>
+                    {% else %}
+                    <button type="submit" class="btn btn-dark btn-lg btn-block">Payer</button>
+                    {% endif %}
             </div>
-
-            <!-- Variables du formulaire -->
-            <input id="methode-paiement" name="methode" value="cash" required hidden>
-            <input name="withdrawReason" id="withdrawReason" value="0" required hidden>
-            <input type="hidden" name="userId" value="{{ app.user.id }}" required>
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" required>
-
-            <!-- Boutons de validation -->
-                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                <div class="btn-group d-flex justify-content-center">
-                    <button type="submit" class="btn btn-success btn-lg">Valider la commande</button>
-                    <span class="btn btn-secondary btn-lg ml-lg-1" onclick="window.location.href='{{ path('openCashier') }}'">Ouvrir la caisse</span>
-                </div>
-                {% else %}
-                <button type="submit" class="btn btn-success btn-lg btn-block">Payer</button>
-                {% endif %}
         </div>
     </form>
 
@@ -338,9 +341,9 @@
                 //'suggestion' templating function used to render a single suggestion
                 suggestion: function(suggestion) {
                   return suggestion._highlightResult.pseudo.value + ' <small>(' +
-                    suggestion._highlightResult.prenom.value + ' <span class="text-uppercase">' +
-                    suggestion._highlightResult.nom.value + '</span>)</small> : <strong>' +
-                    suggestion.solde + '€</strong>';
+                    suggestion._highlightResult.firstName.value + ' <span class="text-uppercase">' +
+                    suggestion._highlightResult.lastName.value + '</span>)</small> : <strong>' +
+                    suggestion.balance + '€</strong>';
                 }
             }
         });

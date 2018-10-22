@@ -1,7 +1,7 @@
 <?php
 namespace AppBundle\Form;
 
-use AppBundle\Entity\Comptes;
+use AppBundle\Entity\Account;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -12,23 +12,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
 
-class CompteType extends AbstractType
+class AccountType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-            ->add('nom',TextType::class, array(
-                'label' => "Nom",
-            ))
-            ->add('prenom',TextType::class, array(
+            ->add('firstName',TextType::class, array(
                 'label' => "Prénom",
+            ))
+            ->add('lastName',TextType::class, array(
+                'label' => "Nom",
             ))
             ->add('pseudo',TextType::class, array(
                 'label' => "Pseudo",
             ))
-            ->add('annee',IntegerType::class, array(
+            ->add('year',IntegerType::class, array(
                 'label' => "Année",
             ))
-            ->add('is_intro', ChoiceType::class, array(
+            ->add('isInducted', ChoiceType::class, array(
                 'label' => "Intronisé",
                 'placeholder' => "Intronisé ?",
                 'choices' => array(
@@ -45,13 +45,13 @@ class CompteType extends AbstractType
 
                 if (!(!$compte || null === $compte->getId())) {
                     $form
-                        ->add('nomStaff', TextType::class, array(
+                        ->add('staffName', TextType::class, array(
                         'label' => 'Nom de Staff', 
                         'required' => false
                         ));
                 } else {
                     $form
-                        ->add('solde',MoneyType::class, array(
+                        ->add('balance',MoneyType::class, array(
                         'label' => "Solde",
                     ));
                 }
@@ -62,7 +62,7 @@ class CompteType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-          'data_class' => Comptes::class,
+          'data_class' => Account::class,
         ));
     }
 }

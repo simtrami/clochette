@@ -6,12 +6,11 @@
     "version": 2,
     "attributesToIndex": [
         "pseudo",
-        "prenom",
-        "nom",
-        "nomstaff",
-        "idcompte",
-        "solde",
-        "annee"
+        "staffName",
+        "firstName",
+        "lastName",
+        "id",
+        "balance"
     ],
     "numericAttributesToIndex": null,
     "attributesToRetrieve": null,
@@ -35,7 +34,7 @@
         "custom"
     ],
     "customRanking": [
-        "desc(idcompte)"
+        "asc(id)"
     ],
     "separatorsToIndex": "",
     "removeWordsIfNoResults": "none",

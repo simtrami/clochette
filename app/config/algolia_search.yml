@@ -1,5 +1,5 @@
 algolia_search:
   indices:
-    - name: comptes
-      class: AppBundle\Entity\Comptes
+    - name: accounts
+      class: AppBundle\Entity\Account
       enable_serializer_groups: true

@@ -3,16 +3,24 @@
 {% block title %}Gestion des ventes{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/preparation.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/management.css') }}">
 {% endblock %}
 
 {% block javascripts %}
 {% endblock %}
 
 {% block body %}
+    {% for message in app.session.flashbag.get('error') %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-double"></i> Information : {{message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
     {% for message in app.session.flashbag.get('info') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-double"></i> Information : {{message}}
+            <i class="fa fa-times-circle"></i> Erreur : {{message}}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -150,8 +158,8 @@
         <h1 class="display-4">Gestion des tenues</h1>
     </div>
 
-    <a class="btn btn-success btn-lg btn-block" href="{{ path('historique_tenues') }}">Historique</a>
-    <a class="btn btn-warning btn-lg btn-block" href="{{ path('generate-z') }}"
+    <a class="btn btn-success btn-lg btn-block" href="{{ path('runs-history') }}">Historique</a>
+    <a class="btn btn-warning btn-lg btn-block" href="{{ path('processing-run') }}"
             onclick="return confirm('Cette action effectue le bilan des ventes depuis la dernière clôture et imprime le ticket Z.\nLe bar doit être entièrement fermé pour effectuer cette action !')"
             data-toggle="tooltip" title="Fait le bilan des ventes depuis la dernière clôture et imprime le ticket Z">
         Clore la tenue</a>
