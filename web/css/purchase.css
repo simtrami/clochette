@@ -80,3 +80,32 @@ a.dropdown-item {
 #modalAccount .modal-footer {
     justify-content: space-between;
 }
+
+#totalTxt {
+    color: var(--white);
+}
+
+#totalTxt:after {
+    content: "€";
+}
+
+body {
+    padding-bottom: 65px;
+}
+
+#paymentContainer {
+    z-index: 3;
+    width: 100%;
+    padding: 0.5rem calc(7.5% + 15px);
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: var(--green);
+}
+
+@media (max-width: 800px), (max-device-width: 800px) {
+    #paymentContainer {
+        padding: 0.5rem 15px;
+    }
+}
