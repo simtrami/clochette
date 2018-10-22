@@ -30,7 +30,7 @@ class UserController extends Controller{
 
     public function indexAction()
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -144,11 +144,11 @@ class UserController extends Controller{
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')) {
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN') && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             // 1) build the form
             $user = new Users();
             $form = $this->createForm(SuperUserType::class, $user);
-        } elseif ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+        } elseif ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             // 1) build the form
             $user = new Users();
             $form = $this->createForm(UserType::class, $user);

@@ -37,7 +37,7 @@ class AccountController extends Controller {
      * @Route("/accounts", name="accounts")
      */
     public function showIndex(){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_ATHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -55,7 +55,7 @@ class AccountController extends Controller {
      * @throws \Exception
      */
     public function createAccount(Request $request){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
 
@@ -104,7 +104,7 @@ class AccountController extends Controller {
      * @throws \Exception
      */
     public function modifyAccount(Request $request, $id){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
       
@@ -159,7 +159,7 @@ class AccountController extends Controller {
      */
     public function refillAccount(Request $request, $id){
 
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
 
