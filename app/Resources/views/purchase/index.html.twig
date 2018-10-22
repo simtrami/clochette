@@ -195,10 +195,12 @@
                         <i class="fa fa-id-badge"></i> Compte
                     </label>
 
+                    {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                     <label class="btn btn-success" id="methodPumpkin" onclick="choixPaiement('pumpkin')">
                         <input class="choix-paiement" type="radio" id="option3">
                         <i class="fa fa-mobile-alt"></i> Pumpkin
                     </label>
+                    {% endif %}
 
                     <label class="btn btn-success" onclick="openModalWithdraw()">
                         <input class="choix-paiement" type="radio" id="option">
