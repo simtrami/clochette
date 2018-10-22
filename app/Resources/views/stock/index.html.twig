@@ -151,7 +151,7 @@
                                 <div class="input-group justify-content-around mx-auto">
                                     <a class="btn btn-success mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true or is_granted(expression('"ROLE_TRESO" in roles'))==true ? "" : "disabled" }}" href="{{ path('modif_article', { 'id_article': beer.id }) }}">
                                         <i class="fas fa-edit"></i> Modif.</a>
-                                    <a class="btn btn-danger mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true ? "" : "disabled" }}" href="{{ path('suppr_article', {'idarticle': item.id}) }}" href="{{ path('suppr_article', {'idarticle': beer.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">
+                                    <a class="btn btn-danger mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true ? "" : "disabled" }}" href="{{ path('suppr_article', {'idarticle': beer.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">
                                         <i class="fas fa-times"></i> Suppr.</a>
                                 </div>
                             </div>
@@ -191,7 +191,7 @@
                                 <div class="input-group justify-content-around mx-auto">
                                     <a class="btn btn-success mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true or is_granted(expression('"ROLE_TRESO" in roles'))==true ? "" : "disabled" }}" href="{{ path('modif_article', { 'id_article': bottle.id }) }}">
                                         <i class="fas fa-edit"></i> Modif.</a>
-                                    <a class="btn btn-danger mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true ? "" : "disabled" }}" href="{{ path('suppr_article', {'idarticle': item.id}) }}" href="{{ path('suppr_article', {'idarticle': bottle.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">
+                                    <a class="btn btn-danger mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true ? "" : "disabled" }}" href="{{ path('suppr_article', {'idarticle': bottle.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">
                                         <i class="fas fa-times"></i> Suppr.</a>
                                 </div>
                             </div>
