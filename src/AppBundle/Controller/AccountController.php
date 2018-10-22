@@ -37,7 +37,7 @@ class AccountController extends Controller {
      * @Route("/accounts", name="accounts")
      */
     public function showIndex(){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_ATHENTICATED_REMEMBERED')) {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
 
