@@ -574,7 +574,7 @@ class ManagementController extends Controller{
 ');
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             $printer->text('Émis le ' . $data['date'] . ' à ' . $data['time'] . '
-par ' . $data['username'] . '
+par ' . $data['user'] . '
 ');
             $printer->feed();
 
