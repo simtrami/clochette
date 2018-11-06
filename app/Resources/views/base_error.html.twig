@@ -87,11 +87,9 @@
                             <i class="fa fa-user" aria-hidden="true"></i> {{ app.user.username }}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            {%  if is_granted(expression('"ROLE_ADMIN" in roles')) %}
                                 <a class="dropdown-item" href="{{ path('modify_user', {id : app.user.id}) }}">
                                     <i class="fa fa-user-cog"></i> Paramètres</a>
                                 <div class="dropdown-divider"></div>
-                            {% endif %}
                             <a class="dropdown-item" href="{{ path('logout') }}">
                                 <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
                         </div>
