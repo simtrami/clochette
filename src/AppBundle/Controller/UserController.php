@@ -57,7 +57,7 @@ class UserController extends Controller{
         }
 
         if ($this->getUser()->getId() != $id && !$this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')){
-            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier un compte qui n\'est pas le votre');
+            throw $this->createAccessDeniedException("Vous ne pouvez pas modifier un compte qui n'est pas le votre");
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -96,37 +96,33 @@ class UserController extends Controller{
             ->getForm()
         ;
 
-        if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()){
+        if ($request->isMethod('POST') && ($form->handleRequest($request)->isValid() || $form_pw->handleRequest($request)->isValid())){
+            if ($form->isValid()){
+                $user->setEmail($form['email']->getData());
+                $user->setUsername($form['username']->getData());
+            }
+            if ($form_pw->isValid()){
+                $password = $passwordEncoder->encodePassword($user, $form_pw['plainPassword']->getData());
+                $user->setPassword($password);
+            }
 
-            $user->setEmail($form['email']->getData());
-            $user->setUsername($form['username']->getData());
-
-            $em->persist($user);
-            $em->flush();
+            try {
+                $em->persist($user);
+                $em->flush();
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'La modification du compte a échoué.');
+                return $this->redirectToRoute('homepage');
+            }
 
             if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')){
-
                 $this->addFlash('info', 'Le compte "' . $user->getUsername() . '" a bien été modifié');
 
                 return $this->redirectToRoute('users');
-            }
-            else{
+            } else{
+                $this->addFlash('info', $user->getUsername(). ', votre compte a bien été modifié. Reconnectez-vous.');
 
-                $this->addFlash('info', $user->getUsername(). ', votre compte a bien été modifié');
-                
                 return $this->redirectToRoute('homepage');
             }
-        }
-
-        if ($request->isMethod('POST') && $form_pw->handleRequest($request)->isValid()){
-
-            $password = $passwordEncoder->encodePassword($user, $form_pw['plainPassword']->getData());
-            $user->setPassword($password);
-
-            $em->persist($user);
-            $em->flush();
-
-            return $this->redirectToRoute('users');
         }
 
         return $this->render('users/modify.html.twig', array(
