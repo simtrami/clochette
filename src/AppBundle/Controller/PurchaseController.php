@@ -79,8 +79,6 @@ class PurchaseController extends Controller
             $cidre->setPrixVente(2.5);
             $em->persist($cidre);
             $em->flush();
-        } else {
-            $this->addFlash('error', "Un problème concernant le Cidre est survenu !");
         }
 
         $draft = $repo_typeStocks->returnType('Fût');
