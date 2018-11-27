@@ -1,6 +1,6 @@
 {
     "name": "spatializer/clochette",
-    "license": "proprietary",
+    "license": "GPLv3",
     "type": "project",
     "autoload": {
         "psr-4": {
