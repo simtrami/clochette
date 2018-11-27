@@ -75,7 +75,7 @@ class PurchaseController extends Controller
             $cidre->setPrixVente(2);
             $em->persist($cidre);
             $em->flush();
-        } elseif ($heure != 22 && $cidre->getPrixVente() == 2) {
+        } elseif (!($heure >= '21:50' && $heure <= '23:00') && $cidre->getPrixVente() == 2) {
             $cidre->setPrixVente(2.5);
             $em->persist($cidre);
             $em->flush();
@@ -223,7 +223,7 @@ class PurchaseController extends Controller
             }
         } else {
             $this->addFlash(
-                'erreur',
+                'error',
                 "L'utilisateur" . $this->getUser()->getUsername() . " n'a pas le droit d'effectuer cette transaction !"
             );
             return $this->redirectToRoute('purchase');
@@ -231,7 +231,7 @@ class PurchaseController extends Controller
       
         if (($montant < 0 && $form['withdrawReason'] == 0) || $montant == 0) {
             $this->addFlash(
-                'erreur',
+                'error',
                 "Le montant de la commande semble incorrecte, merci de la renvoyer."
             );
             return $this->redirectToRoute('purchase');
@@ -250,7 +250,7 @@ class PurchaseController extends Controller
             if (!$this->security->isGranted('ROLE_BUREAU') && ($balance - $montant < 0)) {
 
                 $this->addFlash(
-                    'erreur',
+                    'error',
                     "Le solde du compte de " . $account->getFirstName() . " " . $account->getLastName() . " est insuffisant pour valider la commande : Il manque " . (-$balance + $montant) . "€."
                 );
                 return $this->redirectToRoute('purchase');            
@@ -340,7 +340,7 @@ class PurchaseController extends Controller
                 break;
             default:
                 $this->addFlash(
-                    'erreur', 
+                    'error',
                     "La méthode de paiement n'a pas été reconnue !"
                 );
                 return $this->redirectToRoute('purchase');
