@@ -9,15 +9,6 @@
 {% endblock %}
 
 {% block body %}
-    {% for message in app.session.flashbag.get('info') %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-double"></i> Information : {{message}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endfor %}
-
     <div class="alert alert-light">
         <h1 class="display-4">Modifier clôture du bar</h1>
     </div>

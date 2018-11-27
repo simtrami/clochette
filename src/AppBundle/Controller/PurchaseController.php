@@ -68,19 +68,19 @@ class PurchaseController extends Controller
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
         // Réduction sur le cidre
-	$heure = date('H');
+	    $heure = date('H:m');
         $cidre = $repo_stocks->findOneBy(['nom' => 'Cidre']);
         $em = $this->getDoctrine()->getManager();
-        if ($heure == 22 && $cidre->getPrixVente() == 2.5) {
+        if ($heure >= '21:50' && $heure <= '23:00' && $cidre->getPrixVente() == 2.5) {
             $cidre->setPrixVente(2);
             $em->persist($cidre);
             $em->flush();
-        } elseif ($heure != 22 && $cidre->getPrixVente() == 2) {
+        } elseif (!($heure >= '21:50' && $heure <= '23:00') && $cidre->getPrixVente() == 2) {
             $cidre->setPrixVente(2.5);
             $em->persist($cidre);
             $em->flush();
-        } elseif (!(($heure == 22 && $cidre->getPrixVente() == 2) or ($heure != 22 && $cidre->getPrixVente() == 2.5))) {
-            $this->addFlash('erreur', "Un problème concernant le Cidre est survenu !");
+        } else {
+            $this->addFlash('error', "Un problème concernant le Cidre est survenu !");
         }
 
         $draft = $repo_typeStocks->returnType('Fût');
@@ -223,7 +223,7 @@ class PurchaseController extends Controller
             }
         } else {
             $this->addFlash(
-                'erreur',
+                'error',
                 "L'utilisateur" . $this->getUser()->getUsername() . " n'a pas le droit d'effectuer cette transaction !"
             );
             return $this->redirectToRoute('purchase');
@@ -231,7 +231,7 @@ class PurchaseController extends Controller
       
         if (($montant < 0 && $form['withdrawReason'] == 0) || $montant == 0) {
             $this->addFlash(
-                'erreur',
+                'error',
                 "Le montant de la commande semble incorrecte, merci de la renvoyer."
             );
             return $this->redirectToRoute('purchase');
@@ -250,7 +250,7 @@ class PurchaseController extends Controller
             if (!$this->security->isGranted('ROLE_BUREAU') && ($balance - $montant < 0)) {
 
                 $this->addFlash(
-                    'erreur',
+                    'error',
                     "Le solde du compte de " . $account->getFirstName() . " " . $account->getLastName() . " est insuffisant pour valider la commande : Il manque " . (-$balance + $montant) . "€."
                 );
                 return $this->redirectToRoute('purchase');            
@@ -340,7 +340,7 @@ class PurchaseController extends Controller
                 break;
             default:
                 $this->addFlash(
-                    'erreur', 
+                    'error',
                     "La méthode de paiement n'a pas été reconnue !"
                 );
                 return $this->redirectToRoute('purchase');
