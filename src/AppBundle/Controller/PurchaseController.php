@@ -149,19 +149,19 @@ class PurchaseController extends Controller
             $detail = new DetailsTransactions();
             $article = $repo_stocks->findOneBy(array('nom' => 'Ecocup'));
 
-            $montant = -$form['total'];
+            $montant = -(abs($form['total']));
 
             $detail->setArticle($article);
-            $detail->setQuantite(-$form['total']);
+            $detail->setQuantite(abs($form['total']));
             $detail->setTransaction($commande);
-            $article->setQuantite($article->getQuantite() - $form['total']);
+            $article->setQuantite($article->getQuantite() + (abs($form['total'])));
 
             $em->persist($detail);
             $em->persist($article);
         } elseif ($form['withdrawReason'] == 2 && $this->security->isGranted('ROLE_BUREAU')) {
             $commande->setType(2);
 
-            $montant = -$form['total'];
+            $montant = -(abs($form['total']));
         } elseif ($form['withdrawReason'] == 0) {
             $commande->setType(1);
 
@@ -286,12 +286,12 @@ class PurchaseController extends Controller
                 if ($form['withdrawReason'] == "1" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été ajoutés au compte de ".$account->getFirstName()." ".$account->getLastName()." pour le retour de.". $commande->getMontant() ." écocup(s)."
+                        -$commande->getMontant() . "€ ont été ajoutés au compte de ".$account->getFirstName()." ".$account->getLastName()." pour le retour de ". -$commande->getMontant() ." écocup(s)."
                     );
                 } elseif ($form['withdrawReason'] == "2" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été remboursés sur le compte de ".$account->getFirstName()." ".$account->getLastName()."."
+                        -$commande->getMontant() . "€ ont été remboursés sur le compte de ".$account->getFirstName()." ".$account->getLastName()."."
                     );
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
@@ -310,12 +310,12 @@ class PurchaseController extends Controller
                 if ($form['withdrawReason'] == "1" && $this->security->isGranted('ROLE_INTRO')) {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été retirés de la caisse pour le retour de ". $commande->getMontant() ." écocup(s)."
+                        -$commande->getMontant() . "€ ont été retirés de la caisse pour le retour de ". -$commande->getMontant() ." écocup(s)."
                     );
                 } elseif ($form['withdrawReason'] == "2" && $this->security->isGranted('ROLE_BUREAU')) {
                     $this->addFlash(
                         'info',
-                        $commande->getMontant() . "€ ont été retirés de la caisse pour un remboursement."
+                        -$commande->getMontant() . "€ ont été retirés de la caisse pour un remboursement."
                     );
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
