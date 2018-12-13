@@ -138,7 +138,7 @@
     <div class="spacer"></div>
     <footer class="mx-auto mt-4">
         <div id="copyright" class="mt-2">
-            <p>&copy; {{ date('Y')|date('Y') }} <a href="{{ developer_url }}" target="_blank">{{ developer_username }}</a> &centerdot; Clochette <a href="{{ project_url }}" target="_blank" class="badge badge-light">v{{ project_version }}</a></p>
+            <p>&copy; {{ date('Y')|date('Y') }} <a href="{{ developer_url }}" target="_blank">{{ developer_username }}</a> &centerdot; Clochette <a href="{{ project_url }}{{ project_version }}" target="_blank" class="badge badge-light">v{{ project_version }}</a></p>
         </div>
         {% block footer %}{% endblock %}
     </footer>
