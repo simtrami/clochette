@@ -316,11 +316,11 @@ class ManagementController extends Controller{
 
             // Calcul du montant total des transactions par type
             $totCom = $totComCash + $totComAccount + $totComPumpkin + $totComCard;
-            $totRemb = $totRembCash + $totRembAccount;
+            $totRemb = $totRembCash + $totRembAccount; // < 0
             $totRech = $totRechCash + $totRechPumpkin + $totRechCard;
 
             // Calcul du bilan
-            $tot = $totCom - $totRemb;
+            $tot = $totCom + $totRemb;
 
             // Bilan des stocks
             $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
@@ -800,13 +800,13 @@ par ' . $data['user'] . '
             $printer->text('Total entrées
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text('+ ' . $data['totCom'] . '
+            $printer->text($data['totCom'] . '
 ');
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total sorties
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text('- ' . $data['totRemb'] . '
+            $printer->text($data['totRemb'] . '
 ');
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total
