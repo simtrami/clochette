@@ -3,20 +3,20 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Users;
-use Swift_Image;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Form\SuperUserType;
 use AppBundle\Form\UserType;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Swift_Image;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserController extends Controller{
+class UserController extends BasicController
+{
     protected $sendingAddress;
 
     public function __construct($sendingAddress)
@@ -27,20 +27,21 @@ class UserController extends Controller{
     /**
      * @Route("/users", name="users")
     **/
-
     public function indexAction()
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         $repo_users = $this->getDoctrine()->getManager()->getRepository('AppBundle:Users');
 
-        $listUsers = $repo_users->findAll();
+        $users = $repo_users->findAll();
 
-        return $this->render('users/index.html.twig', array(
-            'users' => $listUsers
-        ));
+        $this->data['users'] = $users;
+
+        return $this->render('users/index.html.twig', $this->data);
     }
 
     /**
@@ -55,10 +56,11 @@ class UserController extends Controller{
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
-
         if ($this->getUser()->getId() != $id && !$this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')){
             throw $this->createAccessDeniedException("Vous ne pouvez pas modifier un compte qui n'est pas le votre");
         }
+
+        $this->getModes();
 
         $em = $this->getDoctrine()->getManager();
         $repo_users = $em->getRepository('AppBundle:Users');
@@ -125,11 +127,11 @@ class UserController extends Controller{
             }
         }
 
-        return $this->render('users/modify.html.twig', array(
-            'form' => $form->createView(),
-            'form_pw' => $form_pw->createView(),
-            'user' => $user
-        ));
+        $this->data['form'] = $form->createView();
+        $this->data['form_pw'] = $form_pw->createView();
+        $this->data['user'] = $user;
+
+        return $this->render('users/modify.html.twig', $this->data);
     }
 
     /**
@@ -152,6 +154,8 @@ class UserController extends Controller{
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         // 2) handle the submit (will only happen on POST)
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -169,13 +173,13 @@ class UserController extends Controller{
             $message = (new \Swift_Message('Confirmation de création du compte utilisateur'))
                 ->setFrom($this->sendingAddress)
                 ->setTo($user->getEmail());
-            $data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
-            $data['username'] = $user->getUsername();
-            $data['roles'] = $user->getRoles();
+            $this->data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
+            $this->data['username'] = $user->getUsername();
+            $this->data['roles'] = $user->getRoles();
             $message->setBody(
                 $this->renderView(
                     'emails/newUser.html.twig',
-                    $data
+                    $this->data
                 ),
                 'text/html'
             )/*
@@ -196,9 +200,11 @@ class UserController extends Controller{
             return $this->redirectToRoute('add_user');
         }
 
+        $this->data['form'] = $form->createView();
+
         return $this->render(
             'users/add.html.twig',
-            array('form' => $form->createView())
+            $this->data
         );
     }
 

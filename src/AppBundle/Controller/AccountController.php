@@ -3,28 +3,19 @@ namespace AppBundle\Controller;
 
 use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Account;
+use AppBundle\Entity\Transactions;
 use AppBundle\Form\AccountType;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use AppBundle\Entity\Transactions;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
-class AccountController extends Controller {
+class AccountController extends BasicController
+{
 
-    private $indexManager;
-
-    /*
-     * @var string
-     */
-    protected $escposPrinterIP;
-
-    /*
-     * @var int
-     */
-    protected $escposPrinterPort;
+    protected $escposPrinterPort, $escposPrinterIP;
+    protected $indexManager;
 
     public function __construct(IndexManagerInterface $indexingManager, $escposPrinterIP, $escposPrinterPort)
     {
@@ -41,10 +32,12 @@ class AccountController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-        $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account')->findAll();
-        $data['accounts']=$repo_account;
+        $this->getModes();
 
-        return $this->render("accounts/index.html.twig", $data);
+        $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account')->findAll();
+        $this->data['accounts'] = $repo_account;
+
+        return $this->render("accounts/index.html.twig", $this->data);
         
     }
 
@@ -58,6 +51,8 @@ class AccountController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         $account=new Account();
         $form=$this->createForm(AccountType::class, $account);
@@ -86,13 +81,12 @@ class AccountController extends Controller {
         
             return $this->redirectToRoute('create_account');
         }
-      
+
+        $this->data['form'] = $form->createView();
+        $this->data['mode'] = 'new_account';
         return $this->render(
           'accounts/account.html.twig',
-          array(
-            'form' => $form->createView(),
-            'mode' => 'new_account',
-          )
+            $this->data
         );
     }
 
@@ -107,6 +101,8 @@ class AccountController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
       
         // 1) Récupérer le compte et construire le form
         $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account');
@@ -139,14 +135,14 @@ class AccountController extends Controller {
             return $this->redirectToRoute('accounts');
         }
 
+        $this->data['form'] = $form->createView();
+        $this->data['mode'] = 'modify_account';
+        $this->data['firstName'] = $account->getFirstName();
+        $this->data['lastName'] = $account->getLastName();
+
         return $this->render(
             'accounts/account.html.twig',
-            array(
-                'form' => $form->createView(),
-                'mode' => 'modify_account',
-                'firstName' => $account->getFirstName(),
-                'lastName' => $account->getLastName()
-            )
+            $this->data
         );
     }
 
@@ -158,10 +154,11 @@ class AccountController extends Controller {
      * @throws \Exception
      */
     public function refillAccount(Request $request, $id){
-
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         $account = $this->getDoctrine()->getManager()->getRepository('AppBundle:Account')->find($id);
 
@@ -234,9 +231,9 @@ class AccountController extends Controller {
             return $this->redirectToRoute('accounts');
         }
 
-        return $this->render('accounts/refill.html.twig', array(
-            'pseudo' => $account->getPseudo(),
-            'form' => $form->createView()
-        ));
+        $this->data['form'] = $form->createView();
+        $this->data['pseudo'] = $account->getPseudo();
+
+        return $this->render('accounts/refill.html.twig', $this->data);
     }
 }

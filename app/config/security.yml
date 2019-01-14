@@ -68,6 +68,7 @@ security:
     - { path: ^/management, roles: ROLE_BUREAU }
     - { path: ^/purchase/open, roles: ROLE_BUREAU }
     - { path: ^/purchase, roles: ROLE_INTRO }
+    - { path: ^/settings, roles: ROLE_ADMIN }
     - { path: ^/stock/ajout, roles: [ROLE_STOCK, ROLE_TRESO] }
     - { path: ^/stock/modifier, roles: [ROLE_STOCK, ROLE_TRESO] }
     - { path: ^/stock/supprimer, roles: ROLE_STOCK }

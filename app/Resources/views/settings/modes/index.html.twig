@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "Paramètres"|trans }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('lib/bootstrap-toggle-master/css/bootstrap-toggle.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('css/modes.css') }}"/>
+{% endblock %}
+
+{% block body %}
+    <div class="alert alert-light">
+        <h1 class="display-4">{{ "Modes de l'application"|trans }}</h1>
+    </div>
+
+    <div class="accordion" id="accordionModule">
+        {% for mode in modes %}
+            <div class="card">
+                <div class="card-header d-flex justify-content-between" id="cardMode{{ mode.id }}">
+                    <div>
+                        <label for="toggle{{ mode.id }}" class="h5 mb-0">
+                            <button class="list-elt btn btn-link text-secondary font-weight-bold" type="button"
+                                    data-toggle="collapse" data-target="#collapseModesDescription{{ mode.id }}"
+                                    aria-expanded="true" aria-controls="collapseModesDescription{{ mode.id }}">
+                                {{ mode.name|upper }}
+                            </button>
+                        </label>
+                        <small class="mode-status" id="toggle{{ mode.id }}status" shown="false"
+                               success="undefined"></small>
+                    </div>
+
+                    {#<input id="toggle{{ mode.id }}" type="checkbox" checked data-toggle="toggle">#}
+                    <input id="toggle{{ mode.id }}" type="checkbox"
+                            {{ mode.parameters['state'] == 1 ? "checked" : "" }} data-toggle="toggle">
+                </div>
+                <div id="collapseModesDescription{{ mode.id }}" class="collapse show"
+                     aria-labelledby="cardMode{{ mode.id }}"
+                     data-parent="#accordionModule">
+                    <div class="card-body text-justify">
+                        {{ mode.description }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('lib/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ asset('lib/bootstrap-toggle-master/js/bootstrap-toggle.min.js') }}"></script>
+    <script>
+        $(function () {
+            $('#toggle1')[0].parentElement.addEventListener('click', function () {
+                $.ajax({
+                    url: '{{ path('toggle_mode') }}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        "id": "1"
+                    },
+                    async: true,
+                    success: function (data) {
+                        if (data["id"] === "1") {
+                            if (data["state"] === "Error") {
+                                showStatus('1', "{{ "Erreur de changement d'état!"|trans }}", "error");
+                                // document.getElementById("toggle1status").innerText = "Error while toggling mode!";
+                                $("#toggle1").bootstrapToggle('toggle');
+                            } else if (data["state"] === 1) {
+                                showStatus('1', "{{ "Activé."|trans }}", "success");
+                                document.documentElement.style.setProperty("--default-theme", "#177952");
+                                document.documentElement.style.setProperty("--stockmarket-theme", "#177952");
+                                $("#toggle1").bootstrapToggle('on');
+                            } else if (data["state"] === 0) {
+                                showStatus('1', "{{ "Désactivé"|trans }}", "success");
+                                document.documentElement.style.setProperty("--default-theme", "#01A867");
+                                document.documentElement.style.setProperty("--stockmarket-theme", "#01A867");
+                                $("#toggle1").bootstrapToggle('off');
+                            } else {
+                                console.log("{{ "Erreur de changement d'état!"|trans }}");
+                            }
+                        } else {
+                            console.log("{{ "Erreur de changement d'état!"|trans }}");
+                        }
+                        console.log(data);
+                    }
+                });
+                return false;
+            });
+        });
+
+        function showStatus(id, message, status) {
+            document.getElementById("toggle" + id + "status").setAttribute("shown", "true");
+            if (status === "error") {
+                document.getElementById("toggle" + id + "status").setAttribute("success", "false");
+            } else if (status === "success") {
+                document.getElementById("toggle" + id + "status").setAttribute("success", "true");
+            } else {
+                document.getElementById("toggle" + id + "status").setAttribute("success", "undefined");
+            }
+            document.getElementById("toggle" + id + "status").innerText = message;
+            setTimeout(function () {
+                document.getElementById("toggle" + id + "status").setAttribute("shown", "false");
+            }, 3000); // in milliseconds
+        }
+    </script>
+{% endblock %}

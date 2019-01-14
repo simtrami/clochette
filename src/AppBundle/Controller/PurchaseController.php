@@ -3,46 +3,19 @@
 namespace AppBundle\Controller;
 
 use Algolia\SearchBundle\IndexManagerInterface;
-use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use AppBundle\Entity\Transactions;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
-class PurchaseController extends Controller
+class PurchaseController extends BasicController
 {
-    protected $indexManager;
-
-    /*
-     * @var string
-     */
-    protected $algoliaAppId;
-
-    /*
-     * @var string
-     */
-    protected $algoliaApiSearchKey;
-
-    /*
-     * @var string
-     */
-    protected $algoliaIndex;
-
-    /*
-     * @var string
-     */
-    protected $escposPrinterIP;
-
-    /*
-     * @var int
-     */
-    protected $escposPrinterPort;
-
+    protected $indexManager, $algoliaAppId, $algoliaApiSearchKey, $algoliaIndex;
+    protected $escposPrinterIP, $escposPrinterPort;
     protected $security;
-
 
     public function __construct($algoliaAppId, $algoliaApiSearchKey, $algoliaIndex, IndexManagerInterface $indexingManager, $escposPrinterIP, $escposPrinterPort, Security $security)
     {
@@ -63,6 +36,8 @@ class PurchaseController extends Controller
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
@@ -91,16 +66,15 @@ class PurchaseController extends Controller
 
         /* articles */ $selected_articles = $repo_stocks->loadStocksForSaleByType($article);
 
-        $data=[];
-        $data['selected_drafts'] = $selected_drafts;
-        $data['selected_bottles'] = $selected_bottles;
-        $data['selected_articles'] = $selected_articles;
+        $this->data['selected_drafts'] = $selected_drafts;
+        $this->data['selected_bottles'] = $selected_bottles;
+        $this->data['selected_articles'] = $selected_articles;
 
-        $data['algoliaAppId'] = $this->algoliaAppId;
-        $data['algoliaApiSearchKey'] = $this->algoliaApiSearchKey;
-        $data['algoliaIndex'] = $this->algoliaIndex;
+        $this->data['algoliaAppId'] = $this->algoliaAppId;
+        $this->data['algoliaApiSearchKey'] = $this->algoliaApiSearchKey;
+        $this->data['algoliaIndex'] = $this->algoliaIndex;
 
-        return $this->render("purchase/index.html.twig", $data);
+        return $this->render("purchase/index.html.twig", $this->data);
     }
 
     /**

@@ -35,6 +35,9 @@
     --blue-darker:#072975;
     --green-darker:#01814F;
     --black:#121314;
+
+    --default-theme: #01A867;
+    --stockmarket-theme: #177952;
 }
 
 /****** Loading ******/
@@ -166,6 +169,15 @@
     border-color: var(--gray-lighter);
 }
 
+.list-elt {
+    text-decoration: none !important;
+}
+
+.list-elt:hover {
+    text-decoration: none;
+    color: var(--dark) !important;
+}
+
 /**** Dropdowns ****/
 
 .dropdown-toggle.no-arrow::before {
@@ -196,8 +208,12 @@ nav.navbar {
     width: 85%;
 }
 
-.navbar{
-    background-color: var(--green);
+body.default header .navbar {
+    background-color: var(--default-theme);
+}
+
+body.stockmarket header .navbar {
+    background-color: var(--stockmarket-theme);
 }
 
 .navbar-brand img {
@@ -249,8 +265,12 @@ body {
     min-height: 100vh;
 }
 
-header {
-    background-color: var(--green) !important;
+body.default header {
+    background-color: var(--default-theme) !important;
+}
+
+body.stockmarket header {
+    background-color: var(--stockmarket-theme) !important;
 }
 
 .container-fluid {

@@ -8,25 +8,13 @@ use AppBundle\Entity\Zreport;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 use Swift_Image;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
 
-class ManagementController extends Controller{
-
-    /*
-     * @var string
-     */
-    protected $escposPrinterIP;
-
-    /*
-     * @var int
-     */
-    protected $escposPrinterPort;
-
-    protected $mailingListAddress;
-
-    protected $sendingAddress;
+class ManagementController extends BasicController
+{
+    protected $escposPrinterIP, $escposPrinterPort;
+    protected $mailingListAddress, $sendingAddress;
 
     public function __construct($escposPrinterIP, $escposPrinterPort, $mailingListAddress, $sendingAddress)
     {
@@ -45,6 +33,8 @@ class ManagementController extends Controller{
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         $em = $this->getDoctrine()->getManager();
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
@@ -91,9 +81,9 @@ class ManagementController extends Controller{
             return $this->redirectToRoute('purchase');
         }
 
-        $data['form'] = $form->createView();
+        $this->data['form'] = $form->createView();
 
-        return $this->render("management/index.html.twig", $data);
+        return $this->render("management/index.html.twig", $this->data);
     }
 
     /**
@@ -341,7 +331,7 @@ class ManagementController extends Controller{
             $zReport->setTotalRefill($totRech);
             $zReport->setTotal($tot);
 
-            $data = array(
+            $this->data = array(
                 'user' => $username,
                 'date' => $date,
                 'time' => $time,
@@ -368,12 +358,12 @@ class ManagementController extends Controller{
                 'nbTransactions' => $nbTransactions,
             );
             // Print Z report
-            $this->printZ($data);
+            $this->printZ($this->data);
             // Add stock balance sheet and send e-mail report
-            $data['drafts'] = $drafts;
-            $data['bottles'] = $bottles;
-            $data['others'] = $others;
-            $this->sendZ($data);
+            $this->data['drafts'] = $drafts;
+            $this->data['bottles'] = $bottles;
+            $this->data['others'] = $others;
+            $this->sendZ($this->data);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($zReport);
@@ -405,6 +395,8 @@ class ManagementController extends Controller{
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         $treasury = new Treasury();
         $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
 
@@ -432,11 +424,11 @@ class ManagementController extends Controller{
             return $this->redirectToRoute('runs-history');
         }
 
+        $this->data['form'] = $form->createView();
+
         return $this->render(
             'management/treasury.html.twig',
-            array(
-                'form' => $form->createView()
-            ));
+            $this->data);
     }
 
     /**
@@ -448,9 +440,13 @@ class ManagementController extends Controller{
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         $zreports = $this->getDoctrine()->getRepository('AppBundle:Zreport')->findAll();
 
-        return $this->render('management/history.html.twig', array("zreports" => $zreports));
+        $this->data['zreports'] = $zreports;
+
+        return $this->render('management/history.html.twig', $this->data);
     }
 
     /**
@@ -464,6 +460,8 @@ class ManagementController extends Controller{
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         $repo_treasury = $this->getDoctrine()->getRepository(Treasury::class);
 
@@ -483,11 +481,11 @@ class ManagementController extends Controller{
             return $this->redirectToRoute("runs-history");
         }
 
+        $this->data['form'] = $form->createView();
+
         return $this->render(
             'management/modify.html.twig',
-            array(
-                'form' => $form->createView()
-            )
+            $this->data
         );
     }
 
@@ -502,13 +500,15 @@ class ManagementController extends Controller{
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         $zreport = $this->getDoctrine()->getRepository(Zreport::class)->find($id_zreport);
+
+        $this->data['zreport'] = $zreport;
 
         return $this->render(
             'management/details.html.twig',
-            array(
-                'zreport' => $zreport
-            )
+            $this->data
         );
     }
 

@@ -16,7 +16,15 @@
 </head>
 
 <body>
-<header class="mb-3">
+<body class="
+    {% if activeModes is defined %}
+        {% for mode in activeModes %}
+            {{ mode }}
+        {% endfor %}
+    {% else %}
+        default
+    {% endif %}
+">
     <nav class="navbar navbar-expand-lg navbar-dark mx-auto">
         <a class="navbar-brand" href="{{ path('homepage') }}">
             <img src="{{ asset('images/logo.png') }}" alt="Logo">
@@ -62,7 +70,7 @@
                 {% endif %}
 
                 {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item{{ "/transactions" in current_path ? " active" : "" }} dropdown">
+                    <li class="nav-item{{ "/transactions" or "/settings" in current_path ? " active" : "" }} dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-plus" aria-hidden="true"></i><span class="d-inline d-md-none d-lg-none d-sm-inline"> Autres</span>
                         </a>
@@ -74,6 +82,8 @@
                             {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
                                 <a class="dropdown-item" href="{{ path('users') }}">
                                     <i class="fa fa-users-cog"></i> Gestion des utilisateurs</a>
+                                <a class="dropdown-item" href="{{ path('settings') }}">
+                                    <i class="fa fa-cog"></i> Paramètres de l'application</a>
                             {% endif %}
                         </div>
                     </li>

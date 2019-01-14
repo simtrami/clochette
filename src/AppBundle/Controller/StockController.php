@@ -2,15 +2,14 @@
 // src/AppBundle/Controller/StockController.php
 namespace AppBundle\Controller;
 
-use AppBundle\Form\StocksType;
 use AppBundle\Entity\Stocks;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use AppBundle\Form\StocksType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class StockController extends Controller {
-
+class StockController extends BasicController
+{
     /**
     * @Route("/stock", name="stock")
     **/
@@ -18,6 +17,8 @@ class StockController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
@@ -34,13 +35,12 @@ class StockController extends Controller {
         $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
         $article = $repo_stocks->findBy(['type' => $typeArticle]);
 
-        $data=[];
-        $data['drafts'] = $drafts;
-        $data['bottles'] = $bottles;
-        $data['article'] = $article;
+        $this->data['drafts'] = $drafts;
+        $this->data['bottles'] = $bottles;
+        $this->data['article'] = $article;
 
 
-        return $this->render("stock/index.html.twig", $data);
+        return $this->render("stock/index.html.twig", $this->data);
     }
 
     /**
@@ -53,6 +53,8 @@ class StockController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         // 1) Récupérer l'Article et construire le form
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
@@ -80,14 +82,14 @@ class StockController extends Controller {
             return $this->redirectToRoute('stock');
         }
 
+        $this->data['form'] = $form->createView();
+        $this->data['mode'] = 'modify_article';
+        $this->data['nom'] = $article->getNom();
+        $this->data['type'] = $type;
+
         return $this->render(
             'stock/article.html.twig',
-             array(
-                 'form' => $form->createView(),
-                 'mode' => 'modify_article',
-                 'nom' => $article->getNom(),
-                 'type' => $type,
-             )
+            $this->data
         );
     }
 
@@ -100,6 +102,8 @@ class StockController extends Controller {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $this->getModes();
 
         // 1) Construire le form
         $article = new Stocks();
@@ -121,12 +125,12 @@ class StockController extends Controller {
             return $this->redirectToRoute('ajout_article');
         }
 
+        $this->data['form'] = $form->createView();
+        $this->data['mode'] = 'new_article';
+
         return $this->render(
             'stock/article.html.twig',
-             array(
-                 'form' => $form->createView(),
-                 'mode' => 'new_article',
-             )
+            $this->data
         );
     }
 
