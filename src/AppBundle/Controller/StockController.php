@@ -2,15 +2,15 @@
 // src/AppBundle/Controller/StockController.php
 namespace AppBundle\Controller;
 
-use AppBundle\Form\StocksType;
 use AppBundle\Entity\Stocks;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use AppBundle\Entity\StocksStockMarket;
+use AppBundle\Form\StocksType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class StockController extends Controller {
-
+class StockController extends BasicController
+{
     /**
     * @Route("/stock", name="stock")
     **/
@@ -19,8 +19,11 @@ class StockController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
+        $this->getModes();
+
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
+
+        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
         $typeDraft = $repo_typeStocks->returnType('Fût');
         $typeBottle = $repo_typeStocks->returnType('Bouteille');
@@ -34,13 +37,12 @@ class StockController extends Controller {
         $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
         $article = $repo_stocks->findBy(['type' => $typeArticle]);
 
-        $data=[];
-        $data['drafts'] = $drafts;
-        $data['bottles'] = $bottles;
-        $data['article'] = $article;
+        $this->data['drafts'] = $drafts;
+        $this->data['bottles'] = $bottles;
+        $this->data['article'] = $article;
 
 
-        return $this->render("stock/index.html.twig", $data);
+        return $this->render("stock/index.html.twig", $this->data);
     }
 
     /**
@@ -54,7 +56,14 @@ class StockController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         // 1) Récupérer l'Article et construire le form
+        if (in_array("stockmarket", $this->data['activeModes'])) {
+            $this->addFlash('error', "Cette action n'est pas autorisée en mode Stock Market !");
+            return $this->redirectToRoute('stock');
+        }
+
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
         $article = $repo_stocks->find($id_article);
@@ -80,14 +89,14 @@ class StockController extends Controller {
             return $this->redirectToRoute('stock');
         }
 
+        $this->data['form'] = $form->createView();
+        $this->data['form_mode'] = 'modify_article';
+        $this->data['nom'] = $article->getNom();
+        $this->data['type'] = $type;
+
         return $this->render(
             'stock/article.html.twig',
-             array(
-                 'form' => $form->createView(),
-                 'mode' => 'modify_article',
-                 'nom' => $article->getNom(),
-                 'type' => $type,
-             )
+            $this->data
         );
     }
 
@@ -101,8 +110,16 @@ class StockController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         // 1) Construire le form
+        if (in_array("stockmarket", $this->data['activeModes'])) {
+            $this->addFlash('error', "Cette action n'est pas autorisée en mode Stock Market !");
+            return $this->redirectToRoute('stock');
+        }
+
         $article = new Stocks();
+
         $form = $this->createForm(StocksType::class, $article);
 
         // 2) Traiter le submit (uniquement sur POST)
@@ -121,12 +138,12 @@ class StockController extends Controller {
             return $this->redirectToRoute('ajout_article');
         }
 
+        $this->data['form'] = $form->createView();
+        $this->data['form_mode'] = 'new_article';
+
         return $this->render(
             'stock/article.html.twig',
-             array(
-                 'form' => $form->createView(),
-                 'mode' => 'new_article',
-             )
+            $this->data
         );
     }
 
@@ -140,18 +157,31 @@ class StockController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-        $idarticle = $request->query->get('idarticle');
+        $this->getModes();
 
-        $em = $this->getDoctrine()->getManager();
-        $article = $em->getRepository('AppBundle:Stocks')->find($idarticle);
-
-        if (!$article) {
-            throw $this->createNotFoundException("Article non trouvé pour l'id " . $idarticle);
+        if (in_array("stockmarket", $this->data['activeModes'])) {
+            $this->addFlash('error', "Cette action n'est pas autorisée en mode Stock Market !");
+            return $this->redirectToRoute('stock');
         }
 
-        $transactions = $em->getRepository('AppBundle:DetailsTransactions')->findOneBy(['article' => $idarticle]);
-        foreach ($transactions as $elt_commande) {
-            $em->remove($elt_commande);
+        $idArticle = $request->query->get('idarticle');
+        $em = $this->getDoctrine()->getManager();
+        $article = $em->getRepository('AppBundle:Stocks')->find($idArticle);
+
+        if (!$article) {
+            throw $this->createNotFoundException("Article non trouvé pour l'id " . $idArticle);
+        }
+
+        $transactions = $em->getRepository('AppBundle:DetailsTransactions')->findBy(['article' => $idArticle]);
+        if (isset($transactions)) {
+            foreach ($transactions as $elt_commande) {
+                $em->remove($elt_commande);
+            }
+        }
+
+        $sm_data = $em->getRepository('AppBundle:StockMarketData')->find($idArticle);
+        if (isset($sm_data)) {
+            $em->remove($sm_data);
         }
 
         $em->remove($article);

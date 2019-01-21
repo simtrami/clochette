@@ -2,11 +2,10 @@
 // src/AppBundle/Controller/TransactionsController.php
 namespace AppBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 
-class TransactionsController extends Controller {
-
+class TransactionsController extends BasicController
+{
     /**
      * @Route("/transactions", name="transactions")
      */
@@ -16,10 +15,12 @@ class TransactionsController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-        $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')->returnNotRegisteredTransactions();
-        $data['transactions']=$repo_transactions;
+        $this->getModes();
 
-        return $this->render("transactions/index.html.twig", $data);
+        $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')->returnNotRegisteredTransactions();
+        $this->data['transactions'] = $repo_transactions;
+
+        return $this->render("transactions/index.html.twig", $this->data);
     }
 
     /**
@@ -32,9 +33,11 @@ class TransactionsController extends Controller {
             throw $this->createAccessDeniedException();
         }
 
-        $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')->findAll();
-        $data['transactions']=$repo_transactions;
+        $this->getModes();
 
-        return $this->render("transactions/index.html.twig", $data);
+        $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')->findAll();
+        $this->data['transactions'] = $repo_transactions;
+
+        return $this->render("transactions/index.html.twig", $this->data);
     }
 }

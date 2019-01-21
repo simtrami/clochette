@@ -3,46 +3,19 @@
 namespace AppBundle\Controller;
 
 use Algolia\SearchBundle\IndexManagerInterface;
-use AppBundle\Entity\Transactions;
 use AppBundle\Entity\DetailsTransactions;
-use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use AppBundle\Entity\Transactions;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
-class PurchaseController extends Controller
+class PurchaseController extends BasicController
 {
-    protected $indexManager;
-
-    /*
-     * @var string
-     */
-    protected $algoliaAppId;
-
-    /*
-     * @var string
-     */
-    protected $algoliaApiSearchKey;
-
-    /*
-     * @var string
-     */
-    protected $algoliaIndex;
-
-    /*
-     * @var string
-     */
-    protected $escposPrinterIP;
-
-    /*
-     * @var int
-     */
-    protected $escposPrinterPort;
-
+    protected $indexManager, $algoliaAppId, $algoliaApiSearchKey, $algoliaIndex;
+    protected $escposPrinterIP, $escposPrinterPort;
     protected $security;
-
 
     public function __construct($algoliaAppId, $algoliaApiSearchKey, $algoliaIndex, IndexManagerInterface $indexingManager, $escposPrinterIP, $escposPrinterPort, Security $security)
     {
@@ -64,21 +37,27 @@ class PurchaseController extends Controller
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
-        // Réduction sur le cidre
-	    $heure = date('H:m');
-        $cidre = $repo_stocks->findOneBy(['nom' => 'Cidre']);
-        $em = $this->getDoctrine()->getManager();
-        if ($heure >= '21:50' && $heure <= '23:00' && $cidre->getPrixVente() == 2.5) {
-            $cidre->setPrixVente(2);
-            $em->persist($cidre);
-            $em->flush();
-        } elseif (!($heure >= '21:50' && $heure <= '23:00') && $cidre->getPrixVente() == 2) {
-            $cidre->setPrixVente(2.5);
-            $em->persist($cidre);
-            $em->flush();
+        if (in_array("stockmarket", $this->data['activeModes'])) {
+            $this->data['smd_articles'] = $this->getDoctrine()->getRepository('AppBundle:StockMarketData')->findAll();
+        } else {
+            // Réduction sur le cidre
+            $heure = date('H:m');
+            $cidre = $repo_stocks->findOneBy(['nom' => 'Cidre']);
+            $em = $this->getDoctrine()->getManager();
+            if ($heure >= '21:50' && $heure <= '23:00' && $cidre->getPrixVente() == 2.5) {
+                $cidre->setPrixVente(2);
+                $em->persist($cidre);
+                $em->flush();
+            } elseif (!($heure >= '21:50' && $heure <= '23:00') && $cidre->getPrixVente() == 2) {
+                $cidre->setPrixVente(2.5);
+                $em->persist($cidre);
+                $em->flush();
+            }
         }
 
         $draft = $repo_typeStocks->returnType('Fût');
@@ -91,16 +70,15 @@ class PurchaseController extends Controller
 
         /* articles */ $selected_articles = $repo_stocks->loadStocksForSaleByType($article);
 
-        $data=[];
-        $data['selected_drafts'] = $selected_drafts;
-        $data['selected_bottles'] = $selected_bottles;
-        $data['selected_articles'] = $selected_articles;
+        $this->data['selected_drafts'] = $selected_drafts;
+        $this->data['selected_bottles'] = $selected_bottles;
+        $this->data['selected_articles'] = $selected_articles;
 
-        $data['algoliaAppId'] = $this->algoliaAppId;
-        $data['algoliaApiSearchKey'] = $this->algoliaApiSearchKey;
-        $data['algoliaIndex'] = $this->algoliaIndex;
+        $this->data['algoliaAppId'] = $this->algoliaAppId;
+        $this->data['algoliaApiSearchKey'] = $this->algoliaApiSearchKey;
+        $this->data['algoliaIndex'] = $this->algoliaIndex;
 
-        return $this->render("purchase/index.html.twig", $data);
+        return $this->render("purchase/index.html.twig", $this->data);
     }
 
     /**
@@ -109,13 +87,20 @@ class PurchaseController extends Controller
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Exception
      */
-    public function validateTransaction(Request $request){
-      
+    public function validateTransaction(Request $request)
+    {
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_INTRO')) {
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         $em = $this->getDoctrine()->getManager();
+
+        if (in_array("stockmarket", $this->data['activeModes'])) {
+            $repo_smd = $this->getDoctrine()->getRepository('AppBundle:StockMarketData');
+        }
+
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_users = $this->getDoctrine()->getRepository('AppBundle:Users');
         $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account');
@@ -170,7 +155,11 @@ class PurchaseController extends Controller
                     $detail = new DetailsTransactions();
                     $article = $repo_stocks->find($item['id']);
 
-                    $montant += $item['quantite'] * $article->getPrixVente();
+                    if (in_array("stockmarket", $this->data['activeModes'])) {
+                        $montant += $item['quantite'] * $article->getData()->getStockValue();
+                    } else {
+                        $montant += $item['quantite'] * $article->getPrixVente();
+                    }
 
                     $detail->setArticle($article);
                     $detail->setQuantite($item['quantite']);
@@ -184,7 +173,11 @@ class PurchaseController extends Controller
                     $detail = new DetailsTransactions();
                     $article = $repo_stocks->find($item['id']);
 
-                    $montant += $item['quantite'] * $article->getPrixVente();
+                    if (in_array("stockmarket", $this->data['activeModes'])) {
+                        $montant += $item['quantite'] * $article->getData()->getStockValue();
+                    } else {
+                        $montant += $item['quantite'] * $article->getPrixVente();
+                    }
 
                     $detail->setArticle($article);
                     $detail->setQuantite($item['quantite']);
@@ -230,7 +223,7 @@ class PurchaseController extends Controller
         if (($montant < 0 && $form['withdrawReason'] == 0) || $montant == 0) {
             $this->addFlash(
                 'error',
-                "Le montant de la commande semble incorrecte, merci de la renvoyer."
+                "Le montant de la commande semble incorrect, merci de la renvoyer."
             );
             return $this->redirectToRoute('purchase');
         } else {
@@ -320,7 +313,7 @@ class PurchaseController extends Controller
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
                         'error',
-                        "Cette fonctionnalité n'est pas autorisée pour cet utilisateur"
+                        "Cette fonctionnalité n'est pas autorisée pour cet utilisateur !"
                     );
                     return $this->redirectToRoute('purchase');
                 } else {

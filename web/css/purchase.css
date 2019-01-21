@@ -101,7 +101,14 @@ body {
     position: fixed;
     bottom: 0;
     left: 0;
-    background-color: var(--green);
+}
+
+body.default #paymentContainer {
+    background-color: var(--default-theme);
+}
+
+body.stockmarket #paymentContainer {
+    background-color: var(--stockmarket-theme);
 }
 
 @media (max-width: 800px), (max-device-width: 800px) {
