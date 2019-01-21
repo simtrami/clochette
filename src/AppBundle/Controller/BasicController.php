@@ -20,6 +20,8 @@ class BasicController extends Controller
         }
         if (!empty($activeModes)) {
             $this->data = ['activeModes' => $activeModes];
+        } else {
+            $this->data = ['activeModes' => []];
         }
         return $this->data;
     }

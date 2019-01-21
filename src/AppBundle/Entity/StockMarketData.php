@@ -7,45 +7,43 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * StocksStockMarket
  *
- * @ORM\Table(name="stocks_stock_market")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\StocksRepository")
+ * @ORM\Table(name="stock_market_data")
+ * @ORM\Entity()
  */
-class StocksStockMarket extends Stocks
+class StockMarketData
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Stocks", inversedBy="data")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="id")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private $articleId;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="stock_value", type="decimal", precision=8, scale=2)
+     * @ORM\Column(name="stock_value", type="decimal", precision=8, scale=2, nullable=true)
      */
     private $stockValue;
 
     /**
      * @var array
      *
-     * @ORM\Column(name="values_history", type="array")
+     * @ORM\Column(name="values_history", type="array", nullable=true)
      */
     private $valuesHistory;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="variation", type="decimal", precision=9, scale=6)
+     * @ORM\Column(name="variation", type="decimal", precision=9, scale=6, nullable=true)
      */
     private $variation;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="demand_coefficient", type="decimal", precision=7, scale=6)
+     * @ORM\Column(name="demand_coefficient", type="decimal", precision=7, scale=6, nullable=true)
      */
     private $demandCoefficient;
 
@@ -56,7 +54,31 @@ class StocksStockMarket extends Stocks
      */
     public function getId()
     {
-        return $this->id;
+        return $this->articleId;
+    }
+
+    /**
+     * Get article.
+     *
+     * @return Stocks
+     */
+    public function getArticle()
+    {
+        return $this->articleId;
+    }
+
+    /**
+     * Set articleId.
+     *
+     * @param Stocks $article
+     *
+     * @return StockMarketData
+     */
+    public function setArticle($article)
+    {
+        $this->articleId = $article;
+
+        return $this;
     }
 
     /**
@@ -74,7 +96,7 @@ class StocksStockMarket extends Stocks
      *
      * @param string $stockValue
      *
-     * @return StocksStockMarket
+     * @return StockMarketData
      */
     public function setStockValue($stockValue)
     {
@@ -98,7 +120,7 @@ class StocksStockMarket extends Stocks
      *
      * @param array $valuesHistory
      *
-     * @return StocksStockMarket
+     * @return StockMarketData
      */
     public function setValuesHistory($valuesHistory)
     {
@@ -122,7 +144,7 @@ class StocksStockMarket extends Stocks
      *
      * @param string $variation
      *
-     * @return StocksStockMarket
+     * @return StockMarketData
      */
     public function setVariation($variation)
     {
@@ -146,7 +168,7 @@ class StocksStockMarket extends Stocks
      *
      * @param string $demandCoefficient
      *
-     * @return StocksStockMarket
+     * @return StockMarketData
      */
     public function setDemandCoefficient($demandCoefficient)
     {

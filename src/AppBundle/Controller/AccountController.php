@@ -83,7 +83,7 @@ class AccountController extends BasicController
         }
 
         $this->data['form'] = $form->createView();
-        $this->data['mode'] = 'new_account';
+        $this->data['form_mode'] = 'new_account';
         return $this->render(
           'accounts/account.html.twig',
             $this->data
@@ -136,7 +136,7 @@ class AccountController extends BasicController
         }
 
         $this->data['form'] = $form->createView();
-        $this->data['mode'] = 'modify_account';
+        $this->data['form_mode'] = 'modify_account';
         $this->data['firstName'] = $account->getFirstName();
         $this->data['lastName'] = $account->getLastName();
 

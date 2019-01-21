@@ -83,6 +83,11 @@ class Stocks
      * @ORM\Column(name="isForSale", type="boolean", nullable=true, options={"default" : false})
      */
     private $isForSale = true;
+
+    /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\StockMarketData", mappedBy="articleId")
+     */
+    private $data;
     
 
 ## Fonctions
@@ -265,5 +270,29 @@ class Stocks
     public function getIsForSale()
     {
         return $this->isForSale;
+    }
+
+    /**
+     * Set data
+     *
+     * @param StockMarketData $data
+     *
+     * @return Stocks
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Get data
+     *
+     * @return StockMarketData
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }
