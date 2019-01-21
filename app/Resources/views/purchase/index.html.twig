@@ -27,7 +27,8 @@
                     <h5 class="card-title center">{{ article.nom }} - {{ article.volume|number_format(0) }}L ({{ article.quantite }})</h5>
                     <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
-                        <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
+                        <input value="{{ mode == "stockmarket" ? article.data.stockValue : article.prixVente }}"
+                               type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
                             <span class="input-group-text" id="inputGroupAppend">
                                 <i class="fa fa-euro-sign"></i>
@@ -73,7 +74,8 @@
                     <h5 class="card-title center">{{ article.nom }} - {{ article.volume*100|number_format(0) }}cL ({{ article.quantite }})</h5>
                     <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
-                        <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
+                        <input value="{{ mode == "stockmarket" ? article.data.stockValue : article.prixVente }}"
+                               type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
                             <span class="input-group-text" id="inputGroupAppend">
                                 <i class="fa fa-euro-sign"></i>

@@ -42,18 +42,22 @@ class PurchaseController extends BasicController
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
 
-        // Réduction sur le cidre
-	    $heure = date('H:m');
-        $cidre = $repo_stocks->findOneBy(['nom' => 'Cidre']);
-        $em = $this->getDoctrine()->getManager();
-        if ($heure >= '21:50' && $heure <= '23:00' && $cidre->getPrixVente() == 2.5) {
-            $cidre->setPrixVente(2);
-            $em->persist($cidre);
-            $em->flush();
-        } elseif (!($heure >= '21:50' && $heure <= '23:00') && $cidre->getPrixVente() == 2) {
-            $cidre->setPrixVente(2.5);
-            $em->persist($cidre);
-            $em->flush();
+        if (in_array("stockmarket", $this->data['activeModes'])) {
+            $this->data['smd_articles'] = $this->getDoctrine()->getRepository('AppBundle:StockMarketData')->findAll();
+        } else {
+            // Réduction sur le cidre
+            $heure = date('H:m');
+            $cidre = $repo_stocks->findOneBy(['nom' => 'Cidre']);
+            $em = $this->getDoctrine()->getManager();
+            if ($heure >= '21:50' && $heure <= '23:00' && $cidre->getPrixVente() == 2.5) {
+                $cidre->setPrixVente(2);
+                $em->persist($cidre);
+                $em->flush();
+            } elseif (!($heure >= '21:50' && $heure <= '23:00') && $cidre->getPrixVente() == 2) {
+                $cidre->setPrixVente(2.5);
+                $em->persist($cidre);
+                $em->flush();
+            }
         }
 
         $draft = $repo_typeStocks->returnType('Fût');
@@ -83,13 +87,20 @@ class PurchaseController extends BasicController
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Exception
      */
-    public function validateTransaction(Request $request){
-      
+    public function validateTransaction(Request $request)
+    {
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_INTRO')) {
             throw $this->createAccessDeniedException();
         }
 
+        $this->getModes();
+
         $em = $this->getDoctrine()->getManager();
+
+        if (in_array("stockmarket", $this->data['activeModes'])) {
+            $repo_smd = $this->getDoctrine()->getRepository('AppBundle:StockMarketData');
+        }
+
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
         $repo_users = $this->getDoctrine()->getRepository('AppBundle:Users');
         $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account');
@@ -144,7 +155,11 @@ class PurchaseController extends BasicController
                     $detail = new DetailsTransactions();
                     $article = $repo_stocks->find($item['id']);
 
-                    $montant += $item['quantite'] * $article->getPrixVente();
+                    if (in_array("stockmarket", $this->data['activeModes'])) {
+                        $montant += $item['quantite'] * $article->getData()->getStockValue();
+                    } else {
+                        $montant += $item['quantite'] * $article->getPrixVente();
+                    }
 
                     $detail->setArticle($article);
                     $detail->setQuantite($item['quantite']);
@@ -158,7 +173,11 @@ class PurchaseController extends BasicController
                     $detail = new DetailsTransactions();
                     $article = $repo_stocks->find($item['id']);
 
-                    $montant += $item['quantite'] * $article->getPrixVente();
+                    if (in_array("stockmarket", $this->data['activeModes'])) {
+                        $montant += $item['quantite'] * $article->getData()->getStockValue();
+                    } else {
+                        $montant += $item['quantite'] * $article->getPrixVente();
+                    }
 
                     $detail->setArticle($article);
                     $detail->setQuantite($item['quantite']);
@@ -204,7 +223,7 @@ class PurchaseController extends BasicController
         if (($montant < 0 && $form['withdrawReason'] == 0) || $montant == 0) {
             $this->addFlash(
                 'error',
-                "Le montant de la commande semble incorrecte, merci de la renvoyer."
+                "Le montant de la commande semble incorrect, merci de la renvoyer."
             );
             return $this->redirectToRoute('purchase');
         } else {
@@ -294,7 +313,7 @@ class PurchaseController extends BasicController
                 } elseif ($form['withdrawReason'] != "0") {
                     $this->addFlash(
                         'error',
-                        "Cette fonctionnalité n'est pas autorisée pour cet utilisateur"
+                        "Cette fonctionnalité n'est pas autorisée pour cet utilisateur !"
                     );
                     return $this->redirectToRoute('purchase');
                 } else {
