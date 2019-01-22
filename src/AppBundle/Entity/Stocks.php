@@ -17,7 +17,7 @@ class Stocks
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TypeStocks")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=false)
      */
     private $type;
 
@@ -130,7 +130,7 @@ class Stocks
     /**
      * Set type
      *
-     * @param string $type
+     * @param TypeStocks $type
      *
      * @return Stocks
      */
@@ -144,7 +144,7 @@ class Stocks
     /**
      * Get type
      *
-     * @return string
+     * @return TypeStocks
      */
     public function getType()
     {
