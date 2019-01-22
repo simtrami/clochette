@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Stocks;
-use AppBundle\Entity\StocksStockMarket;
 use AppBundle\Form\StocksType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
