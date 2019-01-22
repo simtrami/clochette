@@ -27,9 +27,9 @@ class StockMarketData
     private $stockValue;
 
     /**
-     * @var array
+     * @var string
      *
-     * @ORM\Column(name="values_history", type="array", nullable=true)
+     * @ORM\Column(name="values_history", type="text", nullable=true)
      */
     private $valuesHistory;
 
@@ -108,7 +108,7 @@ class StockMarketData
     /**
      * Get valuesHistory.
      *
-     * @return array
+     * @return string
      */
     public function getValuesHistory()
     {
@@ -118,7 +118,7 @@ class StockMarketData
     /**
      * Set valuesHistory.
      *
-     * @param array $valuesHistory
+     * @param string $valuesHistory
      *
      * @return StockMarketData
      */
