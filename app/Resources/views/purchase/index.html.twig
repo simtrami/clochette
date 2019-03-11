@@ -164,29 +164,29 @@
                 <!-- Moyens de paiements -->
                 <div class="input-group w-100 mb-2">
                     <div class="btn-group btn-group-md btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
-                        {#<label class="btn btn-gray-lighter" onclick="choixPaiement('cb')">
+                        {#<label class="btn btn-light" onclick="choixPaiement('cb')">
                             <input type="radio" id="option1">
                             <i class="fa fa-credit-card"></i> <span class="d-none d-sm-none d-md-inline">CB</span>
                         </label>#}
 
-                        <label class="btn btn-gray-lighter" id="methodCash" onclick="choixPaiement('cash')">
+                        <label class="btn btn-light" id="methodCash" onclick="choixPaiement('cash')">
                             <input class="choix-paiement" type="radio" id="option1">
                             <i class="fa fa-coins"></i> <span class="d-none d-sm-none d-md-inline">Liquide</span>
                         </label>
 
-                        <label class="btn btn-gray-lighter" id="methodAccount" onclick="choixPaiement('account')">
+                        <label class="btn btn-light" id="methodAccount" onclick="choixPaiement('account')">
                             <input class="choix-paiement" type="radio" id="option2">
                             <i class="fa fa-id-badge"></i> <span class="d-none d-sm-none d-md-inline">Compte</span>
                         </label>
 
-                        {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                        <label class="btn btn-gray-lighter" id="methodPumpkin" onclick="choixPaiement('pumpkin')">
+                        {% if is_granted(expression('"ROLE_ACTIF" in roles')) %}
+                            <label class="btn btn-light" id="methodPumpkin" onclick="choixPaiement('pumpkin')">
                             <input class="choix-paiement" type="radio" id="option3">
                             <i class="fa fa-mobile-alt"></i> <span class="d-none d-sm-none d-md-inline">Pumpkin</span>
                         </label>
                         {% endif %}
 
-                        <label class="btn btn-gray-lighter" onclick="openModalWithdraw()">
+                        <label class="btn btn-light" onclick="openModalWithdraw()">
                             <input class="choix-paiement" type="radio" id="option">
                             <i class="fas fa-hand-holding-usd"></i> <span
                                     class="d-none d-sm-none d-md-inline">Retrait</span>
@@ -218,7 +218,7 @@
                         <button type="submit" class="btn btn-dark btn-md"><i class="fas fa-check"></i>
                             <span class="d-none d-sm-none d-md-inline">Valider la commande</span>
                         </button>
-                        <span class="btn btn-gray-lighter btn-md ml-lg-1"
+                        <span class="btn btn-light btn-md ml-lg-1"
                               onclick="window.location.href='{{ path('openCashier') }}'">
                             <i class="fas fa-lock-open"></i>
                             <span class="d-none d-sm-none d-md-inline">Ouvrir la caisse</span>
