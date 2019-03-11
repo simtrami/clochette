@@ -78,7 +78,8 @@ security:
     - { path: ^/users, roles: ROLE_ADMIN}
 
     role_hierarchy:
-        ROLE_BUREAU:        ROLE_INTRO
+        ROLE_ACTIF:         ROLE_INTRO
+        ROLE_BUREAU:        ROLE_ACTIF
         ROLE_VVP:           ROLE_BUREAU
         ROLE_FEE:           ROLE_BUREAU
         ROLE_COM:           ROLE_BUREAU
