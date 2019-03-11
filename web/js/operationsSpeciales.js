@@ -1,5 +1,4 @@
 function openModalWithdraw() {
-    $('#withdrawReason').attr('value', '1');
     $('#modalWithdraw').modal('show');
 }
 
@@ -23,6 +22,9 @@ $('#withdraw2').on('click', function () {
 });
 
 function saveWithdraw() {
+    if ($('#withdrawReason').val() != '2') {
+        $('#withdrawReason').attr('value', '1');
+    }
     $('.qte').each(function () {
         $(this).attr('value', '0');
         $(this).val('0');
