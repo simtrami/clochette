@@ -4,13 +4,13 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Users;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class UserType extends AbstractType
 {
@@ -40,6 +40,7 @@ class UserType extends AbstractType
                     'Respo Log' => 'ROLE_STOCK',
                     'Fée' => 'ROLE_VVP',
                     'VVP' => 'ROLE_VVP',
+                    'Membre Actif' => 'ROLE_ACTIF',
                     'PC' => 'ROLE_INTRO',
                 ),
             ))
