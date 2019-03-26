@@ -22,6 +22,8 @@ services:
             $escposPrinterPort: '%env(escpos_printer_port)%'
             $mailingListAddress : '%env(mailing_list_address)%'
             $sendingAddress: '%mailer_user%'
+            $chatbotApiId: '%env(chatbot_api_id)%'
+            $chatbotApiKey: '%env(chatbot_api_key)%'
 
     # makes classes in src/AppBundle available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
