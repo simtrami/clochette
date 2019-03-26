@@ -33,7 +33,11 @@ parameters:
     env(developer_url): ~
     env(developer_username): ~
     env(project_url): ~
-    env(project_version): '1.4.2'
+    env(project_version): '1.4.2-chatbot'
+
+    # Chatbot API credentials
+    env(chatbot_api_id): ~
+    env(chatbot_api_key): ~
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
