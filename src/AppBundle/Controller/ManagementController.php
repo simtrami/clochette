@@ -5,10 +5,14 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\SellsManagement;
 use AppBundle\Entity\Treasury;
 use AppBundle\Entity\Zreport;
+use Exception;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 use Swift_Image;
+use Swift_Message;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ManagementController extends BasicController
@@ -27,7 +31,7 @@ class ManagementController extends BasicController
     /**
      * @Route("/management", name="manage-sells")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return RedirectResponse|Response
      */
     public function manageSells(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -369,12 +373,22 @@ class ManagementController extends BasicController
             $em->persist($zReport);
             $em->flush();
 
+            // Prevent redirection fail because of a timeout
+            $treasury = new Treasury();
+            $treasury->setZreport($zReport);
+            $doctrine = $this->getDoctrine();
+            $lastTreasury = $doctrine->getRepository(Treasury::class)->returnLastTreasury();
+            $treasury->setCoffre('0.00');
+            $treasury->setCaisse('0.00');
+            $em->persist($treasury);
+            $em->flush();
+
             $this->addFlash(
                 'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
             );
 
-            return $this->redirectToRoute('register-treasury', ['id_zreport' => $zReport->getId()]);
-        } catch (\Exception $e) {
+            return $this->redirectToRoute('register-treasury', ['id_zreport' => $zReport->getId(), 'id_treasury' => $treasury->getId()]);
+        } catch (Exception $e) {
             // If it fails, does nothing and goes back
             $this->addFlash(
                 'error', "Une erreur est survenue dans l'impression du ticket ou l'envoi du mail !"
@@ -384,12 +398,12 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/register/{id_zreport}", name="register-treasury")
+     * @Route("/management/runs/register/{id_treasury}", name="register-treasury")
      * @param Request $request
-     * @param $id_zreport
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @param $id_treasury
+     * @return RedirectResponse|Response
      */
-    public function registerTreasury(Request $request, $id_zreport)
+    public function registerTreasury(Request $request, $id_treasury)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -397,6 +411,8 @@ class ManagementController extends BasicController
 
         $this->getModes();
 
+        $doctrine = $this->getDoctrine();
+        $lastTreasury = $doctrine->getRepository(Treasury::class)->returnLastTreasury();
         $treasury = new Treasury();
         $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
 
@@ -405,17 +421,15 @@ class ManagementController extends BasicController
         if ($form->isSubmitted() && $form->isValid()) {
             $mvtCoffre = $request->request->get('mvt-coffre');
 
-            $doctrine = $this->getDoctrine();
-            $repo_treasury = $doctrine->getRepository(Treasury::class);
-            $lastTreasury = $repo_treasury->returnLastTreasury()['coffre'];
+            $treasury = $doctrine->getRepository(Treasury::class)->find($id_treasury);
+            $treasury->setCaisse($form->get('caisse')->getData());
             if (!empty($lastTreasury)) {
                 $treasury->setCoffre($lastTreasury + $mvtCoffre);
             } else {
                 $treasury->setCoffre($mvtCoffre);
             }
 
-            $treasury->setZreport($doctrine->getRepository(Zreport::class)->find($id_zreport));
-            $em = $this->getDoctrine()->getManager();
+            $em = $doctrine->getManager();
             $em->persist($treasury);
             $em->flush();
 
@@ -453,7 +467,7 @@ class ManagementController extends BasicController
      * @Route("/management/runs/modify/{id_treasury}", name="modify-treasury")
      * @param Request $request
      * @param $id_treasury
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return RedirectResponse|Response
      */
     public function modifyTreasury(Request $request, $id_treasury)
     {
@@ -492,7 +506,7 @@ class ManagementController extends BasicController
     /**
      * @Route("/management/runs/details/{id_zreport}", name="run-details")
      * @param $id_zreport
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function runDetails($id_zreport)
     {
@@ -517,7 +531,7 @@ class ManagementController extends BasicController
      */
     protected function sendZ(array $data) {
         // Génération du mail
-        $message = (new \Swift_Message('Ticket Z du ' . $data['date'] . ' à ' . $data['time']))
+        $message = (new Swift_Message('Ticket Z du ' . $data['date'] . ' à ' . $data['time']))
             ->setFrom($this->sendingAddress)
             ->setTo($this->mailingListAddress);
         $data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
@@ -547,7 +561,7 @@ class ManagementController extends BasicController
 
     /**
      * @param array $data
-     * @throws \Exception
+     * @throws Exception
      */
     protected function printZ(array $data) {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
