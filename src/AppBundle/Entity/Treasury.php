@@ -24,16 +24,16 @@ class Treasury
     /**
      * @var string
      *
-     * @ORM\Column(name="caisse", type="decimal", precision=8, scale=2)
+     * @ORM\Column(name="caisse", type="decimal", precision=8, scale=2, options={"default": 0.00})
      */
-    private $caisse;
+    private $caisse = '0.00';
 
     /**
      * @var string
      *
-     * @ORM\Column(name="coffre", type="decimal", precision=8, scale=2)
+     * @ORM\Column(name="coffre", type="decimal", precision=8, scale=2, options={"default": 0.00})
      */
-    private $coffre;
+    private $coffre = '0.00';
 
     /**
      * @var Zreport
@@ -118,7 +118,7 @@ class Treasury
     /**
      * Get zreport.
      *
-     * @return \AppBundle\Entity\Zreport
+     * @return Zreport
      */
     public function getZreport()
     {
