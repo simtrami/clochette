@@ -425,6 +425,9 @@ class ManagementController extends BasicController
         $doctrine = $this->getDoctrine();
         $lastTreasury = $doctrine->getRepository(Treasury::class)->returnLastTreasury();
         $treasury = new Treasury();
+        if (!empty($lastTreasury)) {
+            $treasury->setCaisse($lastTreasury['caisse']);
+        }
         $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
 
         $form->handleRequest($request);
