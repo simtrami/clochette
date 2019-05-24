@@ -92,13 +92,16 @@ class ManagementController extends BasicController
 
     /**
      * @Route("/management/runs/processing", name="processing-run")
+     * @param Request $request
      * @return string
      */
-    public function registerRun()
+    public function registerRun(Request $request)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
+
+        $offline = $request->get('offline');
 
         $repo_z = $this->getDoctrine()->getRepository('AppBundle:Zreport');
         $lastZTimestamp = $repo_z->returnLastZTimestamp()['timestamp'];
@@ -106,25 +109,27 @@ class ManagementController extends BasicController
         $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions');
 
         try {
-            // Trying to open the cash-drawer before doing anything
-            try {
-                $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
-                $printer = new Printer($connector);
+            if (!$offline) {
+                // Trying to open the cash-drawer before doing anything
                 try {
-                    $printer->pulse();
+                    $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+                    $printer = new Printer($connector);
+                    try {
+                        $printer->pulse();
+                        $this->addFlash(
+                            'info',
+                            "L'ouverture de la caisse a été effectuée."
+                        );
+                    } finally {
+                        $printer->close();
+                    }
+                } catch (Exception $e) {
                     $this->addFlash(
-                        'info',
-                        "L'ouverture de la caisse a été effectuée."
+                        'error',
+                        "Impossible de se connecter à la caisse : veuillez vérifier les branchements"
                     );
-                } finally {
-                    $printer->close();
+                    return $this->redirectToRoute('manage-sells');
                 }
-            } catch(\Exception $e) {
-                $this->addFlash(
-                    'error',
-                    "Impossible de se connecter à la caisse : veuillez vérifier les branchements"
-                );
-                return $this->redirectToRoute('manage-sells');
             }
 
             $date = date("d/m/Y");
@@ -362,7 +367,7 @@ class ManagementController extends BasicController
                 'nbTransactions' => $nbTransactions,
             );
             // Print Z report
-            $this->printZ($this->data);
+            $offline ?: $this->printZ($this->data);
             // Add stock balance sheet and send e-mail report
             $this->data['drafts'] = $drafts;
             $this->data['bottles'] = $bottles;
@@ -383,9 +388,15 @@ class ManagementController extends BasicController
             $em->persist($treasury);
             $em->flush();
 
-            $this->addFlash(
-                'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
-            );
+            if ($offline) {
+                $this->addFlash(
+                    'info', "Le ticket Z vient d'être envoyé par mail à la mailing-list !"
+                );
+            } else {
+                $this->addFlash(
+                    'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
+                );
+            }
 
             return $this->redirectToRoute('register-treasury', ['id_zreport' => $zReport->getId(), 'id_treasury' => $treasury->getId()]);
         } catch (Exception $e) {
@@ -414,6 +425,9 @@ class ManagementController extends BasicController
         $doctrine = $this->getDoctrine();
         $lastTreasury = $doctrine->getRepository(Treasury::class)->returnLastTreasury();
         $treasury = new Treasury();
+        if (!empty($lastTreasury)) {
+            $treasury->setCaisse($lastTreasury['caisse']);
+        }
         $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
 
         $form->handleRequest($request);
@@ -424,7 +438,7 @@ class ManagementController extends BasicController
             $treasury = $doctrine->getRepository(Treasury::class)->find($id_treasury);
             $treasury->setCaisse($form->get('caisse')->getData());
             if (!empty($lastTreasury)) {
-                $treasury->setCoffre($lastTreasury + $mvtCoffre);
+                $treasury->setCoffre($lastTreasury['coffre'] + $mvtCoffre);
             } else {
                 $treasury->setCoffre($mvtCoffre);
             }
