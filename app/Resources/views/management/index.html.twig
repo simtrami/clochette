@@ -147,4 +147,8 @@
             onclick="return confirm('Cette action effectue le bilan des ventes depuis la dernière clôture et imprime le ticket Z.\nLe bar doit être entièrement fermé pour effectuer cette action !')"
             data-toggle="tooltip" title="Fait le bilan des ventes depuis la dernière clôture et imprime le ticket Z">
         Clore la tenue</a>
+    <a class="btn btn-outline-warning btn-lg btn-block" href="{{ path('processing-run', {'offline': true}) }}"
+       onclick="return confirm('Cette action effectue le bilan des ventes depuis la dernière clôture et envoie le ticket Z.\nLe bar doit être entièrement fermé pour effectuer cette action !')"
+       data-toggle="tooltip" title="Fait le bilan des ventes depuis la dernière clôture et envoie le ticket Z">
+        Clore la tenue (caisse offline)</a>
 {% endblock %}

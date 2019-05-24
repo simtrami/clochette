@@ -19,7 +19,7 @@ class TreasuryType extends AbstractType
         $builder
             ->add('caisse', MoneyType::class, array(
                 'label' => 'Contenu de la caisse',
-                'required' => true
+                'required' => true,
             ))
         ;
 
@@ -30,7 +30,7 @@ class TreasuryType extends AbstractType
             if ($treasury and null !== $treasury->getId()) {
                 $form
                     ->add('coffre', MoneyType::class, array(
-                        'label' => 'Contenu du coffre'
+                        'label' => 'Contenu du coffre',
                     ));
             }
         });
