@@ -2,6 +2,8 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -98,12 +100,21 @@ class Account
      */
     private $isInducted;
 
+    /**
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transactions", mappedBy="account")
+     */
+    private $transactions;
+
+    public function __construct()
+    {
+        $this->transactions = new ArrayCollection();
+    }
 
     /**
      * Get id
-     * 
+     *
      * @Groups({"searchable"})
-     * 
+     *
      * @return integer
      */
     public function getId()
@@ -129,7 +140,7 @@ class Account
      * Get lastName
      *
      * @Groups({"searchable"})
-     * 
+     *
      * @return string
      */
     public function getLastName()
@@ -155,7 +166,7 @@ class Account
      * Get firstName
      *
      * @Groups({"searchable"})
-     * 
+     *
      * @return string
      */
     public function getFirstName()
@@ -181,7 +192,7 @@ class Account
      * Get pseudo
      *
      * @Groups({"searchable"})
-     * 
+     *
      * @return string
      */
     public function getPseudo()
@@ -207,7 +218,7 @@ class Account
      * Get balance
      *
      * @Groups({"searchable"})
-     * 
+     *
      * @return string
      */
     public function getBalance()
@@ -231,7 +242,7 @@ class Account
 
     /**
      * Get year
-     * 
+     *
      * @return integer
      */
     public function getYear()
@@ -257,7 +268,7 @@ class Account
      * Get staffName
      *
      * @Groups({"searchable"})
-     * 
+     *
      * @return string
      */
     public function getStaffName()
@@ -281,11 +292,42 @@ class Account
 
     /**
      * Get isInducted
-     * 
+     *
      * @return boolean
      */
     public function getIsInducted()
     {
         return $this->isInducted;
+    }
+
+    /**
+     * @return Collection|Transactions[]
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(Transactions $transaction): self
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setAccount($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transactions $transaction): self
+    {
+        if ($this->transactions->contains($transaction)) {
+            $this->transactions->removeElement($transaction);
+            // set the owning side to null (unless already changed)
+            if ($transaction->getAccount() === $this) {
+                $transaction->setAccount(null);
+            }
+        }
+
+        return $this;
     }
 }

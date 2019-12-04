@@ -73,29 +73,27 @@
 
             <tbody>
                 {% for account in accounts %}
-                <tr>
-                    <th>{{ account.id }}</th>
-                    <td>{{ account.firstName }}</td>
-                    <td>{{ account.lastName }}</td>
-                    <td>{{ account.pseudo }}</td>
-                    <td>{{ account.balance }}€</td>
-                    <td>{{ account.year }}</td>
-                    <td>{{ account.staffName }}</td>
-                    {% if account.isInducted == 1 %}
-                    <td>OUI</td>
-                    {% else %}
-                    <td>NON</td>
-                    {% endif %}
-                    <td class="table-actions">
-                        <div class="d-flex">
-                            <div class="input-group justify-content-around mx-auto">
-                                <a class="btn btn-secondary mt-1 {{ is_granted(expression('"ROLE_ALL" in roles'))==true ? "" : "disabled" }}" href="{{ path('modify_account', { 'id':account.id }) }}">
-                                    <i class="fas fa-edit"></i> Modif.</a>
-                                <a class="btn btn-success mt-1" href="{{path('refill_account', {'id':account.id})}}">
-                                    <i class="fas fa-gas-pump"></i> Rech.</a>
+                    <tr>
+                        <th><a href="{{ path('show_account', {'id': account.id}) }}">{{ account.id }}</a></th>
+                        <td>{{ account.firstName }}</td>
+                        <td>{{ account.lastName }}</td>
+                        <td><a href="{{ path('show_account', {'id': account.id}) }}">{{ account.pseudo }}</a></td>
+                        <td>{{ account.balance }}€</td>
+                        <td>{{ account.year }}</td>
+                        <td>{{ account.staffName ? account.staffName : '-' }}</td>
+                        <td>{{ account.isInducted == 1 ? 'Oui' : 'Non' }}</td>
+                        <td class="table-actions">
+                            <div class="d-flex">
+                                <div class="input-group justify-content-around mx-auto">
+                                    <a class="btn btn-secondary mt-1 {{ is_granted(expression('"ROLE_ALL" in roles'))==true ? "" : "disabled" }}"
+                                       href="{{ path('modify_account', { 'id':account.id }) }}">
+                                        <i class="fas fa-edit"></i> Modif.</a>
+                                    <a class="btn btn-success mt-1"
+                                       href="{{ path('refill_account', {'id':account.id}) }}">
+                                        <i class="fas fa-gas-pump"></i> Rech.</a>
+                                </div>
                             </div>
-                        </div>
-                    </td>
+                        </td>
                 </tr>
                 {% endfor %}
             </tbody>

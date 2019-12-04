@@ -3,7 +3,7 @@
     "description": "A Symfony web app for bar-oriented point-of-sells",
     "license": "GPL-3.0-only",
     "type": "project",
-    "version": "1.4.4",
+    "version": "1.5.0-dev",
     "autoload": {
         "psr-4": {
             "AppBundle\\": "src/AppBundle"
@@ -22,7 +22,7 @@
         ]
     },
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=7.1",
         "algolia/algoliasearch-client-php": "^1.27",
         "algolia/search-bundle": "^3.2",
         "doctrine/data-fixtures": "~1.0",
