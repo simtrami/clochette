@@ -5,10 +5,13 @@ use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\Account;
 use AppBundle\Entity\Transactions;
 use AppBundle\Form\AccountType;
+use Exception;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AccountController extends BasicController
@@ -26,6 +29,7 @@ class AccountController extends BasicController
 
     /**
      * @Route("/accounts", name="accounts")
+     * @return Response
      */
     public function showIndex(){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -38,16 +42,31 @@ class AccountController extends BasicController
         $this->data['accounts'] = $repo_account;
 
         return $this->render("accounts/index.html.twig", $this->data);
-        
+    }
+
+    /**
+     * @Route("/accounts/{id}", name="show_account")
+     * @param Account $account
+     * @return Response
+     */
+    public function showAccount(Account $account)
+    {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            throw $this->createAccessDeniedException();
+        }
+        $this->getModes();
+        $this->data['account'] = $account;
+        return $this->render("accounts/show.html.twig", $this->data);
     }
 
     /**
      * @Route("/accounts/new", name="create_account")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
+     * @return RedirectResponse|Response
+     * @throws Exception
      */
-    public function createAccount(Request $request){
+    public function createAccount(Request $request)
+    {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
@@ -94,52 +113,37 @@ class AccountController extends BasicController
      * @Route("/accounts/modify/{id}", name="modify_account")
      * @param Request $request
      * @param $id
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
+     * @return RedirectResponse|Response
+     * @throws Exception
      */
     public function modifyAccount(Request $request, $id){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
-
         $this->getModes();
-      
-        // 1) Récupérer le compte et construire le form
+
         $repo_account = $this->getDoctrine()->getRepository('AppBundle:Account');
         $account = $repo_account->find($id);
         
         $form = $this->createForm(AccountType::class, $account);
-
         //$checkAccount = $this->container->get('appbundle.checkaccount');
 
-        // 2) Traiter le submit (uniquement sur POST)
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
             /*if ($checkAccount->anneeNotValid($account)){
                 throw new \Exception('Une année doit au moins être égale à 1');
             }*/
-
-            // 3) Enregistrer le compte!
             $em = $this->getDoctrine()->getManager();
             $em->persist($account);
-
             $em->flush();
-
             $this->indexManager->index($account, $em);
-
-            // ... autres actions
-
             $this->addFlash('info', 'Le compte de ' .$account->getFirstName(). ' ' .$account->getLastName(). ' a bien été modifié.');
-
             return $this->redirectToRoute('accounts');
         }
-
         $this->data['form'] = $form->createView();
         $this->data['form_mode'] = 'modify_account';
         $this->data['firstName'] = $account->getFirstName();
         $this->data['lastName'] = $account->getLastName();
-
         return $this->render(
             'accounts/account.html.twig',
             $this->data
@@ -150,8 +154,8 @@ class AccountController extends BasicController
      * @Route("/accounts/refill/{id}", name="refill_account")
      * @param Request $request
      * @param $id
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
+     * @return RedirectResponse|Response
+     * @throws Exception
      */
     public function refillAccount(Request $request, $id){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -184,11 +188,9 @@ class AccountController extends BasicController
             $repo_users = $em->getRepository('AppBundle:Users');
 
             $account = $repo_account->find($id);
-
             $user = $repo_users->find($this->getUser()->getId());
 
             $methode = $request->request->get('methode');
-
             $montant = $form->getData()['montant'];
 
             $transaction->setAccount($account);
@@ -202,7 +204,6 @@ class AccountController extends BasicController
             $account->setBalance($newBalance);
 
             $em->persist($account);
-
             $em->persist($transaction);
 
             $em->flush();

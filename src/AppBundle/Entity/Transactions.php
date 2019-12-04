@@ -2,8 +2,9 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -28,7 +29,7 @@ class Transactions
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="dateTransaction", type="datetime", options={"default" : "2017-12-12 05:40:42"})
      */
@@ -37,7 +38,7 @@ class Transactions
     /**
      * @var Account
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Account")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Account", inversedBy="transactions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="account", referencedColumnName="id", nullable=true)
      * })
@@ -115,7 +116,7 @@ class Transactions
     /**
      * Set timestamp
      *
-     * @param \datetime $timestamp
+     * @param datetime $timestamp
      *
      * @return Transactions
      */
@@ -129,7 +130,7 @@ class Transactions
     /**
      * Get timestamp
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getTimestamp()
     {
@@ -280,7 +281,7 @@ class Transactions
     /**
      * Get zreport
      *
-     * @return \AppBundle\Entity\Zreport
+     * @return Zreport
      */
     public function getZreport()
     {
