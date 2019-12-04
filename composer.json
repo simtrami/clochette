@@ -1,8 +1,9 @@
 {
     "name": "spatializer/clochette",
-    "license": "GPLv3",
+    "description": "A Symfony web app for bar-oriented point-of-sells",
+    "license": "GPL-3.0-only",
     "type": "project",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "autoload": {
         "psr-4": {
             "AppBundle\\": "src/AppBundle"
@@ -26,7 +27,7 @@
         "algolia/search-bundle": "^3.2",
         "doctrine/data-fixtures": "~1.0",
         "doctrine/doctrine-bundle": "^1.6",
-        "doctrine/doctrine-fixtures-bundle": "2.3.0",
+        "doctrine/doctrine-fixtures-bundle": "^2.3",
         "doctrine/orm": "^2.5",
         "friendsofsymfony/user-bundle": "~2.0",
         "incenteev/composer-parameter-handler": "^2.0",
