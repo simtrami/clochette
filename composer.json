@@ -3,7 +3,7 @@
     "description": "A Symfony web app for bar-oriented point-of-sells",
     "license": "GPL-3.0-only",
     "type": "project",
-    "version": "1.5.0-dev",
+    "version": "1.5.1",
     "autoload": {
         "psr-4": {
             "AppBundle\\": "src/AppBundle"
