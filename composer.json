@@ -1,9 +1,9 @@
 {
-    "name": "spatializer/clochette",
+    "name": "simtrami/clochette",
     "description": "A Symfony web app for bar-oriented point-of-sells",
     "license": "GPL-3.0-only",
     "type": "project",
-    "version": "1.5.0-dev",
+    "version": "1.5.1",
     "autoload": {
         "psr-4": {
             "AppBundle\\": "src/AppBundle"
@@ -44,6 +44,7 @@
         "twig/twig": "^1.0||^2.0"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^3.0"
     },
@@ -75,7 +76,6 @@
         "symfony-assets-install": "relative",
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
-        },
-        "branch-alias": null
+        }
     }
 }
