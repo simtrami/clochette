@@ -6,14 +6,18 @@
     color: var(--green-dark);
 }
 
-.page-item.active .page-link {
+.page-item.active .page-link, .page-link.active {
     background-color: var(--green);
     border-color: var(--green);
 }
 
+.page-link.active {
+    color: white;
+}
+
 .page-item:not(:disabled):not(.disabled):active:focus,
 .page-item:not(:disabled):not(.disabled).active:focus {
-    box-shadow: 0 0 0 0.2rem rgba(1,168,103, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(1, 168, 103, 0.5);
 }
 
 table tr, table td {

@@ -68,7 +68,6 @@ class Account
      * @var string
      *
      * @ORM\Column(name="balance", type="decimal", precision=8, scale=2, options={"default" : "0.00"})
-     * @Assert\GreaterThanOrEqual(-10)
      */
     private $balance;
 

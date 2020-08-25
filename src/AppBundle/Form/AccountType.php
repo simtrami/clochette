@@ -3,27 +3,28 @@ namespace AppBundle\Form;
 
 use AppBundle\Entity\Account;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AccountType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options){
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
         $builder
-            ->add('firstName',TextType::class, array(
+            ->add('firstName', TextType::class, array(
                 'label' => "Prénom",
             ))
-            ->add('lastName',TextType::class, array(
+            ->add('lastName', TextType::class, array(
                 'label' => "Nom",
             ))
             ->add('pseudo',TextType::class, array(
-                'label' => "Pseudo",
+                'label' => "Surnom",
             ))
             ->add('year',IntegerType::class, array(
                 'label' => "Année",
@@ -40,18 +41,16 @@ class AccountType extends AbstractType
             ;
             
             $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-                $compte = $event->getData();
+                $account = $event->getData();
                 $form = $event->getForm();
 
-                if (!(!$compte || null === $compte->getId())) {
-                    $form
-                        ->add('staffName', TextType::class, array(
-                        'label' => 'Nom de Staff', 
+                if ($account && null !== $account->getId()) {
+                    $form->add('staffName', TextType::class, array(
+                        'label' => 'Nom de Staff',
                         'required' => false
-                        ));
+                    ));
                 } else {
-                    $form
-                        ->add('balance',MoneyType::class, array(
+                    $form->add('balance', MoneyType::class, array(
                         'label' => "Solde",
                     ));
                 }

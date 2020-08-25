@@ -5,8 +5,10 @@ namespace AppBundle\Controller;
 use Algolia\SearchBundle\IndexManagerInterface;
 use AppBundle\Entity\DetailsTransactions;
 use AppBundle\Entity\Transactions;
+use Exception;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
@@ -84,8 +86,8 @@ class PurchaseController extends BasicController
     /**
      * @Route("/purchase/validation", name="purchaseValidation")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Exception
+     * @return RedirectResponse
+     * @throws Exception
      */
     public function validateTransaction(Request $request)
     {
@@ -326,13 +328,19 @@ class PurchaseController extends BasicController
             case 'pumpkin':
                 $this->addFlash(
                     'info',
-                    $commande->getMontant()."€ ont été encaissés par Pumpkin."
+                    $commande->getMontant() . "€ ont été encaissés par Pumpkin."
+                );
+                break;
+            case 'card':
+                $this->addFlash(
+                    'info',
+                    $commande->getMontant() . "€ ont été encaissés par carte."
                 );
                 break;
             default:
                 $this->addFlash(
                     'error',
-                    "La méthode de paiement n'a pas été reconnue !"
+                    "La méthode de paiement est inconnue !"
                 );
                 return $this->redirectToRoute('purchase');
         }
@@ -348,8 +356,8 @@ class PurchaseController extends BasicController
 
     /**
      * @Route("/purchase/open", name="openCashier")
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Exception
+     * @return RedirectResponse
+     * @throws Exception
      */
     public function openCashier(){
         if (!$this->get('security.authorization_checker')->isGranted('ROLE_BUREAU')) {

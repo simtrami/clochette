@@ -1,0 +1,5 @@
+New with release 1.6
+
+- Add credit card option for payments
+- Paginate when loading all transactions
+- Fix issues with accounts management

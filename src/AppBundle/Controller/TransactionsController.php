@@ -2,6 +2,9 @@
 // src/AppBundle/Controller/TransactionsController.php
 namespace AppBundle\Controller;
 
+use Exception;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TransactionsController extends BasicController
@@ -25,9 +28,11 @@ class TransactionsController extends BasicController
 
     /**
      * @Route("/transactions/all", name="all_transactions")
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @return Response
+     * @throws Exception
      */
-    public function showAll()
+    public function showAll(Request $request): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -35,8 +40,18 @@ class TransactionsController extends BasicController
 
         $this->getModes();
 
-        $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')->findAll();
-        $this->data['transactions'] = $repo_transactions;
+        $page = $request->query->get('page', 1);
+        $limit = $request->query->get('limit', 10);
+
+        $allTransactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')
+            ->findAllPaginated($page, $limit);
+        $transactions = $allTransactions->getIterator();
+        $this->data['page'] = $page;
+        $this->data['limit'] = $limit;
+        $this->data['transactions'] = $transactions;
+        $this->data['count'] = $transactions->count();
+        $this->data['total'] = $allTransactions->count();
+        $this->data['maxPage'] = ceil($this->data['total'] / $limit);
 
         return $this->render("transactions/index.html.twig", $this->data);
     }

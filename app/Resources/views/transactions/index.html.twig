@@ -23,14 +23,34 @@
     </div>
 
     <div class="table-responsive mb-3">
-        <table id="table" class="table table-striped table-bordered">
-            <thead class="thead-dark">
+        {% if current_path == "/transactions/all" %}
+        <div id="table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+            <p>Les transactions sont affichées de la plus récente à la plus ancienne.</p>
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <div class="dataTables_length" id="table_length">
+                        <label data-children-count="1">Afficher
+                            <div class="btn-group btn-group-sm" role="group">
+                                {% for value in [10, 20, 50, 100] %}
+                                    <a href="{{ path('all_transactions', {"limit": value, "page": page}) }}"
+                                       class="btn page-link {{ value != limit ?: 'active' }}">{{ value }}</a>
+                                {% endfor %}
+                            </div>
+                            entrées par page
+                        </label>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <table {{ current_path != '/transactions/all' ? 'id="table"' : '' }}
+                    class="table table-striped table-bordered">
+                <thead class="thead-dark">
                 <tr>
                     <th>#</th>
-                    <th>Utilisateur</th>
-                    <th>Compte</th>
+                    <th>Encaissé par</th>
                     <th>Montant</th>
-                    <th>Méthode</th>
+                    <th>Payé par</th>
+                    <th>Compte</th>
                     <th>Horodatage</th>
                     <th class="table-action">Détails</th>
                 </tr>
@@ -41,14 +61,6 @@
                 <tr>
                     <th>{{ transaction.id }}</th>
                     <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
-                    <td>{% if transaction.account != NULL %}
-                            {{ transaction.account.pseudo }}
-                        {% elseif transaction.methode == "account" or transaction.type == 3 %}
-                            Compte supprimé
-                        {% else %}
-                            ---
-                        {% endif %}
-                    </td>
                     <td>{{ transaction.type == 2 ? - transaction.montant : transaction.montant }}€</td>
                     <td>
                         {% if transaction.methode == "account" %}
@@ -63,12 +75,22 @@
                             Non reconnue
                         {% endif %}
                     </td>
+                    <td>
+                        {% if transaction.account != NULL %}
+                            {{ transaction.account.pseudo }}
+                        {% elseif transaction.methode == "account" or transaction.type == 3 %}
+                            Compte supprimé
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </td>
                     <td>{{ transaction.timestamp|date('H:i:s d/m/Y') }}</td>
                     <td class="table-action">
                         <div class="d-flex justify-content-center">
                             {% if transaction.type == 1 %}
                                 <div class="btn-group dropleft">
-                                    <button type="button" class="btn btn-secondary dropdown-toggle no-arrow" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle no-arrow"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fas fa-info-circle" aria-hidden="true"></i>
                                     </button>
                                     <div class="dropdown-menu">
@@ -120,16 +142,65 @@
                 </tr>
             {% endfor %}
             </tbody>
-        </table>
-
-        <div class="input-group mt-3">
+            </table>
             {% if current_path == "/transactions/all" %}
-                <a class="btn btn-success btn-lg btn-block" href="{{ path('transactions') }}">
-                    <i class="fas fa-minus-square"></i> Charger les transactions non clôturées</a>
-            {% else %}
-                <a class="btn btn-success btn-lg btn-block" href="{{ path('all_transactions') }}">
-                    <i class="fas fa-plus-square"></i> Charger toutes les transactions</a>
-            {% endif %}
+            <div class="row" style="margin: 0">
+                <div class="col-sm-12 col-md-5">
+                    <div class="dataTables_info" id="table_info" role="status" aria-live="polite">
+                        Page {{ page }} sur {{ maxPage }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-7">
+                    <div class="dataTables_paginate paging_simple_numbers" id="table_paginate">
+                        <ul class="pagination">
+                            <li class="paginate_button page-item previous {{ page-1 > 0 ?: 'disabled' }}">
+                                <a href="{{ path('all_transactions', {"page": page-1, "limit": limit}) }}"
+                                   class="page-link">&larr;</a>
+                            </li>
+                            {% if page > 1 %}
+                                <li class="paginate_button page-item">
+                                    <a href="{{ path('all_transactions', {"page": 1, "limit": limit}) }}"
+                                       class="page-link">1</a>
+                                </li>
+                            {% endif %}
+                            {% if page > 2 %}
+                                <li class="paginate_button page-item disabled" id="table_ellipsis">
+                                    <a href="#" class="page-link">…</a>
+                                </li>
+                            {% endif %}
+                            <li class="paginate_button page-item active">
+                                <a href="#" class="page-link">{{ page }}</a>
+                            </li>
+                            {% if page < maxPage-1 %}
+                                <li class="paginate_button page-item disabled" id="table_ellipsis">
+                                    <a href="#" class="page-link">…</a>
+                                </li>
+                            {% endif %}
+                            {% if page < maxPage %}
+                                <li class="paginate_button page-item">
+                                    <a href="{{ path('all_transactions', {"page": maxPage, "limit": limit}) }}"
+                                       class="page-link">{{ maxPage }}</a>
+                                </li>
+                            {% endif %}
+                            <li class="paginate_button page-item next {{ page+1 < maxPage ?: 'disabled' }}">
+                                <a href="{{ path('all_transactions', {"page": page+1, "limit": limit}) }}"
+                                   class="page-link">&rarr;</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
+        {% endif %}
+    </div>
+
+    <div class="input-group mt-3">
+        {% if current_path == "/transactions/all" %}
+            <a class="btn btn-success btn-lg btn-block" href="{{ path('transactions') }}">
+                <i class="fas fa-minus-square"></i> Charger les transactions non clôturées</a>
+        {% else %}
+            <a class="btn btn-success btn-lg btn-block" href="{{ path('all_transactions') }}">
+                <i class="fas fa-plus-square"></i> Charger toutes les transactions</a>
+        {% endif %}
     </div>
 {% endblock %}

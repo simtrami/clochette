@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class AccountController extends BasicController
 {
@@ -110,7 +111,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/modify/{id}", name="modify_account")
+     * @Route("/accounts/{id}/modify", name="modify_account")
      * @param Request $request
      * @param $id
      * @return RedirectResponse|Response
@@ -151,13 +152,14 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/refill/{id}", name="refill_account")
+     * @Route("/accounts/{id}/refill", name="refill_account")
      * @param Request $request
      * @param $id
      * @return RedirectResponse|Response
      * @throws Exception
      */
-    public function refillAccount(Request $request, $id){
+    public function refillAccount(Request $request, $id)
+    {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
@@ -166,15 +168,26 @@ class AccountController extends BasicController
 
         $account = $this->getDoctrine()->getManager()->getRepository('AppBundle:Account')->find($id);
 
-        $montant = array('message' => 'Montant du rechargement');
-        $form = $this->createFormBuilder($montant)
-            ->add('montant', MoneyType::class)
-            ->getForm()
-        ;
+        $ammount = array('message' => 'Montant du rechargement');
+        $form = $this->createFormBuilder($ammount)
+            ->add('amount', MoneyType::class, [
+                'constraints' => new GreaterThan(['value' => 0])
+            ])
+            ->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
+            $methode = $request->request->get('methode');
+
+            if (!in_array($methode, ['cash', 'pumpkin', 'card'])) {
+                $this->addFlash(
+                    'error',
+                    "La méthode de paiement est inconnue !"
+                );
+                return $this->redirectToRoute('show_account', ['id' => $id]);
+            }
+
             $transaction = new Transactions();
 
             // Insertion du timestamp dans l'entité Transactions
@@ -190,16 +203,15 @@ class AccountController extends BasicController
             $account = $repo_account->find($id);
             $user = $repo_users->find($this->getUser()->getId());
 
-            $methode = $request->request->get('methode');
-            $montant = $form->getData()['montant'];
+            $ammount = $form->getData()['amount'];
 
             $transaction->setAccount($account);
             $transaction->setUser($user);
             $transaction->setMethode($methode);
-            $transaction->setMontant($montant);
+            $transaction->setMontant($ammount);
 
             $balance = $account->getBalance();
-            $newBalance = $balance + $montant;
+            $newBalance = $balance + $ammount;
 
             $account->setBalance($newBalance);
 
@@ -211,7 +223,7 @@ class AccountController extends BasicController
             $this->indexManager->index($account, $em);
 
             $this->addFlash('info',
-                $form['montant']->getData().
+                $form['amount']->getData() .
                 '€ ont été ajoutés au compte de '.$account->getFirstName().' '.$account->getLastName().'. Son solde est désormais de '.$newBalance.'€.'
             );
 
@@ -229,7 +241,7 @@ class AccountController extends BasicController
                 }
             }
 
-            return $this->redirectToRoute('accounts');
+            return $this->redirectToRoute('show_account', ['id' => $id]);
         }
 
         $this->data['form'] = $form->createView();

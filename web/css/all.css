@@ -80,7 +80,7 @@
     border-color: var(--success);
 }
 
-.btn-outline-success:hover {
+.btn-outline-success:hover, .btn-outline-success:not(:disabled):not(.disabled).active {
     color: var(--white);
     background-color: var(--success);
     border-color: var(--success);

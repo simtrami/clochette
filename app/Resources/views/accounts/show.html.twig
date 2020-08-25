@@ -43,9 +43,9 @@
                         "sortDescending": ": activer pour trier dans l'ordre décroissant"
                     }
                 },
-                "order": [[3, 'desc']],
+                "order": [[4, 'desc']],
                 "columnDefs": [
-                    {"orderable": false, "targets": 5}
+                    {"orderable": false, "targets": 6}
                 ]
             });
         });
@@ -53,11 +53,21 @@
 {% endblock %}
 
 {% block body %}
-    <div class="alert alert-light">
-        <h1 class="display-4">{{ account.pseudo }}</h1>
+    <div class="alert alert-light container-fluid mx-0 w-100">
+        <div class="row px-2">
+            <h1 class="display-4">{{ account.pseudo }}</h1>
+            <div class="spacer"></div>
+            <div class="btn-group" role="group" style="align-self: center">
+                <a class="btn btn-outline-success my-2" href="{{ path('modify_account', {'id': account.id}) }}"
+                   style="height: max-content">
+                    <i class="fas fa-edit"></i>&nbsp;Modifier</a>
+                <a class="btn btn-outline-success my-2" href="{{ path('refill_account', {'id': account.id}) }}"
+                   style="height: max-content">
+                    <i class="fas fa-gas-pump"></i>&nbsp;Recharger</a>
+            </div>
+        </div>
     </div>
 
-    {#    <a class="btn btn-success btn-lg btn-block {{ is_granted(expression('"ROLE_ALL" in roles'))==true ? "" : "disabled" }}" href="{{ path('create_account') }}"><i class="fas fa-plus-circle"></i> Créer un compte</a>#}
 
     <table class="table">
         <tbody>
@@ -98,8 +108,9 @@
                 <thead class="thead-dark">
                 <tr>
                     <th>#</th>
-                    <th>Utilisateur</th>
+                    <th>Encaissé par</th>
                     <th>Montant</th>
+                    <th>Payé par</th>
                     <th>Horodatage</th>
                     <th>Date du Z</th>
                     <th class="table-action">Détails</th>
@@ -112,8 +123,21 @@
                         <th>{{ transaction.id }}</th>
                         <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
                         <td>{{ transaction.type == 2 ? - transaction.montant : transaction.montant }}€</td>
+                        <td>
+                            {% if transaction.methode == "account" %}
+                                Compte
+                            {% elseif transaction.methode == "cash" %}
+                                Liquide
+                            {% elseif transaction.methode == "pumpkin" %}
+                                Pumpkin
+                            {% elseif transaction.methode == "card" %}
+                                Carte Bleue
+                            {% else %}
+                                Non reconnue
+                            {% endif %}
+                        </td>
                         <td>{{ transaction.timestamp|date('d/m/Y H:i:s') }}</td>
-                        <td>{{ transaction.zreport.timestamp|date('d/m/Y H:i:s') }}</td>
+                        <td>{{ transaction.zreport ? transaction.zreport.timestamp|date('d/m/Y H:i:s') : 'En cours' }}</td>
                         <td class="table-action">
                             <div class="d-flex justify-content-center">
                                 {% if transaction.type == 1 %}
