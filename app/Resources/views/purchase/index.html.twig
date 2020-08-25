@@ -158,16 +158,17 @@
                 <!-- Prix total -->
                 <div class="text-center mx-auto mb-2">
                     <div class="display-4"><span id="totalTxt">0</span></div>
-                    <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total" required hidden>
+                    <input class="form-control" type="text" id="totalForm" name="total" value="0" placeholder="Total"
+                           required hidden>
                 </div>
 
                 <!-- Moyens de paiements -->
                 <div class="input-group w-100 mb-2">
                     <div class="btn-group btn-group-md btn-group-toggle mx-auto moyen_paiement" data-toggle="buttons">
-                        {#<label class="btn btn-light" onclick="choixPaiement('cb')">
+                        <label class="btn btn-light" onclick="choixPaiement('card')">
                             <input type="radio" id="option1">
                             <i class="fa fa-credit-card"></i> <span class="d-none d-sm-none d-md-inline">CB</span>
-                        </label>#}
+                        </label>
 
                         <label class="btn btn-light" id="methodCash" onclick="choixPaiement('cash')">
                             <input class="choix-paiement" type="radio" id="option1">

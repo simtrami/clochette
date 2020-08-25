@@ -43,9 +43,9 @@
                         "sortDescending": ": activer pour trier dans l'ordre décroissant"
                     }
                 },
-                "order": [[3, 'desc']],
+                "order": [[4, 'desc']],
                 "columnDefs": [
-                    {"orderable": false, "targets": 5}
+                    {"orderable": false, "targets": 6}
                 ]
             });
         });
@@ -98,8 +98,9 @@
                 <thead class="thead-dark">
                 <tr>
                     <th>#</th>
-                    <th>Utilisateur</th>
+                    <th>Encaissé par</th>
                     <th>Montant</th>
+                    <th>Payé par</th>
                     <th>Horodatage</th>
                     <th>Date du Z</th>
                     <th class="table-action">Détails</th>
@@ -112,6 +113,19 @@
                         <th>{{ transaction.id }}</th>
                         <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
                         <td>{{ transaction.type == 2 ? - transaction.montant : transaction.montant }}€</td>
+                        <td>
+                            {% if transaction.methode == "account" %}
+                                Compte
+                            {% elseif transaction.methode == "cash" %}
+                                Liquide
+                            {% elseif transaction.methode == "pumpkin" %}
+                                Pumpkin
+                            {% elseif transaction.methode == "card" %}
+                                Carte Bleue
+                            {% else %}
+                                Non reconnue
+                            {% endif %}
+                        </td>
                         <td>{{ transaction.timestamp|date('d/m/Y H:i:s') }}</td>
                         <td>{{ transaction.zreport.timestamp|date('d/m/Y H:i:s') }}</td>
                         <td class="table-action">
