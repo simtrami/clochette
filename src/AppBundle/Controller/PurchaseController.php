@@ -340,7 +340,7 @@ class PurchaseController extends BasicController
             default:
                 $this->addFlash(
                     'error',
-                    "La méthode de paiement n'a pas été reconnue !"
+                    "La méthode de paiement est inconnue !"
                 );
                 return $this->redirectToRoute('purchase');
         }

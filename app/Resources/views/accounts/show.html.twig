@@ -53,11 +53,21 @@
 {% endblock %}
 
 {% block body %}
-    <div class="alert alert-light">
-        <h1 class="display-4">{{ account.pseudo }}</h1>
+    <div class="alert alert-light container-fluid mx-0 w-100">
+        <div class="row px-2">
+            <h1 class="display-4">{{ account.pseudo }}</h1>
+            <div class="spacer"></div>
+            <div class="btn-group" role="group" style="align-self: center">
+                <a class="btn btn-outline-success my-2" href="{{ path('modify_account', {'id': account.id}) }}"
+                   style="height: max-content">
+                    <i class="fas fa-edit"></i>&nbsp;Modifier</a>
+                <a class="btn btn-outline-success my-2" href="{{ path('refill_account', {'id': account.id}) }}"
+                   style="height: max-content">
+                    <i class="fas fa-gas-pump"></i>&nbsp;Recharger</a>
+            </div>
+        </div>
     </div>
 
-    {#    <a class="btn btn-success btn-lg btn-block {{ is_granted(expression('"ROLE_ALL" in roles'))==true ? "" : "disabled" }}" href="{{ path('create_account') }}"><i class="fas fa-plus-circle"></i> Créer un compte</a>#}
 
     <table class="table">
         <tbody>
@@ -127,7 +137,7 @@
                             {% endif %}
                         </td>
                         <td>{{ transaction.timestamp|date('d/m/Y H:i:s') }}</td>
-                        <td>{{ transaction.zreport.timestamp|date('d/m/Y H:i:s') }}</td>
+                        <td>{{ transaction.zreport ? transaction.zreport.timestamp|date('d/m/Y H:i:s') : 'En cours' }}</td>
                         <td class="table-action">
                             <div class="d-flex justify-content-center">
                                 {% if transaction.type == 1 %}

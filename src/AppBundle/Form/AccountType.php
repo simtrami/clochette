@@ -24,7 +24,7 @@ class AccountType extends AbstractType
                 'label' => "Nom",
             ))
             ->add('pseudo',TextType::class, array(
-                'label' => "Pseudo",
+                'label' => "Surnom",
             ))
             ->add('year',IntegerType::class, array(
                 'label' => "Année",
