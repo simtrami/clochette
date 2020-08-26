@@ -1,20 +1,20 @@
 {
-    "_readme": [
-        "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-        "This file is @generated automatically"
-    ],
-    "content-hash": "7e3cf4736b4ba7ca695feb317325756e",
-    "packages": [
-        {
-            "name": "algolia/algoliasearch-client-php",
-            "version": "1.28.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/algolia/algoliasearch-client-php.git",
-                "reference": "43b0b0dc64e2d0f206d903ad3a4fb8b0a3660f81"
-            },
-            "dist": {
+  "_readme": [
+    "This file locks the dependencies of your project to a known state",
+    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+    "This file is @generated automatically"
+  ],
+  "content-hash": "4cd68b29c1980fbfaeceb8fcf3bef6f7",
+  "packages": [
+    {
+      "name": "algolia/algoliasearch-client-php",
+      "version": "1.28.1",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/algolia/algoliasearch-client-php.git",
+        "reference": "43b0b0dc64e2d0f206d903ad3a4fb8b0a3660f81"
+      },
+      "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/43b0b0dc64e2d0f206d903ad3a4fb8b0a3660f81",
                 "reference": "43b0b0dc64e2d0f206d903ad3a4fb8b0a3660f81",
