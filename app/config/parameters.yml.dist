@@ -23,7 +23,7 @@ parameters:
     env(ALGOLIA_APP_ID): XXXXXXXXXX
     env(ALGOLIA_API_KEY): indicateYourAdminApiKeyHere
     env(algolia_api_search_key): indicateYourSearchOnlyKeyHere
-    env(algolia_index): indexToSearchFrom
+    env(algolia_index): indexToSearchIn
 
     # Printer's properties for using Escpos by Mike42
     env(escpos_printer_ip): ~
@@ -33,7 +33,7 @@ parameters:
     env(developer_url): ~
     env(developer_username): ~
     env(project_url): ~
-    env(project_version): '1.6.1'
+    env(project_version): '1.6.2'
 
     # Chatbot API credentials
     env(chatbot_api_id): ~
