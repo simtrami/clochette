@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Stocks;
 use AppBundle\Form\StocksType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,12 +46,13 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/stock/modifier/{id_article}", name="modif_article")
+     * @Route("/stock/{id}/modifier", name="modif_article", requirements={"id"="\d+"})
      * @param Request $request
-     * @param $id_article
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @param $id
+     * @return RedirectResponse|Response
      */
-    public function modifArticleAction(Request $request, $id_article){
+    public function modifArticleAction(Request $request, $id)
+    {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
@@ -65,7 +67,7 @@ class StockController extends BasicController
 
         $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
 
-        $article = $repo_stocks->find($id_article);
+        $article = $repo_stocks->find($id);
         $type = $article->getType()->getName();
         // Récupération du type d'article et traduction pour l'affichage
         
@@ -100,9 +102,9 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/stock/ajout", name="ajout_article")
+     * @Route("/stock/new", name="ajout_article")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @return RedirectResponse|Response
      */
     public function ajoutArticleAction(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -147,9 +149,9 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/stock/supprimer", name="suppr_article")
+     * @Route("/stock/delete", name="suppr_article")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function supprArticleAction(Request $request){
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {

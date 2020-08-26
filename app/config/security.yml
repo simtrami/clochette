@@ -60,22 +60,18 @@ security:
                 target: /
     
     access_control:
-    - { path: ^/accounts/modify, roles: ROLE_ALL }
-    - { path: ^/accounts/create, roles: ROLE_ALL }
-    - { path: ^/accounts/refill, roles: ROLE_BUREAU }
     - { path: ^/accounts, roles: ROLE_BUREAU }
+    - { path: ^/accounts/(modify|create)$, roles: ROLE_ALL }
     - { path: ^/management/runs/modify, roles: ROLE_TRESO }
     - { path: ^/management, roles: ROLE_BUREAU }
     - { path: ^/purchase/open, roles: ROLE_BUREAU }
     - { path: ^/purchase, roles: ROLE_INTRO }
     - { path: ^/settings, roles: ROLE_ADMIN }
-    - { path: ^/stock/ajout, roles: [ROLE_STOCK, ROLE_TRESO] }
-    - { path: ^/stock/modifier, roles: [ROLE_STOCK, ROLE_TRESO] }
-    - { path: ^/stock/supprimer, roles: ROLE_STOCK }
-    - { path: ^/stock, roles: ROLE_BUREAU }
+    - { path: ^/stock/, roles: [ROLE_STOCK, ROLE_TRESO] }
+    - { path: ^/stock$, roles: ROLE_BUREAU }
     - { path: ^/transactions, roles: ROLE_BUREAU }
     - { path: ^/users/modify, roles: ROLE_BUREAU}
-    - { path: ^/users, roles: ROLE_ADMIN}
+    - { path: ^/users$, roles: ROLE_ADMIN}
 
     role_hierarchy:
         ROLE_ACTIF:         ROLE_INTRO
