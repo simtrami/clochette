@@ -5,13 +5,17 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Users;
 use AppBundle\Form\SuperUserType;
 use AppBundle\Form\UserType;
+use Exception;
 use Swift_Image;
+use Swift_Message;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -45,11 +49,11 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/users/modify/{id}", name="modify_user")
+     * @Route("/users/{id}/modify", name="modify_user", requirements={"id"="\d+"})
      * @param Request $request
      * @param $id
      * @param UserPasswordEncoderInterface $passwordEncoder
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return RedirectResponse|Response
      */
     public function modifyAction(Request $request, $id, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -111,7 +115,7 @@ class UserController extends BasicController
             try {
                 $em->persist($user);
                 $em->flush();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->addFlash('error', 'La modification du compte a échoué.');
                 return $this->redirectToRoute('homepage');
             }
@@ -135,10 +139,10 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/users/add", name="add_user")
+     * @Route("/users/new", name="add_user")
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return RedirectResponse|Response
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -170,7 +174,7 @@ class UserController extends BasicController
             $entityManager->flush();
 
             // Génération du mail
-            $message = (new \Swift_Message('Confirmation de création du compte utilisateur'))
+            $message = (new Swift_Message('Confirmation de création du compte utilisateur'))
                 ->setFrom($this->sendingAddress)
                 ->setTo($user->getEmail());
             $this->data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
@@ -209,9 +213,9 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/users/toggle/{id}", name="toggle_user")
+     * @Route("/users/{id}/toggle", name="toggle_user", requirements={"id"="\d+"})
      * @param $id
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function disableAction($id)
     {

@@ -46,22 +46,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/{id}", name="show_account")
-     * @param Account $account
-     * @return Response
-     */
-    public function showAccount(Account $account)
-    {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
-        $this->getModes();
-        $this->data['account'] = $account;
-        return $this->render("accounts/show.html.twig", $this->data);
-    }
-
-    /**
-     * @Route("/accounts/new", name="create_account")
+     * @Route("/accounts/create", name="create_account")
      * @param Request $request
      * @return RedirectResponse|Response
      * @throws Exception
@@ -74,14 +59,14 @@ class AccountController extends BasicController
 
         $this->getModes();
 
-        $account=new Account();
-        $form=$this->createForm(AccountType::class, $account);
+        $account = new Account();
+        $form = $this->createForm(AccountType::class, $account);
 
         $form->handleRequest($request);
 
         //$checkAccount = $this->container->get('appbundle.checkaccount');
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             /*if ($checkAccount->anneeNotValid($account)){
                 throw new \Exception('Une année doit au moins être égale à 1');
             }*/
@@ -98,20 +83,35 @@ class AccountController extends BasicController
             $this->indexManager->index($account, $em);
 
             $this->addFlash('info', 'Un nouveau compte a été créé.');
-        
+
             return $this->redirectToRoute('create_account');
         }
 
         $this->data['form'] = $form->createView();
         $this->data['form_mode'] = 'new_account';
         return $this->render(
-          'accounts/account.html.twig',
+            'accounts/account.html.twig',
             $this->data
         );
     }
 
     /**
-     * @Route("/accounts/{id}/modify", name="modify_account")
+     * @Route("/accounts/{id}", name="show_account", requirements={"id"="\d+"})
+     * @param Account $account
+     * @return Response
+     */
+    public function showAccount(Account $account)
+    {
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            throw $this->createAccessDeniedException();
+        }
+        $this->getModes();
+        $this->data['account'] = $account;
+        return $this->render("accounts/show.html.twig", $this->data);
+    }
+
+    /**
+     * @Route("/accounts/{id}/modify", name="modify_account", requirements={"id"="\d+"})
      * @param Request $request
      * @param $id
      * @return RedirectResponse|Response
@@ -152,7 +152,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/{id}/refill", name="refill_account")
+     * @Route("/accounts/{id}/refill", name="refill_account", requirements={"id"="\d+"})
      * @param Request $request
      * @param $id
      * @return RedirectResponse|Response
