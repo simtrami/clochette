@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block stylesheet %}
+{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+
+        <div class="container">
+            {% if is_granted(expression('"ROLE_INTRO" in roles')) %}
+                <h1 class="display-3">Bonjour {{ app.user.username }} :)</h1>
+                <p class="lead">La connexion est validée, vous pouvez commencer à explorer !</p>
+            {% else %}
+                <h1 class="display-3">Clochette Project</h1>
+                <p class="lead">La page d'annonces est en cours de construction</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

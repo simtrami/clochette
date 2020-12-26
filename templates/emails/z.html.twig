@@ -1,0 +1,197 @@
+<div style="font-family: Tahoma, Geneva, sans-serif; width:100%">
+<div style="width: 85%; margin: 0 auto">
+    <p style="text-align: center; margin: 0"><a href="https://clochette.spatializer.fr/login" target="_blank"><img src="{{ logo }}" width="140" alt="Logo"></a></p>
+    <h1 style="text-align: center; margin-top: 0">Ticket Z <small>by Clochette</small></h1>
+    <p style="text-align: center">
+        Récapitulatif de tenue du {{ date }}<br/>
+        Émis à {{ time }} par {{ user }}
+    </p>
+
+    <hr/>
+
+    <h2>Entrées d'argent</h2>
+
+    <h3>Commandes</h3>
+
+    <h4>Liquide</h4>
+    <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">
+        <tr>
+            <th style="border:1px solid black; border-collapse: collapse">Article</th>
+            <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
+            <th style="border:1px solid black; border-collapse: collapse">Total</th>
+        </tr>
+        {% for key, article in commandes.cash %}
+        <tr>
+            <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
+            <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
+            <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.price }}€</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><small><strong>Total : {{ totComCash }}€</strong></small></p>
+
+    <h4>Compte</h4>
+    <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">
+        <tr>
+            <th style="border:1px solid black; border-collapse: collapse">Article</th>
+            <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
+            <th style="border:1px solid black; border-collapse: collapse">Total</th>
+        </tr>
+        {% for key, article in commandes.account %}
+            <tr>
+                <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
+                <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
+                <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.price }}€</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><small><strong>Total : {{ totComAccount }}€</strong></small></p>
+
+
+    <h4>Pumpkin</h4>
+    <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">
+        <tr>
+            <th style="border:1px solid black; border-collapse: collapse">Article</th>
+            <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
+            <th style="border:1px solid black; border-collapse: collapse">Total</th>
+        </tr>
+        {% for key, article in commandes.pumpkin %}
+            <tr>
+                <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
+                <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
+                <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.price }}€</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><small><strong>Total : {{ totComPumpkin }}€</strong></small></p>
+
+    <h4>Carte</h4>
+    <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">
+        <tr>
+            <th style="border:1px solid black; border-collapse: collapse">Article</th>
+            <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
+            <th style="border:1px solid black; border-collapse: collapse">Total</th>
+        </tr>
+        {% for key, article in commandes.card %}
+            <tr>
+                <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
+                <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
+                <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.price }}€</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><small><strong>Total : {{ totComCard }}€</strong></small></p>
+
+    <p><strong>Total des commandes : {{ totCom }}€</strong></p>
+
+    <hr width="30%"/>
+
+    <h3>Rechargements</h3>
+    <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">
+        <tr>
+            <th style="border:1px solid black; border-collapse: collapse">Compte</th>
+            <th style="border:1px solid black; border-collapse: collapse">Moyen de paiement</th>
+            <th style="border:1px solid black; border-collapse: collapse">Montant</th>
+        </tr>
+        {% for account, rechargement in rechargements %}
+        <tr>
+            <td style="border:1px solid black; border-collapse: collapse">{{ account }}</td>
+            <td style="border:1px solid black; border-collapse: collapse">{{ rechargement.methode }}</td>
+            <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ rechargement.montant }}€</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p>Total liquide : {{ totRechCash }}€</p>
+    <p>Total Pumpkin : {{ totRechPumpkin }}€</p>
+    <p>Total carte : {{ totRechCard }}€</p>
+
+    <p><strong>Total des rechargements : {{ totRech }}€</strong></p>
+    <em>Remarque : Les rechargements ne sont pas comptés dans le total étant donné que l'argent ajoutée est utilisée pour commander des articles, cela ferait doublon.</em></p>
+
+    <hr width="40%"/>
+
+    <h2>Sorties</h2>
+
+    <h3>Remboursements</h3>
+
+    <p><strong>Liquide</strong> : <em>{{ nbRembCash }}</em><br/>
+        <small>Ecocups ramenées : <em>{{ totEcoCash }}</em></small><br/>
+        <strong>Total : {{ totRembCash }}€</strong></p>
+
+    <p><strong>Compte</strong> : <em>{{ nbRembAccount }}</em><br/>
+        <small>Ecocups ramenées : <em>{{ totEcoAccount }}</em></small><br/>
+        <strong>Total : {{ totRembAccount }}€</strong></p>
+
+    <p><strong>Total des remboursements : {{ totRemb }}€</strong><br/>
+
+    <hr width="40%"/>
+
+    <h2>Total</h2>
+
+    <p><strong>Total entrées : <span style="color: darkgreen">{{ totCom }}€</span></strong></p>
+    <p><strong>Total sorties : <span style="color: red">{{ totRemb }}€</span></strong></p>
+    <p style="text-align: center"><strong>Total : {{ tot }}€</strong></p>
+
+    <hr width="40%"/>
+
+    <h2>Transactions</h2>
+
+    <ul>
+        {% for key, user in users %}
+        <li>{{ key }} : {{ user }}</li>
+        {% endfor %}
+    </ul>
+
+    <hr/>
+
+    <h1>Bilan des stocks</h1>
+
+    <h2>Fûts</h2>
+
+    <ul>
+        {% for article in drafts %}
+            {% if article.quantite <= 2 %}
+                <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
+            {% elseif article.quantite >= 7 %}
+                <li>{{ article.nom }} : {{ article.quantite }}</li>
+            {% else %}
+                <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <h2>Bouteilles</h2>
+
+    <ul>
+        {% for article in bottles %}
+            {% if article.quantite <= 6 %}
+                <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
+            {% elseif article.quantite >= 20 %}
+                <li>{{ article.nom }} : {{ article.quantite }}</li>
+            {% else %}
+                <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <h2>Nourriture et autres</h2>
+
+    <ul>
+        {% for article in others %}
+            {% if article.quantite <= 6 %}
+                <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
+            {% elseif article.quantite >= 13 %}
+                <li>{{ article.nom }} : {{ article.quantite }}</li>
+            {% else %}
+                <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <hr/>
+
+    <h1 style="text-align: center">En espérant que la caisse aura été comptée !</h1>
+    <p style="margin: 0; text-align: center; font-style: italic">E-mail magique fabriqué par Clochette</p>
+</div>
+</div>
+</html>
