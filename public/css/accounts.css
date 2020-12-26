@@ -1,0 +1,7 @@
+.table-actions {
+    width: 12rem !important;
+}
+
+td.table-actions {
+    padding-top: 0.5rem;
+}
