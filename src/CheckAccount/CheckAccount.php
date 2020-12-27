@@ -6,17 +6,19 @@ use App\Entity\Account;
 
 class CheckAccount{
 
-    public function anneeNotValid(Account $compte){
+    public function anneeNotValid(Account $account): bool
+    {
+        return $account->getYear()<1;
+    }
 
-        return $compte->getYear()<1;
-    } 
-
-    public function namesValid(Account $compte){
-        return (ctype_alpha($compte->getLastName()) &&
-        ctype_alpha($compte->getFirstName()) &&
-        ctype_alpha($compte->getPseudo() 
-        /* ne prend pas en compte 
-        les accents et cédilles */
-    ));
+    public function namesValid(Account $account): bool
+    {
+        return (
+            ctype_alpha($account->getLastName()) &&
+            ctype_alpha($account->getFirstName()) &&
+            ctype_alpha($account->getPseudo()
+            /* ne prend pas en compte
+            les accents et cédilles */
+            ));
     }
 }

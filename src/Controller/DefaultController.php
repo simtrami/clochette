@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends BasicController
 {
     /**
      * @Route("/", name="homepage")
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function indexAction()
+    public function indexAction(): Response
     {
         $this->getModes();
         return $this->render('home/index.html.twig', $this->data);

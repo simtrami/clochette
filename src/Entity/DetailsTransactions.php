@@ -2,117 +2,78 @@
 
 namespace App\Entity;
 
+use App\Repository\DetailsTransactionsRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * DetailsTransactions
- *
- * @ORM\Table(name="details_transactions",
- *  indexes={
- *      @ORM\Index(name="transaction", columns={"transaction"}),
- *      @ORM\Index(name="article", columns={"article"})
- *  }
- * )
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=DetailsTransactionsRepository::class)
  */
 class DetailsTransactions
 {
     /**
-     * @var \App\Entity\Transactions
-     *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Transactions", inversedBy="details")
-     * @ORM\JoinColumn(name="transaction", referencedColumnName="id")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
-    private $transaction;
-    
+    private $id;
+
     /**
-     * @var \App\Entity\Stocks
-     *
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Stocks")
-     * @ORM\JoinColumn(name="article", referencedColumnName="id")
+     * @ORM\Column(type="integer")
+     * @Assert\GreaterThan(0)
+     */
+    private $quantity;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Stocks::class)
+     * @ORM\JoinColumn(nullable=false)
      */
     private $article;
 
     /**
-     * @var integer
-     * 
-     * @ORM\Column(name="quantite", type="smallint")
-     * @Assert\GreaterThan(0)
+     * @ORM\ManyToOne(targetEntity=Transactions::class, inversedBy="details")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $quantite;
+    private $transaction;
 
-    ## Fonctions
-
-    /**
-     * Set transaction
-     *
-     * @param Transactions $transaction
-     * @return DetailsTransactions
-     */
-    public function setTransaction(Transactions $transaction)
+    public function getId(): ?int
     {
-        $this->transaction = $transaction;
+        return $this->id;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
 
         return $this;
     }
 
-    /**
-     * Get transaction
-     *
-     * @return \App\Entity\Transactions
-     */
-    public function getTransaction()
+    public function getArticle(): ?Stocks
     {
-        return $this->transaction;
+        return $this->article;
     }
 
-    /**
-     * Set article
-     *
-     * @param Stocks $article
-     * @return DetailsTransactions
-     */
-    public function setArticle(Stocks $article)
+    public function setArticle(?Stocks $article): self
     {
         $this->article = $article;
 
         return $this;
     }
 
-    /**
-     * Get article
-     *
-     * @return \App\Entity\Stocks
-     */
-    public function getArticle()
+    public function getTransaction(): ?Transactions
     {
-        return $this->article;
+        return $this->transaction;
     }
-    
-    /**
-     * Set quantite
-     *
-     * @param integer $quantite
-     *
-     * @return DetailsTransactions
-     */
-    public function setQuantite($quantite)
+
+    public function setTransaction(?Transactions $transaction): self
     {
-        $this->quantite = $quantite;
+        $this->transaction = $transaction;
 
         return $this;
-    }
-
-    /**
-     * Get quantite
-     *
-     * @return integer
-     */
-    public function getQuantite()
-    {
-        return $this->quantite;
     }
 }

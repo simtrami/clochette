@@ -8,6 +8,7 @@ use App\Form\UserType;
 use Exception;
 use Swift_Image;
 use Swift_Message;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -16,6 +17,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -23,66 +26,57 @@ class UserController extends BasicController
 {
     protected $sendingAddress;
 
-    public function __construct($sendingAddress)
+    public function __construct()
     {
-        $this->sendingAddress = $sendingAddress;
+        $this->sendingAddress = getenv('MAILER_USER');
     }
 
     /**
      * @Route("/users", name="users")
     **/
-    public function indexAction()
+    public function indexAction(): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
-
         $this->getModes();
 
-        $repo_users = $this->getDoctrine()->getManager()->getRepository('AppBundle:Users');
-
-        $users = $repo_users->findAll();
-
+        $users = $this->getDoctrine()->getManager()->getRepository(Users::class)->findAll();
         $this->data['users'] = $users;
 
         return $this->render('users/index.html.twig', $this->data);
     }
 
     /**
-     * @Route("/users/{id}/modify", name="modify_user", requirements={"id"="\d+"})
+     * @Route("/users/{id}/edit", name="modify_user", requirements={"id"="\d+"})
      * @param Request $request
-     * @param $id
+     * @param $user
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return RedirectResponse|Response
      */
-    public function modifyAction(Request $request, $id, UserPasswordEncoderInterface $passwordEncoder)
+    public function modifyAction(Request $request, Users $user, UserPasswordEncoderInterface $passwordEncoder)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            throw $this->createAccessDeniedException();
-        }
-        if ($this->getUser()->getId() != $id && !$this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')){
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->getModes();
+
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN') && $this->getUser()->getId() !== $user->getId()) {
             throw $this->createAccessDeniedException("Vous ne pouvez pas modifier un compte qui n'est pas le votre");
         }
 
-        $this->getModes();
-
         $em = $this->getDoctrine()->getManager();
-        $repo_users = $em->getRepository('AppBundle:Users');
 
-        $user = $repo_users->find($id);
+//        $user = $em->getRepository(Users::class)->find($id);
         $infos = array(
             'email' => $user->getEmail(),
             'username' => $user->getUsername(),
         );
-
-        $infos_pw = array('plainPassword' => $user->getPlainPassword());
 
         $form = $this->createFormBuilder($infos)
             ->add('email', EmailType::class, array(
                 'label' => 'Adresse E-mail'
             ))
             ->add('username', TextType::class, array(
-                'label' => 'Nom d\'utilisateur'
+                'label' => "Nom d'utilisateur"
             ))
             ->add('save', SubmitType::class, array(
                 'label' => 'Mettre à jour'
@@ -90,8 +84,8 @@ class UserController extends BasicController
             ->getForm()
         ;
 
-        $form_pw = $this->createFormBuilder($infos_pw)
-            ->add('plainPassword', RepeatedType::class, array(
+        $form_pw = $this->createFormBuilder()
+            ->add('password', RepeatedType::class, array(
                 'type' => PasswordType::class,
                 'first_options'  => array('label' => 'Mot de passe'),
                 'second_options' => array('label' => 'Confirmer le mot de passe')
@@ -124,11 +118,11 @@ class UserController extends BasicController
                 $this->addFlash('info', 'Le compte "' . $user->getUsername() . '" a bien été modifié');
 
                 return $this->redirectToRoute('users');
-            } else{
-                $this->addFlash('info', $user->getUsername(). ', votre compte a bien été modifié. Reconnectez-vous.');
-
-                return $this->redirectToRoute('homepage');
             }
+
+            $this->addFlash('info', $user->getUsername(). ', votre compte a bien été modifié. Reconnectez-vous.');
+
+            return $this->redirectToRoute('homepage');
         }
 
         $this->data['form'] = $form->createView();
@@ -139,65 +133,45 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/users/new", name="add_user")
+     * @Route("/users/create", name="add_user")
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param MailerInterface $mailer
      * @return RedirectResponse|Response
+     * @throws TransportExceptionInterface
      */
-    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, MailerInterface $mailer)
     {
-        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN') && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            // 1) build the form
-            $user = new Users();
-            $form = $this->createForm(SuperUserType::class, $user);
-        } elseif ($this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            // 1) build the form
-            $user = new Users();
-            $form = $this->createForm(UserType::class, $user);
-        } else {
-            throw $this->createAccessDeniedException();
-        }
-
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $this->getModes();
 
-        // 2) handle the submit (will only happen on POST)
+        $user = new Users();
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')) {
+            $form = $this->createForm(SuperUserType::class, $user);
+        } else {
+            $form = $this->createForm(UserType::class, $user);
+        }
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // 3) Encode the password (you could also do this via Doctrine listener)
-            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $password = $passwordEncoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
 
-            // 4) save the User!
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
             // Génération du mail
-            $message = (new Swift_Message('Confirmation de création du compte utilisateur'))
-                ->setFrom($this->sendingAddress)
-                ->setTo($user->getEmail());
-            $this->data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
             $this->data['username'] = $user->getUsername();
             $this->data['roles'] = $user->getRoles();
-            $message->setBody(
-                $this->renderView(
-                    'emails/newUser.html.twig',
-                    $this->data
-                ),
-                'text/html'
-            )/*
-             * If you also want to include a plaintext version of the message
-            ->addPart(
-                $this->renderView(
-                    'Emails/registration.txt.twig',
-                    array('name' => $name)
-                ),
-                'text/plain'
-            )
-            */
-            ;
-            $this->get('mailer')->send($message);
+            // TODO: Write it in Markdown
+            $message = (new TemplatedEmail())
+                ->from($this->sendingAddress)
+                ->to($user->getEmail())
+                ->subject('Confirmation de création du compte utilisateur')
+                ->htmlTemplate('emails/newUser.html.twig')
+                ->context($this->data);
+            $mailer->send($message);
 
             $this->addFlash('info', $user->getusername().', votre compte a bien été créé. Connectez-vous dès maintenant.');
 
@@ -214,16 +188,16 @@ class UserController extends BasicController
 
     /**
      * @Route("/users/{id}/toggle", name="toggle_user", requirements={"id"="\d+"})
-     * @param $id
+     * @param $user
      * @return RedirectResponse
      */
-    public function disableAction($id)
+    public function disableAction(Users $user): RedirectResponse
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             throw $this->createAccessDeniedException();
         }
 
-        $user = $this->getDoctrine()->getRepository(Users::class)->find($id);
+//        $user = $this->getDoctrine()->getRepository(Users::class)->find($users);
 
         if ($user->getIsActive()) {
             $user->setIsActive(false);

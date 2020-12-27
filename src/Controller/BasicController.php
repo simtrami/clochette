@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Settings;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class BasicController extends Controller
+class BasicController extends AbstractController
 {
     public $data = [];
 
-    public function getModes()
+    public function getModes(): array
     {
         $modesRepository = $this->getDoctrine()->getRepository(Settings::class)->findBy(['type' => 'mode']);
         $activeModes = [];

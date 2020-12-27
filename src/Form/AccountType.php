@@ -14,7 +14,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AccountType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('firstName', TextType::class, array(
@@ -36,9 +39,7 @@ class AccountType extends AbstractType
                     'OUI' => true,
                     'NON' => false,
                 ),
-            ))
-            
-            ;
+            ));
             
             $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
                 $account = $event->getData();
@@ -58,7 +59,10 @@ class AccountType extends AbstractType
     
         }
 
-    public function configureOptions(OptionsResolver $resolver)
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(array(
           'data_class' => Account::class,

@@ -133,10 +133,10 @@
                 {% for beer in drafts %}
                     <tr>
                         <th scope="row">{{ beer.id }}</th>
-                        <td>{{ beer.nom }}</td>
-                        <td id="afficheStock-cout">{{ beer.prixAchat }} ({{ (beer.prixAchat) / beer.volume /2 }})</td>
-                        <td id="afficheStock-prix">{{ beer.prixVente }}</td>
-                        <td id="afficheStock-quantiteRestante">{{ beer.quantite }}</td>
+                        <td>{{ beer.name }}</td>
+                        <td id="afficheStock-cout">{{ beer.cost }} ({{ (beer.cost) / beer.volume /2 }})</td>
+                        <td id="afficheStock-prix">{{ beer.sellingPrice }}</td>
+                        <td id="afficheStock-quantiteRestante">{{ beer.quantity }}</td>
                         <td class="table-actions">
                             <div class="d-flex">
                                 <div class="input-group justify-content-around mx-auto">
@@ -145,7 +145,7 @@
                                         <i class="fas fa-edit"></i> Modif.</a>
                                     <a class="btn btn-danger mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true ? "" : "disabled" }}"
                                        href="{{ path('suppr_article', {'id': beer.id}) }}"
-                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.nom }} ?')">
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ beer.name }} ?')">
                                         <i class="fas fa-times"></i> Suppr.</a>
                                 </div>
                             </div>
@@ -176,10 +176,10 @@
             {% for bottle in bottles %}
                 <tr>
                     <th scope="row">{{ bottle.id }}</th>
-                    <td>{{ bottle.nom }}</td>
-                    <td id="afficheStock-cout">{{ bottle.prixAchat }}</td>
-                    <td id="afficheStock-prix">{{ bottle.prixVente }}</td>
-                    <td id="afficheStock-quantiteRestante">{{ bottle.quantite }}</td>
+                    <td>{{ bottle.name }}</td>
+                    <td id="afficheStock-cout">{{ bottle.cost }}</td>
+                    <td id="afficheStock-prix">{{ bottle.sellingPrice }}</td>
+                    <td id="afficheStock-quantiteRestante">{{ bottle.quantity }}</td>
                     <td class="table-actions">
                         <div class="d-flex">
                             <div class="input-group justify-content-around mx-auto">
@@ -188,7 +188,7 @@
                                     <i class="fas fa-edit"></i> Modif.</a>
                                 <a class="btn btn-danger mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true ? "" : "disabled" }}"
                                    href="{{ path('suppr_article', {'id': bottle.id}) }}"
-                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.nom }} ?')">
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ bottle.name }} ?')">
                                     <i class="fas fa-times"></i> Suppr.</a>
                             </div>
                         </div>
@@ -219,10 +219,10 @@
             {% for item in article %}
                 <tr>
                     <th scope="row">{{ item.id }}</th>
-                    <td>{{ item.nom }}</td>
-                    <td id="afficheStock-cout">{{ item.prixAchat }}</td>
-                    <td id="afficheStock-prix">{{ item.prixVente }}</td>
-                    <td id="afficheStock-quantiteRestante">{{ item.quantite }}</td>
+                    <td>{{ item.name }}</td>
+                    <td id="afficheStock-cout">{{ item.cost }}</td>
+                    <td id="afficheStock-prix">{{ item.sellingPrice }}</td>
+                    <td id="afficheStock-quantiteRestante">{{ item.quantity }}</td>
                     <td class="table-actions">
                         <div class="d-flex">
                             <div class="input-group justify-content-around mx-auto">
@@ -231,7 +231,7 @@
                                     <i class="fas fa-edit"></i> Modif.</a>
                                 <a class="btn btn-danger mt-1 {{ is_granted(expression('"ROLE_STOCK" in roles'))==true ? "" : "disabled" }}"
                                    href="{{ path('suppr_article', {'id': item.id}) }}"
-                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.nom }} ?')">
+                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article : {{ item.name }} ?')">
                                     <i class="fas fa-times"></i> Suppr.</a>
                             </div>
                         </div>

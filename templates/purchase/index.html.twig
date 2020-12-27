@@ -24,10 +24,10 @@
             {% endif %}
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title center">{{ article.nom }} - {{ article.volume|number_format(0) }}L ({{ article.quantite }})</h5>
+                    <h5 class="card-title center">{{ article.name }} - {{ article.volume|number_format(0) }}L ({{ article.quantity }})</h5>
                     <input name="drafts[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
-                        <input value="{{ mode == "stockmarket" ? article.data.stockValue : article.prixVente }}"
+                        <input value="{{ mode == "stockmarket" ? article.data.stockValue : article.sellingPrice }}"
                                type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
                             <span class="input-group-text" id="inputGroupAppend">
@@ -71,10 +71,10 @@
             {% endif %}
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title center">{{ article.nom }} - {{ article.volume*100|number_format(0) }}cL ({{ article.quantite }})</h5>
+                    <h5 class="card-title center">{{ article.name }} - {{ article.volume*100|number_format(0) }}cL ({{ article.quantity }})</h5>
                     <input name="bottles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
-                        <input value="{{ mode == "stockmarket" ? article.data.stockValue : article.prixVente }}"
+                        <input value="{{ mode == "stockmarket" ? article.data.stockValue : article.sellingPrice }}"
                                type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
                             <span class="input-group-text" id="inputGroupAppend">
@@ -89,7 +89,7 @@
                         </div>
                         <input type="number" min="0" step="1" class="qte form-control" autocomplete="off" name="bottles[{{ loop.index }}][quantite]" value="0">
                         <div class="input-group-append">
-                            <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
+                            <input type="text" class="qteStock" value="{{ article.quantity }}" hidden>
                             <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
                             <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                         </div>
@@ -117,10 +117,10 @@
             {% endif %}
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title center">{{ article.nom }} ({{ article.quantite }})</h5>
+                    <h5 class="card-title center">{{ article.name }} ({{ article.quantity }})</h5>
                     <input name="articles[{{ loop.index }}][id]" value="{{ article.id }}" hidden="hidden">
                     <div class="input-group input-prix">
-                        <input value="{{ article.prixVente }}" type="text" class="form-control" id="prix" disabled>
+                        <input value="{{ article.sellingPrice }}" type="text" class="form-control" id="prix" disabled>
                         <div class="input-group-append">
                             <span class="input-group-text" id="inputGroupAppend">
                                 <i class="fa fa-euro-sign"></i>
@@ -134,7 +134,7 @@
                         </div>
                         <input type="number" min="0" step="1" class="qte form-control" autocomplete="off" name="articles[{{ loop.index }}][quantite]" value="0">
                         <div class="input-group-append">
-                            <input type="text" class="qteStock" value="{{ article.quantite }}" hidden>
+                            <input type="text" class="qteStock" value="{{ article.quantity }}" hidden>
                             <span class="btn btn-outline-danger btn-value" id="moins"><i class="fas fa-minus"></i></span>
                             <span class="btn btn-outline-success btn-value" id="plus"><i class="fas fa-plus"></i></span>
                         </div>

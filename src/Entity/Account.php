@@ -2,105 +2,74 @@
 
 namespace App\Entity;
 
+use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Account
- *
- * @ORM\Table(name="account")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=AccountRepository::class)
  */
 class Account
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="last_name", type="string", length=30)
-     * @Assert\Length(
-     *      min = 2,
-     *      max = 30,
-     *      minMessage = "Votre nom doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Votre nom ne peut pas faire plus de {{ limit }} caractères"
-     * )
-     */
-    private $lastName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="first_name", type="string", length=30)
-     * @Assert\Length(
-     *      min = 2,
-     *      max = 30,
-     *      minMessage = "Votre prénom doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Votre prénom ne peut pas faire plus de {{ limit }} caractères"
-     * )
+     * @ORM\Column(type="string", length=255)
      */
     private $firstName;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="pseudo", type="string", length=30, unique=true)
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastName;
+
+    /**
+     * @ORM\Column(type="string", length=30, unique=true)
      * @Assert\Length(
      *      min = 2,
      *      max = 30,
-     *      minMessage = "Votre pseudo doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Votre pseudo ne peut pas faire plus de {{ limit }} caractères"
+     *      minMessage = "This field must be more than {{ limit }} characters.",
+     *      maxMessage = "This field name cannot be more than {{ limit }} characters."
      * )
      */
     private $pseudo;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="balance", type="decimal", precision=8, scale=2, options={"default" : "0.00"})
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      */
     private $balance;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="year", type="integer", options={"default" : 1})
+     * @ORM\Column(type="integer")
      * @Assert\GreaterThanOrEqual(1)
      */
     private $year;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="staff_name", type="string", length=30, nullable=true)
+     * @ORM\Column(type="string", length=30, nullable=true)
      * @Assert\Length(
      *      min = 2,
      *      max = 30,
-     *      minMessage = "Le nom de staff doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Le nom de staff ne peut pas faire plus de {{ limit }} caractères"
+     *      minMessage = "The staff name must be more than {{ limit }} characters.",
+     *      maxMessage = "The staff name cannot be more than {{ limit }} characters."
      * )
      */
     private $staffName;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="is_inducted", type="boolean", options={"default" : false})
+     * @ORM\Column(type="boolean")
      */
-    private $isInducted;
+    private $isInducted = false;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transactions", mappedBy="account")
+     * @ORM\OneToMany(targetEntity=Transactions::class, mappedBy="account")
      */
     private $transactions;
 
@@ -109,194 +78,93 @@ class Account
         $this->transactions = new ArrayCollection();
     }
 
-    /**
-     * Get id
-     *
-     * @Groups({"searchable"})
-     *
-     * @return integer
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set lastName
-     *
-     * @param string $lastName
-     *
-     * @return Account
-     */
-    public function setLastName($lastName)
+    public function getFirstName(): ?string
     {
-        $this->lastName = $lastName;
-
-        return $this;
+        return $this->firstName;
     }
 
-    /**
-     * Get lastName
-     *
-     * @Groups({"searchable"})
-     *
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * Set firstName
-     *
-     * @param string $firstName
-     *
-     * @return Account
-     */
-    public function setFirstName($firstName)
+    public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
 
         return $this;
     }
 
-    /**
-     * Get firstName
-     *
-     * @Groups({"searchable"})
-     *
-     * @return string
-     */
-    public function getFirstName()
+    public function getLastName(): ?string
     {
-        return $this->firstName;
+        return $this->lastName;
     }
 
-    /**
-     * Set pseudo
-     *
-     * @param string $pseudo
-     *
-     * @return Account
-     */
-    public function setPseudo($pseudo)
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(string $pseudo): self
     {
         $this->pseudo = $pseudo;
 
         return $this;
     }
 
-    /**
-     * Get pseudo
-     *
-     * @Groups({"searchable"})
-     *
-     * @return string
-     */
-    public function getPseudo()
+    public function getBalance(): ?string
     {
-        return $this->pseudo;
+        return $this->balance;
     }
 
-    /**
-     * Set balance
-     *
-     * @param string $balance
-     *
-     * @return Account
-     */
-    public function setBalance($balance)
+    public function setBalance(string $balance): self
     {
         $this->balance = $balance;
 
         return $this;
     }
 
-    /**
-     * Get balance
-     *
-     * @Groups({"searchable"})
-     *
-     * @return string
-     */
-    public function getBalance()
+    public function getYear(): ?int
     {
-        return $this->balance;
+        return $this->year;
     }
 
-    /**
-     * Set year
-     *
-     * @param integer $year
-     *
-     * @return Account
-     */
-    public function setYear($year)
+    public function setYear(int $year): self
     {
         $this->year = $year;
 
         return $this;
     }
 
-    /**
-     * Get year
-     *
-     * @return integer
-     */
-    public function getYear()
+    public function getStaffName(): ?string
     {
-        return $this->year;
+        return $this->staffName;
     }
 
-    /**
-     * Set staffNalme
-     *
-     * @param string $staffName
-     *
-     * @return Account
-     */
-    public function setStaffName($staffName)
+    public function setStaffName(?string $staffName): self
     {
         $this->staffName = $staffName;
 
         return $this;
     }
 
-    /**
-     * Get staffName
-     *
-     * @Groups({"searchable"})
-     *
-     * @return string
-     */
-    public function getStaffName()
+    public function getIsInducted(): ?bool
     {
-        return $this->staffName;
+        return $this->isInducted;
     }
 
-    /**
-     * Set isInducted
-     *
-     * @param boolean $isInducted
-     *
-     * @return Account
-     */
-    public function setIsInducted($isInducted)
+    public function setIsInducted(bool $isInducted): self
     {
         $this->isInducted = $isInducted;
 
         return $this;
-    }
-
-    /**
-     * Get isInducted
-     *
-     * @return boolean
-     */
-    public function getIsInducted()
-    {
-        return $this->isInducted;
     }
 
     /**
@@ -319,8 +187,7 @@ class Account
 
     public function removeTransaction(Transactions $transaction): self
     {
-        if ($this->transactions->contains($transaction)) {
-            $this->transactions->removeElement($transaction);
+        if ($this->transactions->removeElement($transaction)) {
             // set the owning side to null (unless already changed)
             if ($transaction->getAccount() === $this) {
                 $transaction->setAccount(null);

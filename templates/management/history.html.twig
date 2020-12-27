@@ -77,21 +77,21 @@
             {% for zreport in zreports %}
                 <tr>
                     <th scope="row">{{ zreport.id }}</th>
-                    <td>{{ zreport.user.username }}</td>
+                    <td>{{ zreport.staff.username }}</td>
                     <td>{{ zreport.totalCommand }}€</td>
                     <td>{{ zreport.totalRefill }}€</td>
                     <td>{{ zreport.totalRefund }}€</td>
                     <td>{{ zreport.total }}€</td>
-                    <td>{{ zreport.treasury.caisse }}€</td>
-                    <td>{{ zreport.treasury.coffre }}€</td>
+                    <td>{{ zreport.treasury.cashRegister }}€</td>
+                    <td>{{ zreport.treasury.safe }}€</td>
                     <td>{{ zreport.transactions|length }}</td>
                     <td>{{ zreport.timestamp|date('H:i:s d/m/Y')  }}</td>
                     <td class="table-actions">
                         <div class="d-flex">
                             <div class="input-group justify-content-around mx-auto">
-                                <a class="btn btn-secondary mt-1 {{ is_granted(expression('"ROLE_TRESO" in roles'))==true ? "" : "disabled" }}" href="{{ path('modify-treasury', { 'id_treasury': zreport.treasury.id }) }}">
+                                <a class="btn btn-secondary mt-1 {{ is_granted(expression('"ROLE_TRESO" in roles'))==true ? "" : "disabled" }}" href="{{ path('modify-treasury', { 'id': zreport.treasury.id }) }}">
                                     <i class="fas fa-edit"></i> Trésorerie</a>
-                                <a class="btn btn-success mt-1" href="{{ path('run-details', {'id_zreport': zreport.id}) }}">
+                                <a class="btn btn-success mt-1" href="{{ path('run-details', {'id': zreport.id}) }}">
                                     <i class="fas fa-plus"></i> Détails</a>
                             </div>
                         </div>

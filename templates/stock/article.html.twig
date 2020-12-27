@@ -26,19 +26,19 @@
           <h1 class="display-4">Ajouter un article</h1>
       {% else %}
           <h1 class="display-4">Modifier un article</h1>
-          <p class='lead'>{{ nom }} ({{ type }})</p>
+          <p class='lead'>{{ name }} ({{ type }})</p>
       {% endif %}
     </div>
 
     {{ form_start(form) }}
         {{ form_errors(form) }}
     {% if form_mode == 'new_article' %}
-            {{ form_row(form.nom) }}
+            {{ form_row(form.name) }}
             {{ form_row(form.type) }}
         {% endif %}
-        {{ form_row(form.prixAchat) }}
-        {{ form_row(form.prixVente) }}
-        {{ form_row(form.quantite) }}
+        {{ form_row(form.cost) }}
+        {{ form_row(form.sellingPrice) }}
+        {{ form_row(form.quantity) }}
     {% if form_mode == 'new_article' %}
         <div class="collapse" id="volume-row" aria-expanded="false">
             {{ form_row(form.volume) }}

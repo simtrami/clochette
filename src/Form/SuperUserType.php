@@ -14,7 +14,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SuperUserType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('email', EmailType::class, array(
@@ -23,7 +26,7 @@ class SuperUserType extends AbstractType
             ->add('username', TextType::class, array(
                 'label' => "Nom d'utilisateur",
             ))
-            ->add('plainPassword', RepeatedType::class, array(
+            ->add('password', RepeatedType::class, array(
                 'type' => PasswordType::class,
                 'first_options'  => array('label' => 'Mot de passe'),
                 'second_options' => array('label' => 'Confirmer le mot de passe'),
@@ -31,6 +34,7 @@ class SuperUserType extends AbstractType
             ->add('roles', ChoiceType::class, array(
                     'label' => "Poste",
                     'placeholder' => 'Sélectionner le poste',
+                    'multiple' => true,
                     'choices' => array(
                         'Président·e' => 'ROLE_ADMIN',
                         'Vice-Président·e' => 'ROLE_ALL',
@@ -45,17 +49,13 @@ class SuperUserType extends AbstractType
                         'PC' => 'ROLE_INTRO',
                     ),
             ))
-
-            /*
-            ->add('termsAccepted', CheckboxType::class, array(
-                'mapped' => false,
-                'constraints' => new IsTrue(),
-            ))
-            */
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(array(
             'data_class' => Users::class,

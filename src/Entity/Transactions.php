@@ -2,289 +2,195 @@
 
 namespace App\Entity;
 
-use DateTime;
+use App\Repository\TransactionsRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Transactions
- *
- * @ORM\Table(name="transactions", indexes={
- *     @ORM\Index(name="account", columns={"account"}),
- *     @ORM\Index(name="user", columns={"user"}),
- *     @ORM\Index(name="zreport", columns={"zreport"}),
- *     })
- * @ORM\Entity(repositoryClass="AppBundle\Repository\TransactionsRepository")
+ * @ORM\Entity(repositoryClass=TransactionsRepository::class)
  */
 class Transactions
 {
+    const METHODS = ['account', 'cash', 'card', 'pumpkin', ];
+
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="dateTransaction", type="datetime", options={"default" : "2017-12-12 05:40:42"})
+     * @ORM\Column(type="datetime")
      */
     private $timestamp;
 
     /**
-     * @var Account
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Account", inversedBy="transactions")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="account", referencedColumnName="id", nullable=true)
-     * })
+     * @ORM\Column(type="decimal", precision=8, scale=2)
+     * @Assert\GreaterThan(0)
+     */
+    private $amount;
+
+    /**
+     * @ORM\Column(type="string", length=7)
+     * @Assert\Choice(choices=Transactions::METHODS, message="Invalid method.")
+     */
+    private $method;
+
+    /**
+     * @ORM\Column(type="smallint")
+     * @Assert\Range(
+     *     min=1,
+     *     max=3,
+     *     invalidMessage="Unknown type."
+     * )
+     */
+    private $type;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Account::class, inversedBy="transactions")
      */
     private $account;
 
     /**
-     * @var Users
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Users")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user", referencedColumnName="id", nullable=true)
-     * })
+     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="transactions")
      */
-    private $user;
+    private $staff;
 
     /**
-     * @var string
-     * 
-     * @ORM\Column(name="montant", type="decimal", precision=8, scale=2)
-     * @Assert\GreaterThan(0)
-     */
-    private $montant;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="methode", type="string", length=7)
-     */
-    private $methode;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="type", type="smallint")
-     *
-     * @Assert\Range(
-     *     min=1,
-     *     max=3,
-     *     invalidMessage="Type de transaction inconnu"
-     * )
-     */
-    private $type;
-  
-    /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\DetailsTransactions", mappedBy="transaction")
+     * @ORM\OneToMany(targetEntity=DetailsTransactions::class, mappedBy="transaction", orphanRemoval=true)
      */
     private $details;
 
     /**
-     * @var Zreport
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Zreport", inversedBy="transactions")
-     * @ORM\JoinColumn(name="zreport", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=Zreport::class, inversedBy="transactions")
      */
     private $zreport;
 
-    ## Fonctions
-
     public function __construct()
     {
-      $this->details = new ArrayCollection();
+        $this->details = new ArrayCollection();
     }
-    
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set timestamp
-     *
-     * @param datetime $timestamp
-     *
-     * @return Transactions
-     */
-    public function setTimestamp($timestamp)
+    public function getTimestamp(): ?DateTimeInterface
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(DateTimeInterface $timestamp): self
     {
         $this->timestamp = $timestamp;
 
         return $this;
     }
 
-    /**
-     * Get timestamp
-     *
-     * @return DateTime
-     */
-    public function getTimestamp()
+    public function getAmount(): ?string
     {
-        return $this->timestamp;
+        return $this->amount;
     }
 
-    /**
-     * Set account
-     *
-     * @param Account|null $account
-     * @return Transactions
-     */
-    public function setAccount(Account $account = null)
+    public function setAmount(string $amount): self
     {
-        $this->account = $account;
+        $this->amount = $amount;
 
         return $this;
     }
 
-    /**
-     * Get account
-     *
-     * @return Account
-     */
-    public function getAccount()
+    public function getMethod(): ?string
     {
-        return $this->account;
+        return $this->method;
     }
 
-    /**
-     * Set user
-     *
-     * @param Users|null $user
-     * @return Transactions
-     */
-    public function setUser(Users $user = null)
+    public function setMethod(string $method): self
     {
-        $this->user = $user;
+        $this->method = $method;
 
         return $this;
     }
 
-    /**
-     * Get user
-     *
-     * @return Users
-     */
-    public function getUser()
+    public function getType(): ?int
     {
-        return $this->user;
-    }
-    
-    /**
-     * Set montant
-     *
-     * @param string $montant
-     *
-     * @return Transactions
-     */
-    public function setMontant($montant)
-    {
-        $this->montant = $montant;
-
-        return $this;
+        return $this->type;
     }
 
-    /**
-     * Get montant
-     *
-     * @return string
-     */
-    public function getMontant()
-    {
-        return $this->montant;
-    }
-
-    /**
-     * Set methode
-     *
-     * @param string $methode
-     *
-     * @return Transactions
-     */
-    public function setMethode($methode)
-    {
-        $this->methode = $methode;
-
-        return $this;
-    }
-
-    /**
-     * Get methode
-     *
-     * @return string
-     */
-    public function getMethode()
-    {
-        return $this->methode;
-    }
-
-    /**
-     * Set type
-     *
-     * @param integer $type
-     *
-     * @return Transactions
-     */
-    public function setType($type)
+    public function setType(int $type): self
     {
         $this->type = $type;
 
         return $this;
     }
 
-    /**
-     * Get type
-     *
-     * @return integer
-     */
-    public function getType()
+    public function getAccount(): ?Account
     {
-        return $this->type;
-    }
-  
-    /**
-     * Get details
-     * 
-     * @return ArrayCollection
-     */
-    public function getDetails()
-    {
-        return $this->details;
+        return $this->account;
     }
 
-    /**
-     * Set zreport
-     *
-     * @param Zreport $zreport
-     * @return Transactions
-     */
-    public function setZreport(Zreport $zreport)
+    public function setAccount(?Account $account): self
     {
-        $this->zreport = $zreport;
+        $this->account = $account;
+
+        return $this;
+    }
+
+    public function getStaff(): ?Users
+    {
+        return $this->staff;
+    }
+
+    public function setStaff(?Users $staff): self
+    {
+        $this->staff = $staff;
 
         return $this;
     }
 
     /**
-     * Get zreport
-     *
-     * @return Zreport
+     * @return Collection|DetailsTransactions[]
      */
-    public function getZreport()
+    public function getDetails(): Collection
+    {
+        return $this->details;
+    }
+
+    public function addDetail(DetailsTransactions $detail): self
+    {
+        if (!$this->details->contains($detail)) {
+            $this->details[] = $detail;
+            $detail->setTransaction($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDetail(DetailsTransactions $detail): self
+    {
+        if ($this->details->removeElement($detail)) {
+            // set the owning side to null (unless already changed)
+            if ($detail->getTransaction() === $this) {
+                $detail->setTransaction(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getZreport(): ?Zreport
     {
         return $this->zreport;
+    }
+
+    public function setZreport(?Zreport $zreport): self
+    {
+        $this->zreport = $zreport;
+
+        return $this;
     }
 }

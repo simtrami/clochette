@@ -107,18 +107,18 @@
                                 <a class="dropdown-item" href="{{ path('modify_user', {id : app.user.id}) }}">
                                     <i class="fa fa-user-cog"></i> Paramètres</a>
                                 <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ path('logout') }}">
+                            <a class="dropdown-item" href="{{ path('app_logout') }}">
                                 <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
                         </div>
                     </li>
                     {% elseif is_granted(expression('"ROLE_INTRO" in roles')) %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('logout') }}">
+                        <a class="nav-link" href="{{ path('app_logout') }}">
                             <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
                     </li>
                     {% else %}
                         <li class="nav-item {{ "/login"==current_path ? "active" : "" }}">
-                        <a class="nav-link" href="{{ path('login') }}">
+                        <a class="nav-link" href="{{ path('app_login') }}">
                             <i class="fa fa-sign-in-alt" aria-hidden="true"></i> Se connecter</a>
                     </li>
                     {% endif %}

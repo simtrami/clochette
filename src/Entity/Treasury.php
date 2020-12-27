@@ -2,126 +2,74 @@
 
 namespace App\Entity;
 
+use App\Repository\TreasuryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Treasury
- *
- * @ORM\Table(name="treasury")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\TreasuryRepository")
+ * @ORM\Entity(repositoryClass=TreasuryRepository::class)
  */
 class Treasury
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="caisse", type="decimal", precision=8, scale=2, options={"default": 0.00})
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      */
-    private $caisse = '0.00';
+    private $cashRegister;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="coffre", type="decimal", precision=8, scale=2, options={"default": 0.00})
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      */
-    private $coffre = '0.00';
+    private $safe;
 
     /**
-     * @var Zreport
-     *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Zreport", inversedBy="treasury")
-     * @ORM\JoinColumn(name="zreport_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=Zreport::class, mappedBy="treasury", cascade={"persist", "remove"})
      */
     private $zreport;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set caisse.
-     *
-     * @param string $caisse
-     *
-     * @return Treasury
-     */
-    public function setCaisse($caisse)
+    public function getCashRegister(): ?string
     {
-        $this->caisse = $caisse;
+        return $this->cashRegister;
+    }
+
+    public function setCashRegister(string $cashRegister): self
+    {
+        $this->cashRegister = $cashRegister;
 
         return $this;
     }
 
-    /**
-     * Get caisse.
-     *
-     * @return string
-     */
-    public function getCaisse()
+    public function getSafe(): ?string
     {
-        return $this->caisse;
+        return $this->safe;
     }
 
-    /**
-     * Set coffre.
-     *
-     * @param string $coffre
-     *
-     * @return Treasury
-     */
-    public function setCoffre($coffre)
+    public function setSafe(string $safe): self
     {
-        $this->coffre = $coffre;
+        $this->safe = $safe;
 
         return $this;
     }
 
-    /**
-     * Get coffre.
-     *
-     * @return string
-     */
-    public function getCoffre()
+    public function getZreport(): ?Zreport
     {
-        return $this->coffre;
+        return $this->zreport;
     }
 
-    /**
-     * Set zreport.
-     *
-     * @param $zreport
-     *
-     * @return Treasury
-     */
-    public function setZreport($zreport)
+    public function setZreport(?Zreport $zreport): self
     {
         $this->zreport = $zreport;
 
         return $this;
-    }
-
-    /**
-     * Get zreport.
-     *
-     * @return Zreport
-     */
-    public function getZreport()
-    {
-        return $this->zreport;
     }
 }

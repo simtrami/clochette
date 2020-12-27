@@ -1,187 +1,160 @@
 <?php
-// src/AppBundle/Entity/Users.php
+
 namespace App\Entity;
 
+use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Table(name="app_users")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UsersRepository")
- * @UniqueEntity(fields="email", message="Email already taken")
- * @UniqueEntity(fields="username", message="Username already taken")
+ * @ORM\Entity(repositoryClass=UsersRepository::class)
  */
-class Users implements AdvancedUserInterface, \Serializable
+class Users implements UserInterface
 {
     /**
-     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=254, unique=true)
-     * @Assert\NotBlank()
-     * @Assert\Email()
+     * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=25, unique=true)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="json")
+     */
+    private $roles = [];
+
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     */
+    private $password;
+
+    /**
+     * @ORM\Column(type="string", length=25)
      * @Assert\Length(
      *      min = 2,
      *      max = 25,
-     *      minMessage = "Votre nom d'utilisateur doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Votre nom d'utilisateur ne peut pas faire plus de {{ limit }} caractères"
+     *      minMessage = "The username must be more than {{ limit }} characters.",
+     *      maxMessage = "The username cannot be more than {{ limit }} characters."
      * )
      */
     private $username;
 
     /**
-     * @Assert\NotBlank()
-     * @Assert\Length(max=4096)
+     * @ORM\Column(type="boolean")
      */
-    private $plainPassword;
+    private $isActive = true;
 
     /**
-     * The below length depends on the "algorithm" you use for encoding
-     * the password, but this works well with bcrypt.
-     *
-     * @ORM\Column(type="string", length=64)
+     * @ORM\OneToMany(targetEntity=Transactions::class, mappedBy="staff")
      */
-    private $password;
+    private $transactions;
 
     /**
-     * @ORM\Column(name="roles", length=30, options={"default" : "ROLE_INTRO"})
+     * @ORM\OneToMany(targetEntity=Zreport::class, mappedBy="staff")
      */
-    private $roles;
-
-    /**
-     * @ORM\Column(name="is_active", type="boolean", options={"default" : true})
-     * @Assert\NotBlank()
-     */
-    private $isActive;
-
-    // other properties and methods
+    private $zreports;
 
     public function __construct()
     {
-        $this->isActive = true;
+        $this->transactions = new ArrayCollection();
+        $this->zreports = new ArrayCollection();
     }
 
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-
-    public function getPlainPassword()
-    {
-        return $this->plainPassword;
-    }
-
-    public function setPlainPassword($password)
-    {
-        $this->plainPassword = $password;
-    }
-
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
-
-    public function setRoles($roles)
-    {
-        $this->roles = $roles;
-    }
-
-    public function getSalt()
-    {
-        // The bcrypt and argon2i algorithms don't require a separate salt.
-        // You *may* need a real salt if you choose a different encoder.
-        return null;
-    }
-
-    // other methods, including security methods like getRoles()
-
-    public function getRoles()
-    {
-        return array(
-            $this->roles,
-        );
-    }
-    
-    public function eraseCredentials()
-    {
-    }
-
-    /** @see \Serializable::serialize() */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->username,
-            $this->password,
-            $this->isActive,
-            // pas besoin de sel avec bcrypt
-            // $this->salt,
-        ));
-    }
-
-    /** @see \Serializable::unserialize() */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            $this->username,
-            $this->password,
-            $this->isActive,
-            // pas besoin de sel avec bcrypt
-            // $this->salt
-        ) = unserialize($serialized, ['allowed_classes' => false]);
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
     /**
-     * Set isActive
-     *
-     * @param boolean $isActive
-     *
-     * @return Users
+     * @see UserInterface
      */
-    public function setIsActive($isActive)
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getPassword(): string
+    {
+        return (string) $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
 
@@ -189,33 +162,62 @@ class Users implements AdvancedUserInterface, \Serializable
     }
 
     /**
-     * Get isActive
-     *
-     * @return boolean
+     * @return Collection|Transactions[]
      */
-    public function getIsActive()
+    public function getTransactions(): Collection
     {
-        return $this->isActive;
+        return $this->transactions;
     }
 
-    // https://symfony.com/doc/3.4/security/entity_provider.html#forbid-inactive-users-advanceduserinterface
-    public function isAccountNonExpired()
+    public function addTransaction(Transactions $transaction): self
     {
-        return true;
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setStaff($this);
+        }
+
+        return $this;
     }
 
-    public function isAccountNonLocked()
+    public function removeTransaction(Transactions $transaction): self
     {
-        return true;
+        if ($this->transactions->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getStaff() === $this) {
+                $transaction->setStaff(null);
+            }
+        }
+
+        return $this;
     }
 
-    public function isCredentialsNonExpired()
+    /**
+     * @return Collection|Zreport[]
+     */
+    public function getZreports(): Collection
     {
-        return true;
+        return $this->zreports;
     }
 
-    public function isEnabled()
+    public function addZreport(Zreport $zreport): self
     {
-        return $this->isActive;
+        if (!$this->zreports->contains($zreport)) {
+            $this->zreports[] = $zreport;
+            $zreport->setStaff($this);
+        }
+
+        return $this;
+    }
+
+    public function removeZreport(Zreport $zreport): self
+    {
+        if ($this->zreports->removeElement($zreport)) {
+            // set the owning side to null (unless already changed)
+            if ($zreport->getStaff() === $this) {
+                $zreport->setStaff(null);
+            }
+        }
+
+        return $this;
     }
 }

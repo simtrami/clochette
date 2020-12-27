@@ -2,297 +2,172 @@
 
 namespace App\Entity;
 
+use App\Repository\StocksRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Stocks
- *
- * @ORM\Table(name="stocks")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\StocksRepository")
+ * @ORM\Entity(repositoryClass=StocksRepository::class)
  */
-
 class Stocks
 {
-
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TypeStocks")
-     * @ORM\JoinColumn()
-     */
-    private $type;
-
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=40, nullable=false)
+     * @ORM\Column(type="string", length=40)
      * @Assert\Length(
      *      min = 2,
      *      max = 40,
-     *      minMessage = "Le nom de l'article doit faire au moins {{ limit }} caractères",
-     *      maxMessage = "Le nom de l'article ne peut pas faire plus de {{ limit }} caractères"
+     *      minMessage = "Articles name must be more than {{ limit }} characters.",
+     *      maxMessage = "Articles name cannot be more than {{ limit }} characters."
      * )
      */
-    private $nom;
-
+    private $name;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="prixVente", type="decimal", precision=8, scale=2, nullable=false)
-     * @Assert\GreaterThanOrEqual(0)
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      */
-    private $prixVente;
+    private $sellingPrice;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="prixAchat", type="decimal", precision=8, scale=2, nullable=false)
-     * @Assert\GreaterThanOrEqual(0)
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      */
-    private $prixAchat;
+    private $cost;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="quantite", type="integer", nullable=false)
-     * @Assert\GreaterThanOrEqual(0)
+     * @ORM\Column(type="integer")
      */
-    private $quantite;
+    private $quantity;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="volume", type="decimal", precision=8, scale=2, nullable=true)
-     * @Assert\GreaterThanOrEqual(0)
+     * @ORM\Column(type="decimal", precision=8, scale=2, nullable=true)
      */
     private $volume;
 
     /**
-     * @var boolean
-     * 
-     * @ORM\Column(name="isForSale", type="boolean", nullable=true, options={"default" : false})
+     * @ORM\Column(type="boolean")
      */
     private $isForSale = true;
 
     /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\StockMarketData", mappedBy="articleId")
+     * @ORM\ManyToOne(targetEntity=TypeStocks::class, inversedBy="stocks")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $data;
-    
-
-## Fonctions
-
+    private $type;
 
     /**
-     * Get id
-     *
-     * @return integer
+     * @ORM\OneToOne(targetEntity=StockMarketData::class, mappedBy="articleId", cascade={"persist", "remove"})
      */
-    public function getId()
+    private $data;
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set nom
-     *
-     * @param string $nom
-     *
-     * @return Stocks
-     */
-    public function setNom($nom)
+    public function getName(): ?string
     {
-        $this->nom = $nom;
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get nom
-     *
-     * @return string
-     */
-    public function getNom()
+    public function getSellingPrice(): ?string
     {
-        return $this->nom;
+        return $this->sellingPrice;
     }
 
-    /**
-     * Set type
-     *
-     * @param TypeStocks $type
-     *
-     * @return Stocks
-     */
-    public function setType($type)
+    public function setSellingPrice(string $sellingPrice): self
     {
-        $this->type = $type;
+        $this->sellingPrice = $sellingPrice;
 
         return $this;
     }
 
-    /**
-     * Get type
-     *
-     * @return TypeStocks
-     */
-    public function getType()
+    public function getCost(): ?string
     {
-        return $this->type;
+        return $this->cost;
     }
 
-    /**
-     * Set quantite
-     *
-     * @param integer $quantite
-     *
-     * @return Stocks
-     */
-    public function setQuantite($quantite)
+    public function setCost(string $cost): self
     {
-        $this->quantite = $quantite;
+        $this->cost = $cost;
 
         return $this;
     }
 
-    /**
-     * Get quantite
-     *
-     * @return integer
-     */
-    public function getQuantite()
+    public function getQuantity(): ?int
     {
-        return $this->quantite;
+        return $this->quantity;
     }
 
-    /**
-     * Set prixAchat
-     *
-     * @param string $prixAchat
-     *
-     * @return Stocks
-     */
-    public function setPrixAchat($prixAchat)
+    public function setQuantity(int $quantity): self
     {
-        $this->prixAchat = $prixAchat;
+        $this->quantity = $quantity;
 
         return $this;
     }
 
-    /**
-     * Get prixAchat
-     *
-     * @return string
-     */
-    public function getPrixAchat()
+    public function getVolume(): ?string
     {
-        return $this->prixAchat;
+        return $this->volume;
     }
 
-
-    /**
-     * Set prixVente
-     *
-     * @param string $prixVente
-     *
-     * @return Stocks
-     */
-    public function setPrixVente($prixVente)
-    {
-        $this->prixVente = $prixVente;
-
-        return $this;
-    }
-
-    /**
-     * Get prixVente
-     *
-     * @return string
-     */
-    public function getPrixVente()
-    {
-        return $this->prixVente;
-    }
-
-    /**
-     * Set volume
-     *
-     * @param string $volume
-     *
-     * @return Stocks
-     */
-    public function setVolume($volume)
+    public function setVolume(string $volume): self
     {
         $this->volume = $volume;
 
         return $this;
     }
 
-    /**
-     * Get volume
-     *
-     * @return string
-     */
-    public function getVolume()
+    public function getIsForSale(): ?bool
     {
-        return $this->volume;
+        return $this->isForSale;
     }
 
-    /**
-     * Set isForSale
-     *
-     * @param boolean $isForSale
-     *
-     * @return Stocks
-     */
-    public function setIsForSale($isForSale)
+    public function setIsForSale(bool $isForSale): self
     {
         $this->isForSale = $isForSale;
 
         return $this;
     }
 
-    /**
-     * Get isForSale
-     *
-     * @return boolean
-     */
-    public function getIsForSale()
+    public function getType(): ?TypeStocks
     {
-        return $this->isForSale;
+        return $this->type;
     }
 
-    /**
-     * Set data
-     *
-     * @param StockMarketData $data
-     *
-     * @return Stocks
-     */
-    public function setData($data)
+    public function setType(TypeStocks $type): self
     {
-        $this->data = $data;
+        $this->type = $type;
 
         return $this;
     }
 
-    /**
-     * Get data
-     *
-     * @return StockMarketData
-     */
-    public function getData()
+    public function getData(): ?StockMarketData
     {
         return $this->data;
+    }
+
+    public function setData(StockMarketData $data): self
+    {
+        // set the owning side of the relation if necessary
+        if ($data->getArticleId() !== $this) {
+            $data->setArticleId($this);
+        }
+
+        $this->data = $data;
+
+        return $this;
     }
 }

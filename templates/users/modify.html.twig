@@ -1,14 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
-{% endblock %}
-
-{% block title %}
-
-Modifier {{user.username}}
-
-{% endblock %}
+{% block title %}Modifier {{user.username}}{% endblock %}
 
 {% block body %}
     {{form(form)}}

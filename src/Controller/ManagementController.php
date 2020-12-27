@@ -3,37 +3,49 @@
 namespace App\Controller;
 
 use App\Entity\SellsManagement;
+use App\Entity\Stocks;
+use App\Entity\Transactions;
 use App\Entity\Treasury;
+use App\Entity\TypeStocks;
 use App\Entity\Zreport;
+use App\Form\SellsManagementType;
+use App\Form\TreasuryType;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Exception;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
-use Swift_Image;
-use Swift_Message;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ManagementController extends BasicController
 {
     protected $escposPrinterIP, $escposPrinterPort;
-    protected $mailingListAddress, $sendingAddress;
+    protected $mailingListAddress, $sendingAddress, $mailer;
 
-    public function __construct($escposPrinterIP, $escposPrinterPort, $mailingListAddress, $sendingAddress)
+    public function __construct(MailerInterface $mailer)
     {
-        $this->escposPrinterIP = $escposPrinterIP;
-        $this->escposPrinterPort = $escposPrinterPort;
-        $this->mailingListAddress = $mailingListAddress;
-        $this->sendingAddress = $sendingAddress;
+        $this->escposPrinterIP = getenv('ESCPOS_PRINTER_IP');
+        $this->escposPrinterPort = getenv('ESCPOS_PRINTER_PORT');
+        $this->mailingListAddress = getenv('MAILING_LIST_ADDRESS');
+        $this->sendingAddress = getenv('MAILER_USER');
+        $this->mailer = $mailer;
     }
 
     /**
      * @Route("/management", name="manage-sells")
      * @param Request $request
      * @return RedirectResponse|Response
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
-    public function manageSells(Request $request){
+    public function manageSells(Request $request)
+    {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
@@ -41,19 +53,17 @@ class ManagementController extends BasicController
         $this->getModes();
 
         $em = $this->getDoctrine()->getManager();
-        $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
-        $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
+        $repo_stocks = $this->getDoctrine()->getRepository(Stocks::class);
+        $repo_typeStocks = $this->getDoctrine()->getRepository(TypeStocks::class);
 
         $typeDraft = $repo_typeStocks->returnType('Fût');
-        $typeBottle = $repo_typeStocks->returnType('Bouteille');
-        $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
-
-        $management = new SellsManagement();
-
         $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
+        $typeBottle = $repo_typeStocks->returnType('Bouteille');
         $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
+        $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
         $articles = $repo_stocks->findBy(['type' => $typeArticle]);
 
+        $management = new SellsManagement();
         foreach ($drafts as $draft){
             $management->getDrafts()->add($draft);
         }
@@ -64,7 +74,7 @@ class ManagementController extends BasicController
             $management->getArticles()->add($article);
         }
 
-        $form = $this->createForm('AppBundle\Form\SellsManagementType', $management);
+        $form = $this->createForm(SellsManagementType::class, $management);
 
         $form->handleRequest($request);
 
@@ -93,355 +103,342 @@ class ManagementController extends BasicController
     /**
      * @Route("/management/runs/processing", name="processing-run")
      * @param Request $request
-     * @return string
+     * @return RedirectResponse
+     * @throws NonUniqueResultException|TransportExceptionInterface
+     * @throws Exception
      */
-    public function registerRun(Request $request)
+    public function registerRun(Request $request): RedirectResponse
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+        // By default, the app is not offline, meaning the cash register is connected
+        $offline = $request->get('offline') ?: false ;
+
+        $repo_z = $this->getDoctrine()->getRepository(Zreport::class);
+        $lastZ = $repo_z->returnLastZTimestamp();
+        if ($lastZ) {
+            $lastZTimestamp = $repo_z->returnLastZTimestamp()['timestamp'];
         }
 
-        $offline = $request->get('offline');
+        $repo_transactions = $this->getDoctrine()->getRepository(Transactions::class);
 
-        $repo_z = $this->getDoctrine()->getRepository('AppBundle:Zreport');
-        $lastZTimestamp = $repo_z->returnLastZTimestamp()['timestamp'];
-
-        $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions');
-
-        try {
-            if (!$offline) {
-                // Trying to open the cash-drawer before doing anything
+        if (!$offline && !getenv('NO_PRINTER')) {
+            // Trying to open the cash-drawer before doing anything
+            try {
+                $printer = new Printer(new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort));
                 try {
-                    $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
-                    $printer = new Printer($connector);
-                    try {
-                        $printer->pulse();
-                        $this->addFlash(
-                            'info',
-                            "L'ouverture de la caisse a été effectuée."
-                        );
-                    } finally {
-                        $printer->close();
-                    }
-                } catch (Exception $e) {
+                    $printer->pulse();
                     $this->addFlash(
-                        'error',
-                        "Impossible de se connecter à la caisse : veuillez vérifier les branchements"
+                        'info',
+                        "L'ouverture de la caisse a été effectuée."
                     );
-                    return $this->redirectToRoute('manage-sells');
+                } finally {
+                    $printer->close();
                 }
-            }
-
-            $date = date("d/m/Y");
-            $time = date("H:i:s");
-            $user = $this->getUser();
-            $username = $user->getUsername();
-
-            if (!empty($lastZTimestamp)) {
-                $transactions = $repo_transactions->returnTransactionsSince($lastZTimestamp);
-            } else {
-                $transactions = $repo_transactions->findAll();
-            }
-
-            $zReport = new Zreport();
-
-            // Total transactions
-            $nbTransactions = count($transactions);
-
-            // Types de transactions
-            $commandes = [
-                "cash" => array(),
-                "account" => array(),
-                "pumpkin" => array(),
-                "card" => array()
-            ];
-            //$remboursements = array();
-            $rechargements = array();
-
-            // Totaux des commandes par méthode de paiement
-            $totComCash = 0;
-            $totComAccount = 0;
-            $totComPumpkin = 0;
-            $totComCard = 0;
-
-            // Totaux des remboursements par méthode de paiement
-            $totRembCash = 0;
-            $totRembAccount = 0;
-            // Nb écocups rendues par méthode de paiement
-            $totEcoCash = 0;
-            $totEcoAccount = 0;
-
-            // Totaux des rechargements par méthode de paiement
-            $totRechCash = 0;
-            $totRechPumpkin = 0;
-            $totRechCard = 0;
-
-            // Nombre de remboursement par méthode de paiement
-            $nbRembCash = 0;
-            $nbRembAccount = 0;
-
-            // Utilisateurs (staff) ayant effectués des transactions
-            $users = array();
-
-            // Transactions présentant une exception (peut apparaître plusieurs fois)
-            $erreurs = array();
-
-            foreach ($transactions as $transaction) {
-                // Tri par type
-                switch ($transaction->getType()) {
-                    case 1:
-                        switch ($transaction->getMethode()) {
-                            case "cash":
-                                $totComCash += $transaction->getMontant();
-                                foreach ($transaction->getDetails() as $detail) {
-                                    if (!isset($commandes["cash"][$detail->getArticle()->getNom()])) {
-                                        $commandes["cash"][$detail->getArticle()->getNom()] = array();
-                                        $commandes["cash"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                        $commandes["cash"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    } else {
-                                        $commandes["cash"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                        $commandes["cash"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    }
-                                }
-                                break;
-                            case "account":
-                                $totComAccount += $transaction->getMontant();
-                                foreach ($transaction->getDetails() as $detail) {
-                                    if (!isset($commandes["account"][$detail->getArticle()->getNom()])) {
-                                        $commandes["account"][$detail->getArticle()->getNom()] = array();
-                                        $commandes["account"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                        $commandes["account"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    } else {
-                                        $commandes["account"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                        $commandes["account"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    }
-                                }
-                                break;
-                            case "pumpkin":
-                                $totComPumpkin += $transaction->getMontant();
-                                foreach ($transaction->getDetails() as $detail) {
-                                    if (!isset($commandes["pumpkin"][$detail->getArticle()->getNom()])) {
-                                        $commandes["pumpkin"][$detail->getArticle()->getNom()] = array();
-                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    } else {
-                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                        $commandes["pumpkin"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    }
-                                }
-                                break;
-                            case "card":
-                                $totComCard += $transaction->getMontant();
-                                foreach ($transaction->getDetails() as $detail) {
-                                    if (!isset($commandes["card"][$detail->getArticle()->getNom()])) {
-                                        $commandes["card"][$detail->getArticle()->getNom()] = array();
-                                        $commandes["card"][$detail->getArticle()->getNom()]["qty"] = $detail->getQuantite();
-                                        $commandes["card"][$detail->getArticle()->getNom()]["price"] = $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    } else {
-                                        $commandes["card"][$detail->getArticle()->getNom()]["qty"] += $detail->getQuantite();
-                                        $commandes["card"][$detail->getArticle()->getNom()]["price"] += $detail->getQuantite() * $detail->getArticle()->getPrixVente();
-                                    }
-                                }
-                                break;
-                            default:
-                                array_push($erreurs, $transaction);
-                                break;
-                        }
-                        break;
-                    case 2:
-                        //array_push($remboursements, $transaction);
-                        if ($transaction->getMethode() == "cash") {
-                            $nbRembCash++;
-                            $totRembCash += $transaction->getMontant();
-                            // Récupération du nb d'écocup
-                            if (!$transaction->getDetails()->isEmpty()) {
-                                foreach ($transaction->getDetails() as $detail) {
-                                    $totEcoCash += $detail->getQuantite();
-                                }
-                            }
-                        } elseif ($transaction->getMethode() == "account") {
-                            $nbRembAccount++;
-                            $totRembAccount += $transaction->getMontant();
-                            // Récupération du nb d'écocup
-                            if (!$transaction->getDetails()->isEmpty()) {
-                                foreach ($transaction->getDetails() as $detail) {
-                                    $totEcoAccount += $detail->getQuantite();
-                                }
-                            }
-                        } else {
-                            array_push($erreurs, $transaction);
-                        }
-                        break;
-                    case 3:
-                        if ($transaction->getMethode() == "cash") {
-                            $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
-                                "methode" => "Liquide",
-                                "montant" => $transaction->getMontant()
-                            ];
-                            $totRechCash += $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["montant"];
-                        } elseif ($transaction->getMethode() == "pumpkin") {
-                            $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
-                                "methode" => "Pumpkin",
-                                "montant" => $transaction->getMontant()
-                            ];
-                            $totRechPumpkin += $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["montant"];
-                        } elseif ($transaction->getMethode() == "card") {
-                            $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
-                                "methode" => "Carte Bleue",
-                                "montant" => $transaction->getMontant()
-                            ];
-                            $totRechCard += $rechargements[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["montant"];
-                        } else {
-                            array_push($erreurs, $transaction);
-                        }
-                        break;
-                    default:
-                        array_push($erreurs, $transaction);
-                        break;
-                }
-
-
-                // Récupération des transactions par utilisateur (staff)
-                if (is_null($transaction->getUser())) {
-                    array_push($erreurs, $transaction);
-                } elseif (!isset($users[$transaction->getUser()->getUsername()])) {
-                    $users[$transaction->getUser()->getUsername()] = 1;
-                } else {
-                    $users[$transaction->getUser()->getUsername()]++;
-                }
-
-                $transaction->setZreport($zReport);
-            }
-
-            // Calcul du montant total des transactions par type
-            $totCom = $totComCash + $totComAccount + $totComPumpkin + $totComCard;
-            $totRemb = $totRembCash + $totRembAccount; // < 0
-            $totRech = $totRechCash + $totRechPumpkin + $totRechCard;
-
-            // Calcul du bilan
-            $tot = $totCom + $totRemb;
-
-            // Bilan des stocks
-            $repo_stocks = $this->getDoctrine()->getRepository('AppBundle:Stocks');
-            $repo_typeStocks = $this->getDoctrine()->getRepository('AppBundle:TypeStocks');
-            $typeDraft = $repo_typeStocks->returnType('Fût');
-            $typeBottle = $repo_typeStocks->returnType('Bouteille');
-            $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
-            $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
-            $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
-            $others = $repo_stocks->findBy(['type' => $typeArticle]);
-
-            // Génération de l'entité Zreport
-            $zReport->setUser($this->getUser());
-            $timestamp = date_create(date("Y-m-d H:i:s"));
-            $zReport->setTimestamp($timestamp);
-            $zReport->setTotalCommand($totCom);
-            $zReport->setTotalRefund($totRemb);
-            $zReport->setTotalRefill($totRech);
-            $zReport->setTotal($tot);
-
-            $this->data = array(
-                'user' => $username,
-                'date' => $date,
-                'time' => $time,
-                'commandes' => $commandes,
-                'totComCash' => $totComCash,
-                'totComAccount' => $totComAccount,
-                'totComPumpkin' => $totComPumpkin,
-                'totComCard' => $totComCard,
-                'totCom' => $totCom,
-                'rechargements' => $rechargements,
-                'totRechCash' => $totRechCash,
-                'totRechPumpkin' => $totRechPumpkin,
-                'totRechCard' => $totRechCard,
-                'totRech' => $totRech,
-                'nbRembCash' => $nbRembCash,
-                'totEcoCash' => $totEcoCash,
-                'totRembCash' => $totRembCash,
-                'nbRembAccount' => $nbRembAccount,
-                'totEcoAccount' => $totEcoAccount,
-                'totRembAccount' => $totRembAccount,
-                'totRemb' => $totRemb,
-                'tot' => $tot,
-                'users' => $users,
-                'nbTransactions' => $nbTransactions,
-            );
-            // Print Z report
-            $offline ?: $this->printZ($this->data);
-            // Add stock balance sheet and send e-mail report
-            $this->data['drafts'] = $drafts;
-            $this->data['bottles'] = $bottles;
-            $this->data['others'] = $others;
-            $this->sendZ($this->data);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($zReport);
-            $em->flush();
-
-            // Prevent redirection fail because of a timeout
-            $treasury = new Treasury();
-            $treasury->setZreport($zReport);
-            $doctrine = $this->getDoctrine();
-            $lastTreasury = $doctrine->getRepository(Treasury::class)->returnLastTreasury();
-            $treasury->setCoffre('0.00');
-            $treasury->setCaisse('0.00');
-            $em->persist($treasury);
-            $em->flush();
-
-            if ($offline) {
+            } catch (Exception $e) {
                 $this->addFlash(
-                    'info', "Le ticket Z vient d'être envoyé par mail à la mailing-list !"
+                    'error',
+                    "Impossible de se connecter à la caisse : veuillez vérifier les branchements"
                 );
-            } else {
-                $this->addFlash(
-                    'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
-                );
+                return $this->redirectToRoute('manage-sells');
             }
-
-            return $this->redirectToRoute('register-treasury', ['id_zreport' => $zReport->getId(), 'id_treasury' => $treasury->getId()]);
-        } catch (Exception $e) {
-            // If it fails, does nothing and goes back
-            $this->addFlash(
-                'error', "Une erreur est survenue dans l'impression du ticket ou l'envoi du mail !"
-            );
-            return $this->redirectToRoute('manage-sells');
+        } else if (getenv('NO_PRINTER')) {
+            $this->addFlash('info', 'The printer is disabled.');
         }
+
+        $date = date("d/m/Y");
+        $time = date("H:i:s");
+        $user = $this->getUser();
+        $username = $user->getUsername();
+
+        if (!empty($lastZTimestamp)) {
+            $transactions = $repo_transactions->returnTransactionsSince($lastZTimestamp);
+        } else {
+            $transactions = $repo_transactions->findAll();
+        }
+
+        $zReport = new Zreport();
+
+        // Total transactions
+        $nbTransactions = count($transactions);
+
+        // Types de transactions
+        $commands = [
+            "cash" => [],
+            "account" => [],
+            "pumpkin" => [],
+            "card" => [],
+        ];
+        $refills = [];
+
+        // Totaux des commandes par méthode de paiement
+        $totCommandsCash = 0;
+        $totCommandsAccount = 0;
+        $totCommandsPumpkin = 0;
+        $totCommandsCard = 0;
+
+        // Totaux des remboursements par méthode de paiement
+        $totReimbursementsCash = 0;
+        $totReimbursementsAccount = 0;
+        // Nb écocups rendues par méthode de paiement
+        $totEcocupsCash = 0;
+        $totEcocupsAccount = 0;
+
+        // Totaux des rechargements par méthode de paiement
+        $totRefillsCash = 0;
+        $totRefillsPumpkin = 0;
+        $totRefillsCard = 0;
+
+        // Nombre de remboursement par méthode de paiement
+        $nbReimbursementsCash = 0;
+        $nbReimbursementsAccount = 0;
+
+        // Utilisateurs (staff) ayant effectués des transactions
+        $users = [];
+
+        // Transactions présentant une exception (peut apparaître plusieurs fois)
+        $errors = [];
+
+        foreach ($transactions as $transaction) {
+            // Tri par type
+            switch ($transaction->getType()) {
+                case 1:
+                    switch ($transaction->getMethod()) {
+                        case "cash":
+                            $totCommandsCash += $transaction->getAmount();
+                            foreach ($transaction->getDetails() as $detail) {
+                                if (!isset($commands["cash"][$detail->getArticle()->getName()])) {
+                                    $commands["cash"][$detail->getArticle()->getName()] = array();
+                                    $commands["cash"][$detail->getArticle()->getName()]["qty"] = $detail->getQuantity();
+                                    $commands["cash"][$detail->getArticle()->getName()]["price"] = $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                } else {
+                                    $commands["cash"][$detail->getArticle()->getName()]["qty"] += $detail->getQuantity();
+                                    $commands["cash"][$detail->getArticle()->getName()]["price"] += $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                }
+                            }
+                            break;
+                        case "account":
+                            $totCommandsAccount += $transaction->getAmount();
+                            foreach ($transaction->getDetails() as $detail) {
+                                if (!isset($commands["account"][$detail->getArticle()->getName()])) {
+                                    $commands["account"][$detail->getArticle()->getName()] = array();
+                                    $commands["account"][$detail->getArticle()->getName()]["qty"] = $detail->getQuantity();
+                                    $commands["account"][$detail->getArticle()->getName()]["price"] = $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                } else {
+                                    $commands["account"][$detail->getArticle()->getName()]["qty"] += $detail->getQuantity();
+                                    $commands["account"][$detail->getArticle()->getName()]["price"] += $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                }
+                            }
+                            break;
+                        case "pumpkin":
+                            $totCommandsPumpkin += $transaction->getAmount();
+                            foreach ($transaction->getDetails() as $detail) {
+                                if (!isset($commands["pumpkin"][$detail->getArticle()->getName()])) {
+                                    $commands["pumpkin"][$detail->getArticle()->getName()] = array();
+                                    $commands["pumpkin"][$detail->getArticle()->getName()]["qty"] = $detail->getQuantity();
+                                    $commands["pumpkin"][$detail->getArticle()->getName()]["price"] = $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                } else {
+                                    $commands["pumpkin"][$detail->getArticle()->getName()]["qty"] += $detail->getQuantity();
+                                    $commands["pumpkin"][$detail->getArticle()->getName()]["price"] += $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                }
+                            }
+                            break;
+                        case "card":
+                            $totCommandsCard += $transaction->getAmount();
+                            foreach ($transaction->getDetails() as $detail) {
+                                if (!isset($commands["card"][$detail->getArticle()->getName()])) {
+                                    $commands["card"][$detail->getArticle()->getName()] = array();
+                                    $commands["card"][$detail->getArticle()->getName()]["qty"] = $detail->getQuantity();
+                                    $commands["card"][$detail->getArticle()->getName()]["price"] = $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                } else {
+                                    $commands["card"][$detail->getArticle()->getName()]["qty"] += $detail->getQuantity();
+                                    $commands["card"][$detail->getArticle()->getName()]["price"] += $detail->getQuantity() * $detail->getArticle()->getSellingPrice();
+                                }
+                            }
+                            break;
+                        default:
+                            $errors[] = $transaction;
+                            break;
+                    }
+                    break;
+                case 2:
+                    //array_push($remboursements, $transaction);
+                    if ($transaction->getMethod() === "cash") {
+                        $nbReimbursementsCash++;
+                        $totReimbursementsCash += $transaction->getAmount();
+                        // Récupération du nb d'écocup
+                        if (!$transaction->getDetails()->isEmpty()) {
+                            foreach ($transaction->getDetails() as $detail) {
+                                $totEcocupsCash += $detail->getQuantity();
+                            }
+                        }
+                    } elseif ($transaction->getMethod() === "account") {
+                        $nbReimbursementsAccount++;
+                        $totReimbursementsAccount += $transaction->getAmount();
+                        // Récupération du nb d'écocup
+                        if (!$transaction->getDetails()->isEmpty()) {
+                            foreach ($transaction->getDetails() as $detail) {
+                                $totEcocupsAccount += $detail->getQuantity();
+                            }
+                        }
+                    } else {
+                        array_push($errors, $transaction);
+                    }
+                    break;
+                case 3:
+                    if ($transaction->getMethod() === "cash") {
+                        $refills[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
+                            "method" => "Liquide",
+                            "amount" => $transaction->getAmount()
+                        ];
+                        $totRefillsCash += $refills[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["amount"];
+                    } elseif ($transaction->getMethod() === "pumpkin") {
+                        $refills[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
+                            "method" => "Pumpkin",
+                            "amount" => $transaction->getAmount()
+                        ];
+                        $totRefillsPumpkin += $refills[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["amount"];
+                    } elseif ($transaction->getMethod() === "card") {
+                        $refills[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()] = [
+                            "method" => "Carte Bleue",
+                            "amount" => $transaction->getAmount()
+                        ];
+                        $totRefillsCard += $refills[$transaction->getAccount()->getFirstName() . ' ' . $transaction->getAccount()->getLastName()]["amount"];
+                    } else {
+                        $errors[] = $transaction;
+                    }
+                    break;
+                default:
+                    $errors[] = $transaction;
+                    break;
+            }
+
+
+            // Récupération des transactions par utilisateur (staff)
+            if (is_null($transaction->getStaff())) {
+                $errors[] = $transaction;
+            } elseif (!isset($users[$transaction->getStaff()->getUsername()])) {
+                $users[$transaction->getStaff()->getUsername()] = 1;
+            } else {
+                $users[$transaction->getStaff()->getUsername()]++;
+            }
+
+            $transaction->setZreport($zReport);
+        }
+
+        // Calcul du montant total des transactions par type
+        $totCommands = $totCommandsCash + $totCommandsAccount + $totCommandsPumpkin + $totCommandsCard;
+        $totReimbursements = $totReimbursementsCash + $totReimbursementsAccount; // < 0
+        $totRefills = $totRefillsCash + $totRefillsPumpkin + $totRefillsCard;
+
+        // Calcul du bilan
+        $tot = $totCommands + $totReimbursements;
+
+        // Bilan des stocks
+        $repo_stocks = $this->getDoctrine()->getRepository(Stocks::class);
+        $repo_typeStocks = $this->getDoctrine()->getRepository(TypeStocks::class);
+        $typeDraft = $repo_typeStocks->returnType('Fût');
+        $typeBottle = $repo_typeStocks->returnType('Bouteille');
+        $typeArticle = $repo_typeStocks->returnType('Nourriture ou autre');
+        $drafts = $repo_stocks->findBy(['type' => $typeDraft]);
+        $bottles = $repo_stocks->findBy(['type' => $typeBottle]);
+        $others = $repo_stocks->findBy(['type' => $typeArticle]);
+
+        // Génération de l'entité Zreport
+        $zReport->setStaff($this->getUser());
+        $timestamp = date_create(date("Y-m-d H:i:s"));
+        $zReport->setTimestamp($timestamp);
+        $zReport->setTotalCommand($totCommands);
+        $zReport->setTotalRefund($totReimbursements);
+        $zReport->setTotalRefill($totRefills);
+        $zReport->setTotal($tot);
+
+        $this->data = array(
+            'user' => $username,
+            'date' => $date,
+            'time' => $time,
+            'commands' => $commands,
+            'totCommandsCash' => $totCommandsCash,
+            'totCommandsAccount' => $totCommandsAccount,
+            'totCommandsPumpkin' => $totCommandsPumpkin,
+            'totCommandsCard' => $totCommandsCard,
+            'totCommands' => $totCommands,
+            'refills' => $refills,
+            'totRefillsCash' => $totRefillsCash,
+            'totRefillsPumpkin' => $totRefillsPumpkin,
+            'totRefillsCard' => $totRefillsCard,
+            'totRefills' => $totRefills,
+            'nbReimbursementsCash' => $nbReimbursementsCash,
+            'totEcocupsCash' => $totEcocupsCash,
+            'totReimbursementsCash' => $totReimbursementsCash,
+            'nbReimbursementsAccount' => $nbReimbursementsAccount,
+            'totEcocupsAccount' => $totEcocupsAccount,
+            'totReimbursementsAccount' => $totReimbursementsAccount,
+            'totReimbursements' => $totReimbursements,
+            'tot' => $tot,
+            'users' => $users,
+            'nbTransactions' => $nbTransactions,
+        );
+        // Print Z report
+        $offline ?: $this->printZ($this->data);
+        // Add stock balance sheet and send e-mail report
+        $this->data['drafts'] = $drafts;
+        $this->data['bottles'] = $bottles;
+        $this->data['others'] = $others;
+        $this->sendZ($this->data);
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($zReport);
+        // Prevent redirection fail because of a timeout
+        $lastTreasury = $this->getDoctrine()->getRepository(Treasury::class)->latest();
+        $treasury = new Treasury();
+        $treasury->setZreport($zReport);
+        if ($lastTreasury !== null) {
+            $treasury->setSafe($lastTreasury->getSafe());
+            $treasury->setCashRegister($lastTreasury->getCashRegister());
+        } else {
+            $treasury->setSafe(0);
+            $treasury->setCashRegister(0);
+        }
+        $em->persist($treasury);
+        $em->flush();
+
+        if ($offline) {
+            $this->addFlash(
+                'info', "Le ticket Z vient d'être envoyé par mail à la mailing-list !"
+            );
+        } else {
+            $this->addFlash(
+                'info', "Le ticket Z vient d'être imprimé et envoyé par mail à la mailing-list !"
+            );
+        }
+
+        return $this->redirectToRoute('register-treasury', ['id' => $treasury->getId()]);
     }
 
     /**
-     * @Route("/management/runs/register/{id_treasury}", name="register-treasury")
+     * @Route("/management/runs/{id}/fill", name="register-treasury")
      * @param Request $request
-     * @param $id_treasury
+     * @param $treasury
      * @return RedirectResponse|Response
      */
-    public function registerTreasury(Request $request, $id_treasury)
+    public function registerTreasury(Request $request, Treasury $treasury)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
-
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $doctrine = $this->getDoctrine();
-        $lastTreasury = $doctrine->getRepository(Treasury::class)->returnLastTreasury();
-        $treasury = new Treasury();
-        if (!empty($lastTreasury)) {
-            $treasury->setCaisse($lastTreasury['caisse']);
-        }
-        $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
+//        $treasury = new Treasury();
+        $form = $this->createForm(TreasuryType::class, $treasury);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $mvtCoffre = $request->request->get('mvt-coffre');
+            $mvtSafe = $request->request->get('mvt-coffre');
 
-            $treasury = $doctrine->getRepository(Treasury::class)->find($id_treasury);
-            $treasury->setCaisse($form->get('caisse')->getData());
-            if (!empty($lastTreasury)) {
-                $treasury->setCoffre($lastTreasury['coffre'] + $mvtCoffre);
-            } else {
-                $treasury->setCoffre($mvtCoffre);
-            }
+//            $treasury = $doctrine->getRepository(Treasury::class)->find($id_treasury);
+//            $treasury->setCashRegister($form->get('cashRegister')->getData());
+            $treasury->setSafe($treasury->getSafe() + $mvtSafe);
 
             $em = $doctrine->getManager();
             $em->persist($treasury);
@@ -462,7 +459,7 @@ class ManagementController extends BasicController
     /**
      * @Route("/management/runs/history", name="runs-history")
      */
-    public function runsHistory()
+    public function runsHistory(): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -470,7 +467,7 @@ class ManagementController extends BasicController
 
         $this->getModes();
 
-        $zreports = $this->getDoctrine()->getRepository('AppBundle:Zreport')->findAll();
+        $zreports = $this->getDoctrine()->getRepository(Zreport::class)->findAll();
 
         $this->data['zreports'] = $zreports;
 
@@ -478,24 +475,17 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/modify/{id_treasury}", name="modify-treasury")
+     * @Route("/management/runs/{id}/edit", name="modify-treasury")
      * @param Request $request
-     * @param $id_treasury
+     * @param $treasury
      * @return RedirectResponse|Response
      */
-    public function modifyTreasury(Request $request, $id_treasury)
+    public function modifyTreasury(Request $request, Treasury $treasury)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
-
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
-        $repo_treasury = $this->getDoctrine()->getRepository(Treasury::class);
-
-        $treasury = $repo_treasury->find($id_treasury);
-
-        $form = $this->createForm('AppBundle\Form\TreasuryType', $treasury);
+        $form = $this->createForm(TreasuryType::class, $treasury);
 
         $form->handleRequest($request);
 
@@ -518,19 +508,14 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/details/{id_zreport}", name="run-details")
-     * @param $id_zreport
+     * @Route("/management/runs/{id}", name="run-details")
+     * @param $zreport
      * @return Response
      */
-    public function runDetails($id_zreport)
+    public function runDetails(Zreport $zreport): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
-
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
-
-        $zreport = $this->getDoctrine()->getRepository(Zreport::class)->find($id_zreport);
 
         $this->data['zreport'] = $zreport;
 
@@ -542,10 +527,20 @@ class ManagementController extends BasicController
 
     /**
      * @param array $data
+     * @throws TransportExceptionInterface
      */
-    protected function sendZ(array $data) {
+    protected function sendZ(array $data): void
+    {
         // Génération du mail
-        $message = (new Swift_Message('Ticket Z du ' . $data['date'] . ' à ' . $data['time']))
+        // TODO: Write it in Markdown - https://symfony.com/doc/4.4/mailer.html#rendering-markdown-content
+        $email = (new TemplatedEmail())
+            ->from($this->sendingAddress)
+            ->to($this->mailingListAddress)
+            ->subject("Ticket Z du {$data['date']} à {$data['time']}")
+            ->htmlTemplate('emails/z.html.twig')
+            ->context($data);
+        $this->mailer->send($email);
+        /*$message = (new Swift_Message("Ticket Z du {$data['date']} à {$data['time']}"))
             ->setFrom($this->sendingAddress)
             ->setTo($this->mailingListAddress);
         $data['logo'] = $message->embed(Swift_Image::fromPath('images/logo.ico'));
@@ -555,31 +550,22 @@ class ManagementController extends BasicController
                 $data
             ),
             'text/html'
-        )/*
-             * If you also want to include a plaintext version of the message
-            ->addPart(
-                $this->renderView(
-                    'Emails/registration.txt.twig',
-                    array('name' => $name)
-                ),
-                'text/plain'
-            )
-            */
-        ;
-
-        //$mailer->send($message);
+        );
 
         // or, you can also fetch the mailer service this way
         $this->get('mailer')->send($message);
+        */
     }
 
     /**
      * @param array $data
      * @throws Exception
      */
-    protected function printZ(array $data) {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
+    protected function printZ(array $data): void
+    {
+        if (getenv('NO_PRINTER')) {
+            $this->addFlash('info', 'The printer is disabled.');
+            return;
         }
 
         $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
@@ -601,9 +587,9 @@ class ManagementController extends BasicController
             $printer->text('Récapitulatif de tenue
 ');
             $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->text('Émis le ' . $data['date'] . ' à ' . $data['time'] . '
-par ' . $data['user'] . '
-');
+            $printer->text("Émis le {$data['date']} à {$data['time']}
+par {$data['user']}
+");
             $printer->feed();
 
             $printer->initialize();
@@ -631,19 +617,19 @@ par ' . $data['user'] . '
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             foreach ($data['commandes']['cash'] as $article => $details) {
                 $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $details['qty'] . '
-');
+                $printer->text("{$article} : {$details['qty']}
+");
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($details['price'] . '
-');
+                $printer->text("{$details['price']}
+");
             }
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total liquide
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totComCash'] . '
-');
+            $printer->text("{$data['totComCash']}
+");
             $printer->feed();
 
             // Compte
@@ -654,19 +640,19 @@ par ' . $data['user'] . '
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             foreach ($data['commandes']['account'] as $article => $details) {
                 $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $details['qty'] . '
-');
+                $printer->text("{$article} : {$details['qty']}
+");
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($details['price'] . '
-');
+                $printer->text("{$details['price']}
+");
             }
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total compte
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totComAccount'] . '
-');
+            $printer->text("{$data['totComAccount']}
+");
             $printer->feed();
 
             // Pumpkin
@@ -677,19 +663,19 @@ par ' . $data['user'] . '
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             foreach ($data['commandes']['pumpkin'] as $article => $details) {
                 $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $details['qty'] . '
-');
+                $printer->text("{$article} : {$details['qty']}
+");
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($details['price'] . '
-');
+                $printer->text("{$details['price']}
+");
             }
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total Pumpkin
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totComPumpkin'] . '
-');
+            $printer->text("{$data['totComPumpkin']}
+");
             $printer->feed();
 
             // Carte
@@ -700,19 +686,19 @@ par ' . $data['user'] . '
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             foreach ($data['commandes']['card'] as $article => $details) {
                 $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($article . ' : ' . $details['qty'] . '
-');
+                $printer->text("{$article} : {$details['qty']}
+");
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($details['price'] . '
-');
+                $printer->text("{$details['price']}
+");
             }
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total carte
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totComCard'] . '
-');
+            $printer->text("{$data['totComCard']}
+");
             $printer->feed();
 
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
@@ -720,8 +706,8 @@ par ' . $data['user'] . '
             $printer->text('Total
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totCom'] . '
-');
+            $printer->text("{$data['totCom']}
+");
             $printer->feed();
 
             // Rechargements
@@ -732,40 +718,40 @@ par ' . $data['user'] . '
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             foreach ($data['rechargements'] as $account => $rechargement) {
                 $printer->setJustification(Printer::JUSTIFY_LEFT);
-                $printer->text($account . ' (' . $rechargement["methode"] . ')
-');
+                $printer->text("{$account} ({$rechargement["method"]})
+");
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                $printer->text($rechargement["montant"] . '
-');
+                $printer->text("{$rechargement["amount"]}
+");
             }
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total liquide
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRechCash'] . '
-');
+            $printer->text("{$data['totRechCash']}
+");
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total Pumpkin
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRechPumpkin'] . '
-');
+            $printer->text("{$data['totRechPumpkin']}
+");
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total Carte
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRechCard'] . '
-');
+            $printer->text("{$data['totRechCard']}
+");
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRech'] . '
-');
+            $printer->text("{$data['totRech']}
+");
             $printer->feed();
 
             // SORTIES
@@ -781,33 +767,33 @@ par ' . $data['user'] . '
             $printer->text('REMBOURSEMENTS
 ');
             $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->text('Liquide : ' . $data['nbRembCash'] . '
-');
+            $printer->text("Liquide : {$data['nbRembCash']}
+");
             $printer->selectPrintMode(Printer::MODE_FONT_B);
-            $printer->text('Ecocups ramenées : ' . $data['totEcoCash'] . '
-');
+            $printer->text("Ecocups ramenées : {$data['totEcoCash']}
+");
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRembCash'] . '
-');
+            $printer->text("{$data['totRembCash']}
+");
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->selectPrintMode(Printer::MODE_FONT_A);
-            $printer->text('Compte : ' . $data['nbRembAccount'] . '
-');
+            $printer->text("Compte : {$data['nbRembAccount']}
+");
             $printer->selectPrintMode(Printer::MODE_FONT_B);
-            $printer->text('Ecocups ramenées : ' . $data['totEcoAccount'] . '
-');
+            $printer->text("Ecocups ramenées : {$data['totEcoAccount']}
+");
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRembAccount'] . '
-');
+            $printer->text("{$data['totRembAccount']}
+");
             $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total remboursements
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRemb'] . '
-');
+            $printer->text("{$data['totRemb']}
+");
             $printer->feed();
 
             $printer->initialize();
@@ -828,20 +814,20 @@ par ' . $data['user'] . '
             $printer->text('Total entrées
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totCom'] . '
-');
+            $printer->text("{$data['totCom']}
+");
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total sorties
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['totRemb'] . '
-');
+            $printer->text("{$data['totRemb']}
+");
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text('Total
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['tot'] . '
-');
+            $printer->text("{$data['tot']}
+");
             $printer->feed();
 
             $printer->initialize();
@@ -859,8 +845,8 @@ par ' . $data['user'] . '
             $printer->initialize();
             $printer->selectPrintMode(Printer::MODE_FONT_A);
             foreach ($data['users'] as $user => $nb) {
-                $printer->text($user . ' : ' . $nb . '
-');
+                $printer->text("{$user} : {$nb}
+");
             }
             $printer->feed();
 
@@ -869,8 +855,8 @@ par ' . $data['user'] . '
             $printer->text('Nombre total de transactions
 ');
             $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text($data['nbTransactions'] . '
-');
+            $printer->text("{$data['nbTransactions']}
+");
             $printer->feed();
 
             $printer->initialize();

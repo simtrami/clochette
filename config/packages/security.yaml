@@ -1,14 +1,33 @@
 security:
+    encoders:
+        App\Entity\Users:
+            algorithm: auto
+
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        users_in_memory: { memory: null }
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\Users
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             anonymous: lazy
-            provider: users_in_memory
+            provider: app_user_provider
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAthenticatorAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                target: app_login
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 1 week in seconds
+                path: /
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -19,5 +38,29 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/accounts, roles: ROLE_BUREAU }
+        - { path: ^/accounts/(edit|create)$, roles: ROLE_ALL }
+        - { path: ^/management/runs/edit, roles: ROLE_TRESO }
+        - { path: ^/management, roles: ROLE_BUREAU }
+        - { path: ^/purchase/open, roles: ROLE_BUREAU }
+        - { path: ^/purchase, roles: ROLE_INTRO }
+        - { path: ^/settings, roles: ROLE_ADMIN }
+        - { path: ^/stock/, roles: [ ROLE_STOCK, ROLE_TRESO ] }
+        - { path: ^/stock$, roles: ROLE_BUREAU }
+        - { path: ^/transactions, roles: ROLE_BUREAU }
+        - { path: ^/users/edit, roles: ROLE_BUREAU }
+        - { path: ^/users$, roles: ROLE_ADMIN }
+        - { path: ^/type-stocks, roles: ROLE_STOCK }
+
+    role_hierarchy:
+        ROLE_ACTIF: ROLE_INTRO
+        ROLE_BUREAU: ROLE_ACTIF
+        ROLE_VVP: ROLE_BUREAU
+        ROLE_FEE: ROLE_BUREAU
+        ROLE_COM: ROLE_BUREAU
+        ROLE_SECRET: ROLE_BUREAU
+        ROLE_STOCK: ROLE_BUREAU
+        ROLE_TRESO: ROLE_BUREAU
+        ROLE_ALL: [ ROLE_STOCK, ROLE_TRESO, ROLE_SECRET, ROLE_COM, ROLE_FEE, ROLE_VVP ]
+        ROLE_ADMIN: ROLE_ALL
+        ROLE_SUPER_ADMIN: ROLE_ADMIN

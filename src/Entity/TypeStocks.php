@@ -2,47 +2,49 @@
 
 namespace App\Entity;
 
+use App\Repository\TypeStocksRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * TypeStocks
- *
- * @ORM\Table(name="typestocks")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\TypeStocksRepository")
+ * @ORM\Entity(repositoryClass=TypeStocksRepository::class)
  */
-
-class TypeStocks{
-
+class TypeStocks
+{
     /**
-    * @ORM\Column(name="id", type="integer")
-    * @ORM\Id
-    * @ORM\GeneratedValue(strategy="AUTO")
-    */
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
     private $id;
 
     /**
-    * @ORM\Column(name="name", type="string", length=255)
-    */
+     * @ORM\Column(type="string", length=255, unique=true)
+     */
     private $name;
 
     /**
-     * Get id
-     *
-     * @return integer
+     * @ORM\OneToMany(targetEntity=Stocks::class, mappedBy="type", orphanRemoval=true)
      */
-    public function getId()
+    private $stocks;
+
+    public function __construct()
+    {
+        $this->stocks = new ArrayCollection();
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return TypeStocks
-     */
-    public function setName($name)
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -50,16 +52,32 @@ class TypeStocks{
     }
 
     /**
-     * Get name
-     *
-     * @return string
+     * @return Collection|Stocks[]
      */
-    public function getName()
+    public function getStocks(): Collection
     {
-        return $this->name;
+        return $this->stocks;
     }
 
-    public function __toString() {
-        return $this->name;
+    public function addStock(Stocks $stock): self
+    {
+        if (!$this->stocks->contains($stock)) {
+            $this->stocks[] = $stock;
+            $stock->setType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStock(Stocks $stock): self
+    {
+        if ($this->stocks->removeElement($stock)) {
+            // set the owning side to null (unless already changed)
+            if ($stock->getType() === $this) {
+                $stock->setType(null);
+            }
+        }
+
+        return $this;
     }
 }

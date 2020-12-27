@@ -1,6 +1,6 @@
 <div style="font-family: Tahoma, Geneva, sans-serif; width:100%">
 <div style="width: 85%; margin: 0 auto">
-    <p style="text-align: center; margin: 0"><a href="https://clochette.spatializer.fr/login" target="_blank"><img src="{{ logo }}" width="140" alt="Logo"></a></p>
+    <p style="text-align: center; margin: 0"><a href="{{ absolute_url(path('app_login')) }}" target="_blank"><img src="{{ absolute_url(asset('images/logo.ico')) }}" width="140" alt="Logo"></a></p>
     <h1 style="text-align: center; margin-top: 0">Ticket Z <small>by Clochette</small></h1>
     <p style="text-align: center">
         Récapitulatif de tenue du {{ date }}<br/>
@@ -20,7 +20,7 @@
             <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
             <th style="border:1px solid black; border-collapse: collapse">Total</th>
         </tr>
-        {% for key, article in commandes.cash %}
+        {% for key, article in commands.cash %}
         <tr>
             <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
             <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
@@ -28,7 +28,7 @@
         </tr>
         {% endfor %}
     </table>
-    <p><small><strong>Total : {{ totComCash }}€</strong></small></p>
+    <p><small><strong>Total : {{ totCommandsCash }}€</strong></small></p>
 
     <h4>Compte</h4>
     <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">
@@ -37,7 +37,7 @@
             <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
             <th style="border:1px solid black; border-collapse: collapse">Total</th>
         </tr>
-        {% for key, article in commandes.account %}
+        {% for key, article in commands.account %}
             <tr>
                 <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
                 <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
@@ -45,7 +45,7 @@
             </tr>
         {% endfor %}
     </table>
-    <p><small><strong>Total : {{ totComAccount }}€</strong></small></p>
+    <p><small><strong>Total : {{ totCommandsAccount }}€</strong></small></p>
 
 
     <h4>Pumpkin</h4>
@@ -55,7 +55,7 @@
             <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
             <th style="border:1px solid black; border-collapse: collapse">Total</th>
         </tr>
-        {% for key, article in commandes.pumpkin %}
+        {% for key, article in commands.pumpkin %}
             <tr>
                 <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
                 <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
@@ -63,7 +63,7 @@
             </tr>
         {% endfor %}
     </table>
-    <p><small><strong>Total : {{ totComPumpkin }}€</strong></small></p>
+    <p><small><strong>Total : {{ totCommandsPumpkin }}€</strong></small></p>
 
     <h4>Carte</h4>
     <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">
@@ -72,7 +72,7 @@
             <th style="border:1px solid black; border-collapse: collapse">Quantité</th>
             <th style="border:1px solid black; border-collapse: collapse">Total</th>
         </tr>
-        {% for key, article in commandes.card %}
+        {% for key, article in commands.card %}
             <tr>
                 <td style="border:1px solid black; border-collapse: collapse">{{ key }}</td>
                 <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ article.qty }}</td>
@@ -80,9 +80,9 @@
             </tr>
         {% endfor %}
     </table>
-    <p><small><strong>Total : {{ totComCard }}€</strong></small></p>
+    <p><small><strong>Total : {{ totCommandsCard }}€</strong></small></p>
 
-    <p><strong>Total des commandes : {{ totCom }}€</strong></p>
+    <p><strong>Total des commandes : {{ totCommands }}€</strong></p>
 
     <hr width="30%"/>
 
@@ -93,19 +93,19 @@
             <th style="border:1px solid black; border-collapse: collapse">Moyen de paiement</th>
             <th style="border:1px solid black; border-collapse: collapse">Montant</th>
         </tr>
-        {% for account, rechargement in rechargements %}
+        {% for account, refill in refills %}
         <tr>
             <td style="border:1px solid black; border-collapse: collapse">{{ account }}</td>
-            <td style="border:1px solid black; border-collapse: collapse">{{ rechargement.methode }}</td>
-            <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ rechargement.montant }}€</td>
+            <td style="border:1px solid black; border-collapse: collapse">{{ refill.method }}</td>
+            <td style="border:1px solid black; border-collapse: collapse; text-align: right">{{ refill.amount }}€</td>
         </tr>
         {% endfor %}
     </table>
-    <p>Total liquide : {{ totRechCash }}€</p>
-    <p>Total Pumpkin : {{ totRechPumpkin }}€</p>
-    <p>Total carte : {{ totRechCard }}€</p>
+    <p>Total liquide : {{ totRefillsCash }}€</p>
+    <p>Total Pumpkin : {{ totRefillsPumpkin }}€</p>
+    <p>Total carte : {{ totRefillsCard }}€</p>
 
-    <p><strong>Total des rechargements : {{ totRech }}€</strong></p>
+    <p><strong>Total des rechargements : {{ totRefills }}€</strong></p>
     <em>Remarque : Les rechargements ne sont pas comptés dans le total étant donné que l'argent ajoutée est utilisée pour commander des articles, cela ferait doublon.</em></p>
 
     <hr width="40%"/>
@@ -114,22 +114,22 @@
 
     <h3>Remboursements</h3>
 
-    <p><strong>Liquide</strong> : <em>{{ nbRembCash }}</em><br/>
-        <small>Ecocups ramenées : <em>{{ totEcoCash }}</em></small><br/>
-        <strong>Total : {{ totRembCash }}€</strong></p>
+    <p><strong>Liquide</strong> : <em>{{ nbReimbursementsCash }}</em><br/>
+        <small>Ecocups ramenées : <em>{{ totEcocupsCash }}</em></small><br/>
+        <strong>Total : {{ totReimbursementsCash }}€</strong></p>
 
-    <p><strong>Compte</strong> : <em>{{ nbRembAccount }}</em><br/>
-        <small>Ecocups ramenées : <em>{{ totEcoAccount }}</em></small><br/>
-        <strong>Total : {{ totRembAccount }}€</strong></p>
+    <p><strong>Compte</strong> : <em>{{ nbReimbursementsAccount }}</em><br/>
+        <small>Ecocups ramenées : <em>{{ totEcocupsAccount }}</em></small><br/>
+        <strong>Total : {{ totReimbursementsAccount }}€</strong></p>
 
-    <p><strong>Total des remboursements : {{ totRemb }}€</strong><br/>
+    <p><strong>Total des remboursements : {{ totReimbursements }}€</strong><br/>
 
     <hr width="40%"/>
 
     <h2>Total</h2>
 
-    <p><strong>Total entrées : <span style="color: darkgreen">{{ totCom }}€</span></strong></p>
-    <p><strong>Total sorties : <span style="color: red">{{ totRemb }}€</span></strong></p>
+    <p><strong>Total entrées : <span style="color: darkgreen">{{ totCommands }}€</span></strong></p>
+    <p><strong>Total sorties : <span style="color: red">{{ totReimbursements }}€</span></strong></p>
     <p style="text-align: center"><strong>Total : {{ tot }}€</strong></p>
 
     <hr width="40%"/>
@@ -150,12 +150,12 @@
 
     <ul>
         {% for article in drafts %}
-            {% if article.quantite <= 2 %}
-                <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
-            {% elseif article.quantite >= 7 %}
-                <li>{{ article.nom }} : {{ article.quantite }}</li>
+            {% if article.quantity <= 2 %}
+                <li>{{ article.name }} : <span style="color:red">{{ article.quantity }}</span></li>
+            {% elseif article.quantity >= 7 %}
+                <li>{{ article.name }} : {{ article.quantity }}</li>
             {% else %}
-                <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
+                <li>{{ article.name }} : <span style="color:darkorange">{{ article.quantity }}</span></li>
             {% endif %}
         {% endfor %}
     </ul>
@@ -164,12 +164,12 @@
 
     <ul>
         {% for article in bottles %}
-            {% if article.quantite <= 6 %}
-                <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
-            {% elseif article.quantite >= 20 %}
-                <li>{{ article.nom }} : {{ article.quantite }}</li>
+            {% if article.quantity <= 6 %}
+                <li>{{ article.name }} : <span style="color:red">{{ article.quantity }}</span></li>
+            {% elseif article.quantity >= 20 %}
+                <li>{{ article.name }} : {{ article.quantity }}</li>
             {% else %}
-                <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
+                <li>{{ article.name }} : <span style="color:darkorange">{{ article.quantity }}</span></li>
             {% endif %}
         {% endfor %}
     </ul>
@@ -178,12 +178,12 @@
 
     <ul>
         {% for article in others %}
-            {% if article.quantite <= 6 %}
-                <li>{{ article.nom }} : <span style="color:red">{{ article.quantite }}</span></li>
-            {% elseif article.quantite >= 13 %}
-                <li>{{ article.nom }} : {{ article.quantite }}</li>
+            {% if article.quantity <= 6 %}
+                <li>{{ article.name }} : <span style="color:red">{{ article.quantity }}</span></li>
+            {% elseif article.quantity >= 13 %}
+                <li>{{ article.name }} : {{ article.quantity }}</li>
             {% else %}
-                <li>{{ article.nom }} : <span style="color:darkorange">{{ article.quantite }}</span></li>
+                <li>{{ article.name }} : <span style="color:darkorange">{{ article.quantity }}</span></li>
             {% endif %}
         {% endfor %}
     </ul>

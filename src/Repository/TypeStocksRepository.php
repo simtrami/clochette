@@ -2,23 +2,41 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use App\Entity\TypeStocks;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\Persistence\ManagerRegistry;
 
-class TypeStocksRepository extends EntityRepository
+/**
+ * @method TypeStocks|null find($id, $lockMode = null, $lockVersion = null)
+ * @method TypeStocks|null findOneBy(array $criteria, array $orderBy = null)
+ * @method TypeStocks[]    findAll()
+ * @method TypeStocks[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class TypeStocksRepository extends ServiceEntityRepository
 {
-    /* Cette méthode permet de retourner l'instance de TypeStocks $type correspondant à la chaine de caractère $type */
-    public function returnType($type){
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, TypeStocks::class);
+    }
+
+    /**
+     * Returns the TypeStocks instance with the corresponding type
+     *
+     * @param string $type
+     * @return EntityManagerInterface|int|mixed|string
+     * @throws NoResultException If the query returned no result and hydration mode is not HYDRATE_SINGLE_SCALAR.
+     * @throws NonUniqueResultException If the query result is not unique.
+     */
+    public function returnType(string $type)
+    {
         $qb = $this->createQueryBuilder('t');
 
         $qb->where('t.name = :name')
             ->setParameter('name', $type);
 
-        try {
-            return $qb->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
-        } catch (NonUniqueResultException $e) {
-        }
+        return $qb->getQuery()->getSingleResult();
     }
 }

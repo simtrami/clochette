@@ -2,175 +2,107 @@
 
 namespace App\Entity;
 
+use App\Repository\SettingsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Settings
- *
- * @ORM\Table(name="settings")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=SettingsRepository::class)
  */
 class Settings
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="type", type="string", length=255)
+     * @ORM\Column(type="string", length=255)
+     * @Assert\Choice({"mode", "other"})
      */
     private $type;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $name;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     private $description;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="parameters", type="json_array")
+     * @ORM\Column(type="json", nullable=true)
      */
-    private $parameters;
+    private $parameters = [];
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Get type.
-     *
-     * @return string
-     */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * Set type.
-     *
-     * @param string $type
-     *
-     * @return Settings
-     */
-    public function setType($type)
+    public function setType(string $type): self
     {
         $this->type = $type;
 
         return $this;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Settings
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * Get description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * Set description.
-     *
-     * @param string $description
-     *
-     * @return Settings
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get parameters.
-     *
-     * @return array
-     */
-    public function getParameters()
+    public function getParameters(): ?array
     {
         return $this->parameters;
     }
 
-    /**
-     * Set parameters.
-     *
-     * @param array $parameters
-     *
-     * @return Settings
-     */
-    public function setParameters($parameters)
+    public function setParameters(?array $parameters): self
     {
         $this->parameters = $parameters;
 
         return $this;
     }
 
-    // Customs
-
     /**
      * Toggle the selected mode.
-     * This only applies to an entity which type is 'mode';
-     *
-     * @return Settings
+     * This only applies to an entity of type 'mode';
      */
-    public function toggleMode()
+    public function toggleMode(): self
     {
         if ($this->type === 'mode') {
             $parameters = $this->parameters;
-            if ($parameters == 1) {
+            if ($parameters['state'] === 1) {
                 $parameters['state'] = 0;
-            } elseif ($parameters == 0) {
+            } else {
                 $parameters['state'] = 1;
             }
 

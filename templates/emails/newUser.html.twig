@@ -1,10 +1,10 @@
 <div style="font-family: Tahoma, Geneva, sans-serif; width:100%">
     <div style="width: 85%; margin: 0 auto">
-        <p style="text-align: center; margin: 0"><a href="https://clochette.spatializer.fr/login" target="_blank"><img src="{{ logo }}" width="140" alt="Logo"></a></p>
+        <p style="text-align: center; margin: 0"><a href="{{ absolute_url(path('app_login')) }}" target="_blank"><img src="{{ absolute_url(asset('images/logo.ico')) }}" width="140" alt="Logo"></a></p>
         <h1 style="text-align: center; margin-top: 0">Votre compte utilisateur a bien été créé</h1>
 
         <p style="text-align: justify">
-            Vous venez de créer un compte sur <a href="https://www.clochette.beer" target="_blank">clochette.beer</a>.
+            Vous venez de créer un compte sur <a href="{{ absolute_url(path('homepage')) }}" target="_blank">Clochette</a>.
             Votre identifiant est {{ username }} et vous avez pour roles :<br/>
             <ul>
             {% for role in roles %}
@@ -13,7 +13,7 @@
             </ul>
             N'oubliez pas votre mot de passe, il pourra néanmoins être changé par le super-administrateur (Responsable Technique).
         </p>
-        <h3>Connectez-vous dès maintenant sur <a href="https://www.clochette.beer/login" target="_blank">https://www.clochette.beer/login</a> !</h3>
+        <h3>Connectez-vous dès maintenant sur <a href="{{ absolute_url(path('app_login')) }}" target="_blank">{{ absolute_url(path('app_login')) }}</a> !</h3>
 
         <p style="margin-top: 3rem; margin-bottom: 0; text-align: center; font-style: italic">E-mail magique fabriqué par Clochette</p>
     </div>

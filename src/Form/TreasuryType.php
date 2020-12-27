@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Treasury;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,10 +15,10 @@ class TreasuryType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('caisse', MoneyType::class, array(
+            ->add('cashRegister', MoneyType::class, array(
                 'label' => 'Contenu de la caisse',
                 'required' => true,
             ))
@@ -27,9 +28,9 @@ class TreasuryType extends AbstractType
             $treasury = $event->getData();
             $form = $event->getForm();
 
-            if ($treasury and null !== $treasury->getId()) {
+            if ($treasury && !is_null($treasury->getId())) {
                 $form
-                    ->add('coffre', MoneyType::class, array(
+                    ->add('safe', MoneyType::class, array(
                         'label' => 'Contenu du coffre',
                     ));
             }
@@ -39,19 +40,11 @@ class TreasuryType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Treasury'
+            'data_class' => Treasury::class
         ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockPrefix()
-    {
-        return 'appbundle_treasury';
     }
 
 

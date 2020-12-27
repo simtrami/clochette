@@ -12,26 +12,32 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class SelectArticleType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('isForSale', CheckboxType::class, array(
                 'label' => ' ',
                 'required' => false,
             ))
-            ->add('nom', TextType::class, array(
+            ->add('name', TextType::class, array(
                 'disabled' => true,
             ))
-            ->add('prixVente', TextType::class, array(
+            ->add('sellingPrice', TextType::class, array(
                 'disabled' =>  true,
             ))
-            ->add('quantite', TextType::class, array(
+            ->add('quantity', TextType::class, array(
                 'disabled' => true,
             ))
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(array(
             'data_class' => Stocks::class,

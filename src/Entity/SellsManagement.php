@@ -19,15 +19,15 @@ class SellsManagement
         $this->articles = new ArrayCollection;
     }
 
-    public function getDrafts()
+    public function getDrafts(): ArrayCollection
     {
         return $this->drafts;
     }
-    public function getBottles()
+    public function getBottles(): ArrayCollection
     {
         return $this->bottles;
     }
-    public function getArticles()
+    public function getArticles(): ArrayCollection
     {
         return $this->articles;
     }

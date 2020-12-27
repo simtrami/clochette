@@ -9,7 +9,10 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class SellsManagementType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('drafts', CollectionType::class, array(
@@ -27,7 +30,10 @@ class SellsManagementType extends AbstractType
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(array(
             'data_class' => SellsManagement::class,

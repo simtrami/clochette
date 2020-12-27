@@ -2,175 +2,101 @@
 
 namespace App\Entity;
 
+use App\Repository\StockMarketDataRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * StocksStockMarket
- *
- * @ORM\Table(name="stock_market_data")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=StockMarketDataRepository::class)
  */
 class StockMarketData
 {
+
     /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Stocks", inversedBy="data")
-     * @ORM\JoinColumn(name="article_id", referencedColumnName="id")
      * @ORM\Id
+     * @ORM\OneToOne(targetEntity=Stocks::class, inversedBy="data", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
      */
     private $articleId;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="stock_value", type="decimal", precision=8, scale=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=8, scale=2, nullable=true)
      */
     private $stockValue;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="values_history", type="text", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $valuesHistory;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="variation", type="decimal", precision=9, scale=6, nullable=true)
+     * @ORM\Column(type="decimal", precision=9, scale=6, nullable=true)
      */
     private $variation;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="demand_coefficient", type="decimal", precision=7, scale=6, nullable=true)
+     * @ORM\Column(type="decimal", precision=7, scale=6, nullable=true)
      */
     private $demandCoefficient;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
+    {
+        return $this->getArticleId()->getId();
+    }
+
+    public function getArticleId(): ?Stocks
     {
         return $this->articleId;
     }
 
-    /**
-     * Get article.
-     *
-     * @return Stocks
-     */
-    public function getArticle()
+    public function setArticleId(Stocks $articleId): self
     {
-        return $this->articleId;
-    }
-
-    /**
-     * Set articleId.
-     *
-     * @param Stocks $article
-     *
-     * @return StockMarketData
-     */
-    public function setArticle($article)
-    {
-        $this->articleId = $article;
+        $this->articleId = $articleId;
 
         return $this;
     }
 
-    /**
-     * Get stockValue.
-     *
-     * @return string
-     */
-    public function getStockValue()
+    public function getStockValue(): ?string
     {
         return $this->stockValue;
     }
 
-    /**
-     * Set stockValue.
-     *
-     * @param string $stockValue
-     *
-     * @return StockMarketData
-     */
-    public function setStockValue($stockValue)
+    public function setStockValue(?string $stockValue): self
     {
         $this->stockValue = $stockValue;
 
         return $this;
     }
 
-    /**
-     * Get valuesHistory.
-     *
-     * @return string
-     */
-    public function getValuesHistory()
+    public function getValuesHistory(): ?string
     {
         return $this->valuesHistory;
     }
 
-    /**
-     * Set valuesHistory.
-     *
-     * @param string $valuesHistory
-     *
-     * @return StockMarketData
-     */
-    public function setValuesHistory($valuesHistory)
+    public function setValuesHistory(?string $valuesHistory): self
     {
         $this->valuesHistory = $valuesHistory;
 
         return $this;
     }
 
-    /**
-     * Get variation.
-     *
-     * @return string
-     */
-    public function getVariation()
+    public function getVariation(): ?string
     {
         return $this->variation;
     }
 
-    /**
-     * Set variation.
-     *
-     * @param string $variation
-     *
-     * @return StockMarketData
-     */
-    public function setVariation($variation)
+    public function setVariation(?string $variation): self
     {
         $this->variation = $variation;
 
         return $this;
     }
 
-    /**
-     * Get demandCoefficient.
-     *
-     * @return string
-     */
-    public function getDemandCoefficient()
+    public function getDemandCoefficient(): ?string
     {
         return $this->demandCoefficient;
     }
 
-    /**
-     * Set demandCoefficient.
-     *
-     * @param string $demandCoefficient
-     *
-     * @return StockMarketData
-     */
-    public function setDemandCoefficient($demandCoefficient)
+    public function setDemandCoefficient(?string $demandCoefficient): self
     {
         $this->demandCoefficient = $demandCoefficient;
 

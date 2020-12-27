@@ -2,283 +2,199 @@
 
 namespace App\Entity;
 
+use App\Repository\ZreportRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Zreport
- *
- * @ORM\Table(name="zreport", indexes={
- *     @ORM\Index(name="user", columns={"user"})
- * })
- * @ORM\Entity(repositoryClass="AppBundle\Repository\ZreportRepository")
+ * @ORM\Entity(repositoryClass=ZreportRepository::class)
  */
 class Zreport
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var \string
-     *
-     * @ORM\Column(name="total_command", type="decimal", precision=8, scale=2)
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      * @Assert\GreaterThanOrEqual(0)
      */
     private $totalCommand;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="total_refund", type="decimal", precision=8, scale=2)
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      * @Assert\GreaterThanOrEqual(0)
      */
     private $totalRefund;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="total_refill", type="decimal", precision=8, scale=2)
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      * @Assert\GreaterThanOrEqual(0)
      */
     private $totalRefill;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="total", type="decimal", precision=8, scale=2)
-     * @Assert\GreaterThanOrEqual(0)
+     * @ORM\Column(type="decimal", precision=8, scale=2)
      */
     private $total;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="timestamp", type="datetime", unique=true, options={"default" : "2017-12-12 05:40:42"})
+     * @ORM\Column(type="datetime")
      */
     private $timestamp;
 
     /**
-     * @var \App\Entity\Users
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Users")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user", referencedColumnName="id", nullable=false)
-     * })
+     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="zreports")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private $staff;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Transactions", mappedBy="zreport")
+     * @ORM\OneToMany(targetEntity=Transactions::class, mappedBy="zreport")
      */
     private $transactions;
 
     /**
-     * @var Treasury
-     *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Treasury", mappedBy="zreport")
+     * @ORM\OneToOne(targetEntity=Treasury::class, inversedBy="zreport", cascade={"persist", "remove"})
      */
     private $treasury;
 
-    /**
-     * Zreport constructor.
-     */
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set totalCommand
-     *
-     * @param string $totalCommand
-     *
-     * @return Zreport
-     */
-    public function setTotalCommand($totalCommand)
+    public function getTotalCommand(): ?string
+    {
+        return $this->totalCommand;
+    }
+
+    public function setTotalCommand(string $totalCommand): self
     {
         $this->totalCommand = $totalCommand;
 
         return $this;
     }
 
-    /**
-     * Get totalCommand
-     *
-     * @return string
-     */
-    public function getTotalCommand()
+    public function getTotalRefund(): ?string
     {
-        return $this->totalCommand;
+        return $this->totalRefund;
     }
 
-    /**
-     * Set totalRefund
-     *
-     * @param string $totalRefund
-     *
-     * @return Zreport
-     */
-    public function setTotalRefund($totalRefund)
+    public function setTotalRefund(string $totalRefund): self
     {
         $this->totalRefund = $totalRefund;
 
         return $this;
     }
 
-    /**
-     * Get totalRefund
-     *
-     * @return string
-     */
-    public function getTotalRefund()
+    public function getTotalRefill(): ?string
     {
-        return $this->totalRefund;
+        return $this->totalRefill;
     }
 
-    /**
-     * Set totalRefill
-     *
-     * @param string $totalRefill
-     *
-     * @return Zreport
-     */
-    public function setTotalRefill($totalRefill)
+    public function setTotalRefill(string $totalRefill): self
     {
         $this->totalRefill = $totalRefill;
 
         return $this;
     }
 
-    /**
-     * Get totalRefill
-     *
-     * @return string
-     */
-    public function getTotalRefill()
+    public function getTotal(): ?string
     {
-        return $this->totalRefill;
+        return $this->total;
     }
 
-    /**
-     * Set total
-     *
-     * @param string $total
-     *
-     * @return Zreport
-     */
-    public function setTotal($total)
+    public function setTotal(string $total): self
     {
         $this->total = $total;
 
         return $this;
     }
 
-    /**
-     * Get total
-     *
-     * @return string
-     */
-    public function getTotal()
+    public function getTimestamp(): ?\DateTimeInterface
     {
-        return $this->total;
+        return $this->timestamp;
     }
 
-    /**
-     * Set timestamp.
-     *
-     * @param \DateTime $timestamp
-     *
-     * @return Zreport
-     */
-    public function setTimestamp($timestamp)
+    public function setTimestamp(\DateTimeInterface $timestamp): self
     {
         $this->timestamp = $timestamp;
 
         return $this;
     }
 
-    /**
-     * Get timestamp.
-     *
-     * @return \DateTime
-     */
-    public function getTimestamp()
+    public function getStaff(): ?Users
     {
-        return $this->timestamp;
+        return $this->staff;
     }
 
-    /**
-     * Set user.
-     *
-     * @param $user
-     *
-     * @return Zreport
-     */
-    public function setUser($user)
+    public function setStaff(?Users $staff): self
     {
-        $this->user = $user;
+        $this->staff = $staff;
 
         return $this;
     }
 
     /**
-     * Get user.
-     *
-     * @return \App\Entity\Users
+     * @return Collection|Transactions[]
      */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Get transactions.
-     *
-     * @return ArrayCollection
-     */
-    public function getTransactions()
+    public function getTransactions(): Collection
     {
         return $this->transactions;
     }
 
-    /**
-     * Set treasury
-     *
-     * @param $treasury
-     *
-     * @return Zreport
-     */
-    public function setTreasury($treasury)
+    public function addTransaction(Transactions $transaction): self
     {
-        $this->treasury = $treasury;
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setZreport($this);
+        }
 
         return $this;
     }
 
-    /**
-     * Get treasury
-     *
-     * @return \App\Entity\Treasury
-     */
-    public function getTreasury()
+    public function removeTransaction(Transactions $transaction): self
+    {
+        if ($this->transactions->removeElement($transaction)) {
+            // set the owning side to null (unless already changed)
+            if ($transaction->getZreport() === $this) {
+                $transaction->setZreport(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTreasury(): ?Treasury
     {
         return $this->treasury;
+    }
+
+    public function setTreasury(?Treasury $treasury): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($treasury === null && $this->$treasury !== null) {
+            $this->treasury->setZreport(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($treasury !== null && $treasury->getZreport() !== $this) {
+            $treasury->setZreport($this);
+        }
+
+        $this->treasury = $treasury;
+
+        return $this;
     }
 }

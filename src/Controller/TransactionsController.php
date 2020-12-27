@@ -2,6 +2,7 @@
 // src/AppBundle/Controller/TransactionsController.php
 namespace App\Controller;
 
+use App\Entity\Transactions;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,15 +13,14 @@ class TransactionsController extends BasicController
     /**
      * @Route("/transactions", name="transactions")
      */
-    public function showNotRegistered()
+    public function showNotRegistered(): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
-
         $this->getModes();
 
-        $repo_transactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')->returnNotRegisteredTransactions();
+        $repo_transactions = $this->getDoctrine()->getRepository(Transactions::class)->notRegistered();
         $this->data['transactions'] = $repo_transactions;
 
         return $this->render("transactions/index.html.twig", $this->data);
@@ -37,14 +37,12 @@ class TransactionsController extends BasicController
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
         }
-
         $this->getModes();
 
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 10);
 
-        $allTransactions = $this->getDoctrine()->getRepository('AppBundle:Transactions')
-            ->findAllPaginated($page, $limit);
+        $allTransactions = $this->getDoctrine()->getRepository(Transactions::class)->findAllPaginated($page, $limit);
         $transactions = $allTransactions->getIterator();
         $this->data['page'] = $page;
         $this->data['limit'] = $limit;

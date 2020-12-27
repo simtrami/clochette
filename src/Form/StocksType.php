@@ -2,6 +2,8 @@
 
 namespace App\Form;
 
+use App\Entity\Stocks;
+use App\Entity\TypeStocks;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,16 +20,16 @@ class StocksType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('prixAchat', MoneyType::class, array(
+            ->add('cost', MoneyType::class, array(
                 'label' => "Prix à l'achat (TTC+accise, hors consigne)",
             ))
-            ->add('prixVente', MoneyType::class, array(
+            ->add('sellingPrice', MoneyType::class, array(
                 'label' => "Prix à la vente (/unité)",
             ))
-            ->add('quantite', IntegerType::class, array(
+            ->add('quantity', IntegerType::class, array(
                 'label' => "Quantité",
             ))
         ;
@@ -39,22 +41,22 @@ class StocksType extends AbstractType
             // Vérifie si l'objet Article est "nouveau"
             // Si aucune donnée n'est passée au form, alors elle vaut "null".
             // Ceci doit être considéré comme un nouvel Article :
-            if (!$article || null === $article->getId()) {
+            if (!$article || is_null($article->getId())) {
                 $form
-                    ->add('nom', TextType::class, array(
+                    ->add('name', TextType::class, array(
                         'label' => "Nom de l'article",
                     ))
                     ->add('type', EntityType::class, array(
                         'label' => "Type d'article",
                         'choice_label' => 'name',
                         'placeholder' => "Selectionner le type d'article",
-                        'class' => 'AppBundle:TypeStocks'
+                        'class' => TypeStocks::class
                     ))
                     ->add('volume', NumberType::class, array(
                         'label' => "Volume à l'unité (L)",
                         'required' => false,
                     ));
-            } else if ($article->getType() != "Nourriture ou autre") {
+            } else if ($article->getType() !== "Nourriture ou autre") {
                 $form
                     ->add('volume', NumberType::class, array(
                         'label' => "Volume à l'unité (L)",
@@ -62,23 +64,15 @@ class StocksType extends AbstractType
                     ));
             }
         });
-    }/**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Stocks'
-        ));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function configureOptions(OptionsResolver $resolver): void
     {
-        return 'appbundle_stocks';
+        $resolver->setDefaults(array(
+            'data_class' => Stocks::class
+        ));
     }
-
-
 }

@@ -121,16 +121,16 @@
                 {% for transaction in account.transactions %}
                     <tr>
                         <th>{{ transaction.id }}</th>
-                        <td>{{ transaction.user is not null ? transaction.user.username : "Utilisateur supprimé" }}</td>
-                        <td>{{ transaction.type == 2 ? - transaction.montant : transaction.montant }}€</td>
+                        <td>{{ transaction.staff is not null ? transaction.staff.username : "Utilisateur supprimé" }}</td>
+                        <td>{{ transaction.type == 2 ? - transaction.amount : transaction.amount }}€</td>
                         <td>
-                            {% if transaction.methode == "account" %}
+                            {% if transaction.method == "account" %}
                                 Compte
-                            {% elseif transaction.methode == "cash" %}
+                            {% elseif transaction.method == "cash" %}
                                 Liquide
-                            {% elseif transaction.methode == "pumpkin" %}
+                            {% elseif transaction.method == "pumpkin" %}
                                 Pumpkin
-                            {% elseif transaction.methode == "card" %}
+                            {% elseif transaction.method == "card" %}
                                 Carte Bleue
                             {% else %}
                                 Non reconnue
@@ -150,7 +150,7 @@
                                             <h6 class="dropdown-header">Articles achetés</h6>
                                             {% if transaction.details is not empty %}
                                                 {% for detail in transaction.details %}
-                                                    <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                                    <span class="dropdown-item">{{ detail.article.name }} : {{ detail.quantity }}</span>
                                                 {% endfor %}
                                             {% else %}
                                                 <span class="dropdown-item">Articles supprimés</span>
@@ -167,7 +167,7 @@
                                             <div class="dropdown-menu">
                                                 <h6 class="dropdown-header">Articles retournés</h6>
                                                 {% for detail in transaction.details %}
-                                                    <span class="dropdown-item">{{ detail.article.nom }} : {{ detail.quantite }}</span>
+                                                    <span class="dropdown-item">{{ detail.article.name }} : {{ detail.quantity }}</span>
                                                 {% endfor %}
                                             </div>
                                         </div>
