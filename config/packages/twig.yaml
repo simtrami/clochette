@@ -3,3 +3,11 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     exception_controller: null
+    form_themes:
+        - bootstrap_4_layout.html.twig
+    globals:
+        admin_mail: '%env(MAILING_LIST_ADDRESS)%'
+        developer_url: '%env(DEVELOPER_URL)%'
+        developer_username: '%env(DEVELOPER_USERNAME)%'
+        project_url: '%env(PROJECT_URL)%'
+        project_version: '%env(PROJECT_VERSION)%'
