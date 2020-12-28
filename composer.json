@@ -30,9 +30,11 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "roave/better-reflection": "^4.12",
         "roave/security-advisories": "dev-master",
         "symfony/dotenv": "4.4.*",
         "symfony/maker-bundle": "^1.26",
+        "symfony/phpunit-bridge": "^5.2",
         "symfony/stopwatch": "^4.4",
         "symfony/web-profiler-bundle": "^4.4",
         "symfony/web-server-bundle": "4.4.*"
