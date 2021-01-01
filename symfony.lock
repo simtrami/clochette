@@ -147,6 +147,9 @@
     "mike42/gfx-php": {
         "version": "v0.6"
     },
+    "monolog/monolog": {
+        "version": "1.26.0"
+    },
     "nikic/php-parser": {
         "version": "v4.10.4"
     },
@@ -351,6 +354,24 @@
     },
     "symfony/mime": {
         "version": "v4.4.18"
+    },
+    "symfony/monolog-bridge": {
+        "version": "v4.4.18"
+    },
+    "symfony/monolog-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "d7249f7d560f6736115eee1851d02a65826f0a56"
+        },
+        "files": [
+            "config/packages/dev/monolog.yaml",
+            "config/packages/prod/deprecations.yaml",
+            "config/packages/prod/monolog.yaml",
+            "config/packages/test/monolog.yaml"
+        ]
     },
     "symfony/options-resolver": {
         "version": "v4.4.18"
