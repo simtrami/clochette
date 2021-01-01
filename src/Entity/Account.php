@@ -46,6 +46,7 @@ class Account
     private $pseudo;
 
     /**
+     * @Groups({"searchable"})
      * @ORM\Column(type="decimal", precision=8, scale=2)
      */
     private $balance;
