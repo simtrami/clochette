@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ form_mode == 'new_account' ? 'Créer un compte' : "Modifier " ~ firstName ~ " " ~ lastName }}{% endblock %}
+{% block title %}{{ form_mode == 'new' ? 'Créer un compte' : "Modifier " ~ firstName ~ " " ~ lastName }}{% endblock %}
 
 {% block stylesheet %}
 {% endblock %}
@@ -10,29 +10,29 @@
 
 {% block body %}
     <div class="alert alert-light">
-        <h1 class="display-4">{{ form_mode == 'new_account' ? 'Créer un compte' : "Modifier le compte de " ~ firstName ~ " " ~ lastName }}</h1>
+        <h1 class="display-4">{{ form_mode == 'new' ? 'Créer un compte' : "Modifier le compte de " ~ firstName ~ " " ~ lastName }}</h1>
     </div>
 
     {{ form_start(form) }}
-        {{ form_errors(form) }}
-    {% if form_mode == 'modify_account' %}
-            {{ form_row(form.staffName) }}
-        {% endif %}
-        {{ form_row(form.firstName) }}
-        {{ form_row(form.lastName) }}
-        {{ form_row(form.pseudo) }}
-    {% if form_mode == 'new_account' %}
-          {{ form_row(form.balance, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
-          {{ form_row(form.year, { 'attr' : {'placeholder' : '1', 'value' : '1'} }) }}
-      {% endif %}
-        {{ form_rest(form) }}
+    {{ form_errors(form) }}
+    {% if form_mode == 'edit' %}
+        {{ form_row(form.staffName) }}
+    {% endif %}
+    {{ form_row(form.firstName) }}
+    {{ form_row(form.lastName) }}
+    {{ form_row(form.pseudo) }}
+    {% if form_mode == 'new' %}
+        {{ form_row(form.balance, { 'attr' : {'placeholder' : '0.00', 'value' : '0.00'} }) }}
+        {{ form_row(form.year, { 'attr' : {'placeholder' : '1', 'value' : '1'} }) }}
+    {% endif %}
+    {{ form_rest(form) }}
 
     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
-            <button type="submit" class="btn btn-success btn-lg col-8">
-                {{ form_mode == 'new_account' ? '<i class="fas fa-plus-circle"></i> Créer le compte' : '<i class="fas fa-save"></i> Enregister les modifications' }}</button>
+        <button type="submit" class="btn btn-success btn-lg col-8">
+            {{ form_mode == 'new' ? '<i class="fas fa-plus-circle"></i> Créer le compte' : '<i class="fas fa-save"></i> Enregister les modifications' }}</button>
         {{ form_end(form) }}
 
-        <a class="btn btn-danger btn-lg col-3" href="{{ path('accounts') }}">
+        <a class="btn btn-danger btn-lg col-3" href="{{ path('accounts_index') }}">
             <i class="fas fa-times"></i> Annuler
         </a>
     </div>

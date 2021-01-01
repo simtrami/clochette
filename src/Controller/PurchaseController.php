@@ -34,7 +34,7 @@ class PurchaseController extends BasicController
     }
 
     /**
-     * @Route("", name="purchase")
+     * @Route("", name="purchase_index", methods={"GET"})
      **/
     public function index(): Response
     {
@@ -95,12 +95,12 @@ class PurchaseController extends BasicController
     }
 
     /**
-     * @Route("/validation", name="purchaseValidation")
+     * @Route("/submit", name="purchase_submit", methods={"GET","POST"})
      * @param Request $request
      * @return RedirectResponse
      * @throws Exception
      */
-    public function validation(Request $request): RedirectResponse
+    public function submit(Request $request): RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
@@ -234,7 +234,7 @@ class PurchaseController extends BasicController
                 'error',
                 "L'utilisateur" . $this->getUser()->getUsername() . " n'a pas le droit d'effectuer cette transaction !"
             );
-            return $this->redirectToRoute('purchase');
+            return $this->redirectToRoute('purchase_index');
         }
 
         if (($amount < 0 && $form['withdrawReason'] == 0) || $amount == 0) {
@@ -242,7 +242,7 @@ class PurchaseController extends BasicController
                 'error',
                 "Le montant de la commande semble incorrect, merci de la renvoyer."
             );
-            return $this->redirectToRoute('purchase');
+            return $this->redirectToRoute('purchase_index');
         }
 
         // Insertion du prix dans l'entité Transactions
@@ -263,7 +263,7 @@ class PurchaseController extends BasicController
                         'error',
                         "Le solde du compte de " . $account->getFirstName() . " " . $account->getLastName() . " est insuffisant pour valider la commande : Il manque " . (-$balance + $amount) . "€."
                     );
-                    return $this->redirectToRoute('purchase');
+                    return $this->redirectToRoute('purchase_index');
                 }
 
                 $newBalance = $balance - $amount;
@@ -307,7 +307,7 @@ class PurchaseController extends BasicController
                         'error',
                         "Cette fonctionnalité n'est pas autorisée pour cet utilisateur"
                     );
-                    return $this->redirectToRoute('purchase');
+                    return $this->redirectToRoute('purchase_index');
                 } elseif ($form['withdrawReason'] == "1") {
                     $this->addFlash(
                         'info',
@@ -341,7 +341,7 @@ class PurchaseController extends BasicController
                         'error',
                         "Cette fonctionnalité n'est pas autorisée pour cet utilisateur !"
                     );
-                    return $this->redirectToRoute('purchase');
+                    return $this->redirectToRoute('purchase_index');
                 } else {
                     $this->addFlash(
                         'info',
@@ -366,7 +366,7 @@ class PurchaseController extends BasicController
                     'error',
                     "Unknown payment method."
                 );
-                return $this->redirectToRoute('purchase');
+                return $this->redirectToRoute('purchase_index');
         }
 
         $em->flush();
@@ -375,11 +375,11 @@ class PurchaseController extends BasicController
 //            $this->searchService->index($account, $em);
 //        }
 
-        return $this->redirectToRoute('purchase');
+        return $this->redirectToRoute('purchase_index');
     }
 
     /**
-     * @Route("/open", name="openCashier")
+     * @Route("/open-drawer", name="purchase_open_drawer", methods={"GET"})
      * @return RedirectResponse
      * @throws Exception
      */
@@ -389,7 +389,7 @@ class PurchaseController extends BasicController
 
         if ($this->getParameter('app.printer.disable')) {
             $this->addFlash('info', 'The printer is disabled.');
-            return $this->redirectToRoute('purchase');
+            return $this->redirectToRoute('purchase_index');
         }
         $connector = new NetworkPrintConnector($this->getParameter('app.printer.ip'), $this->getParameter('app.printer.port'));
         $printer = new Printer($connector);
@@ -403,6 +403,6 @@ class PurchaseController extends BasicController
             $printer->close();
         }
 
-        return $this->redirectToRoute("purchase");
+        return $this->redirectToRoute("purchase_index");
     }
 }

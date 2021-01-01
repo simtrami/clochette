@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SettingController extends BasicController
 {
     /**
-     * @Route("", name="settings")
+     * @Route("", name="settings_index", methods={"GET"})
      * @return Response
      */
     public function index(): Response

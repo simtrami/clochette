@@ -14,14 +14,14 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends BasicController
 {
     /**
-     * @Route("/login", name="app_login")
+     * @Route("/login", name="app_login", methods={"GET","POST"})
      * @param AuthenticationUtils $authenticationUtils
      * @return Response
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
          if ($this->getUser()) {
-             return $this->redirectToRoute('purchase');
+             return $this->redirectToRoute('purchase_index');
          }
         $this->getModes();
 

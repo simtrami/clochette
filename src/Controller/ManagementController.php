@@ -38,7 +38,7 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("", name="manage-sells")
+     * @Route("", name="management_index", methods={"GET"})
      * @param Request $request
      * @return RedirectResponse|Response
      * @throws NoResultException
@@ -89,7 +89,7 @@ class ManagementController extends BasicController
 
             $this->addFlash('info', 'La liste des articles en vente a bien été mise à jour.');
 
-            return $this->redirectToRoute('purchase');
+            return $this->redirectToRoute('purchase_index');
         }
 
         $this->data['form'] = $form->createView();
@@ -98,7 +98,7 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/runs/new", name="processing-run")
+     * @Route("/runs/new", name="management_runs_new", methods={"GET"})
      * @param Request $request
      * @return RedirectResponse
      * @throws NonUniqueResultException|TransportExceptionInterface
@@ -137,7 +137,7 @@ class ManagementController extends BasicController
                     'error',
                     "Impossible de se connecter à la caisse : veuillez vérifier les branchements"
                 );
-                return $this->redirectToRoute('manage-sells');
+                return $this->redirectToRoute('management_index');
             }
         } else {
             $this->addFlash('info', 'The printer is disabled.');
@@ -279,7 +279,7 @@ class ManagementController extends BasicController
                             }
                         }
                     } else {
-                        array_push($errors, $transaction);
+                        $errors[] = $transaction;
                     }
                     break;
                 case 3:
@@ -410,11 +410,11 @@ class ManagementController extends BasicController
             );
         }
 
-        return $this->redirectToRoute('register-treasury', ['id' => $treasury->getId()]);
+        return $this->redirectToRoute('management_runs_treasury_new', ['id' => $treasury->getId()]);
     }
 
     /**
-     * @Route("/runs/{id}/treasury/new", name="register-treasury")
+     * @Route("/runs/{id}/treasury/new", name="management_runs_treasury_new", methods={"GET","POST"})
      * @param Request $request
      * @param $treasury
      * @return RedirectResponse|Response
@@ -425,7 +425,6 @@ class ManagementController extends BasicController
         $this->getModes();
 
         $doctrine = $this->getDoctrine();
-//        $treasury = new Treasury();
         $form = $this->createForm(TreasuryType::class, $treasury);
 
         $form->handleRequest($request);
@@ -433,8 +432,6 @@ class ManagementController extends BasicController
         if ($form->isSubmitted() && $form->isValid()) {
             $mvtSafe = $request->request->get('mvt-coffre');
 
-//            $treasury = $doctrine->getRepository(Treasury::class)->find($id_treasury);
-//            $treasury->setCashRegister($form->get('cashRegister')->getData());
             $treasury->setSafe($treasury->getSafe() + $mvtSafe);
 
             $em = $doctrine->getManager();
@@ -443,7 +440,7 @@ class ManagementController extends BasicController
 
             $this->addFlash('info', 'La trésorerie a bien été mise à jour.');
 
-            return $this->redirectToRoute('runs-history');
+            return $this->redirectToRoute('management_runs_index');
         }
 
         $this->data['form'] = $form->createView();
@@ -454,9 +451,9 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/runs", name="runs-history")
+     * @Route("/runs", name="management_runs_index", methods={"GET"})
      */
-    public function indexRuns(): Response
+    public function runsIndex(): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -472,7 +469,7 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/runs/{id}/treasury/edit", name="modify-treasury")
+     * @Route("/runs/{id}/treasury/edit", name="management_runs_treasury_edit", methods={"GET","POST"})
      * @param Request $request
      * @param $treasury
      * @return RedirectResponse|Response
@@ -493,19 +490,16 @@ class ManagementController extends BasicController
 
             $this->addFlash('info', "La clôture de la tenue a bien été modifiée.");
 
-            return $this->redirectToRoute("runs-history");
+            return $this->redirectToRoute("management_runs_index");
         }
 
         $this->data['form'] = $form->createView();
 
-        return $this->render(
-            'management/modify.html.twig',
-            $this->data
-        );
+        return $this->render('management/modify.html.twig', $this->data);
     }
 
     /**
-     * @Route("/runs/{id}", name="run-details")
+     * @Route("/runs/{id}", name="management_runs_show", methods={"GET"})
      * @param $zreport
      * @return Response
      */

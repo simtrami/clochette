@@ -58,10 +58,10 @@
             <h1 class="display-4">{{ account.pseudo }}</h1>
             <div class="spacer"></div>
             <div class="btn-group" role="group" style="align-self: center">
-                <a class="btn btn-outline-success my-2" href="{{ path('modify_account', {'id': account.id}) }}"
+                <a class="btn btn-outline-success my-2" href="{{ path('accounts_edit', {'id': account.id}) }}"
                    style="height: max-content">
                     <i class="fas fa-edit"></i>&nbsp;Modifier</a>
-                <a class="btn btn-outline-success my-2" href="{{ path('refill_account', {'id': account.id}) }}"
+                <a class="btn btn-outline-success my-2" href="{{ path('accounts_refill', {'id': account.id}) }}"
                    style="height: max-content">
                     <i class="fas fa-gas-pump"></i>&nbsp;Recharger</a>
             </div>

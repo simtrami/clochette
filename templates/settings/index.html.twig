@@ -16,7 +16,7 @@
     {% for setting in settings %}
         {% if setting.type is same as('mode') and setting.parameters['state'] == 1 %}
             <div class="alert alert-warning alert-link text-capitalize" role="alert">
-                {{ "Mode"|trans }} <a href="{{ path('modes') }}">{{ setting.name }}</a> {{ "actif"|trans }}.
+                {{ "Mode"|trans }} <a href="{{ path('modes_index') }}">{{ setting.name }}</a> {{ "actif"|trans }}.
             </div>
         {% endif %}
     {% endfor %}
@@ -29,7 +29,7 @@
                         aria-expanded="true" aria-controls="collapseModesDescription">
                     {{ "Modes de l'application"|trans }}
                 </button>
-                <a class="btn btn-primary" href="{{ path('modes') }}">
+                <a class="btn btn-primary" href="{{ path('modes_index') }}">
                     {{ 'Ouvrir'|trans }}</span>
                 </a>
             </div>

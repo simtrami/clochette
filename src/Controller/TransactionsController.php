@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsController extends BasicController
 {
     /**
-     * @Route("", name="transactions")
+     * @Route("", name="transactions_index", methods={"GET"})
      */
     public function index(): Response
     {
@@ -30,7 +30,7 @@ class TransactionsController extends BasicController
     }
 
     /**
-     * @Route("/all", name="all_transactions")
+     * @Route("/all", name="transactions_index_all", methods={"GET"})
      * @param Request $request
      * @return Response
      * @throws Exception

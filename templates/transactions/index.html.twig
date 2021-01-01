@@ -32,7 +32,7 @@
                         <label data-children-count="1">Afficher
                             <div class="btn-group btn-group-sm" role="group">
                                 {% for value in [10, 20, 50, 100] %}
-                                    <a href="{{ path('all_transactions', {"limit": value, "page": page}) }}"
+                                    <a href="{{ path('transactions_index_all', {"limit": value, "page": page}) }}"
                                        class="btn page-link {{ value != limit ?: 'active' }}">{{ value }}</a>
                                 {% endfor %}
                             </div>
@@ -154,12 +154,12 @@
                     <div class="dataTables_paginate paging_simple_numbers" id="table_paginate">
                         <ul class="pagination">
                             <li class="paginate_button page-item previous {{ page-1 > 0 ?: 'disabled' }}">
-                                <a href="{{ path('all_transactions', {"page": page-1, "limit": limit}) }}"
+                                <a href="{{ path('transactions_index_all', {"page": page-1, "limit": limit}) }}"
                                    class="page-link">&larr;</a>
                             </li>
                             {% if page > 1 %}
                                 <li class="paginate_button page-item">
-                                    <a href="{{ path('all_transactions', {"page": 1, "limit": limit}) }}"
+                                    <a href="{{ path('transactions_index_all', {"page": 1, "limit": limit}) }}"
                                        class="page-link">1</a>
                                 </li>
                             {% endif %}
@@ -178,12 +178,12 @@
                             {% endif %}
                             {% if page < maxPage %}
                                 <li class="paginate_button page-item">
-                                    <a href="{{ path('all_transactions', {"page": maxPage, "limit": limit}) }}"
+                                    <a href="{{ path('transactions_index_all', {"page": maxPage, "limit": limit}) }}"
                                        class="page-link">{{ maxPage }}</a>
                                 </li>
                             {% endif %}
                             <li class="paginate_button page-item next {{ page+1 < maxPage ?: 'disabled' }}">
-                                <a href="{{ path('all_transactions', {"page": page+1, "limit": limit}) }}"
+                                <a href="{{ path('transactions_index_all', {"page": page+1, "limit": limit}) }}"
                                    class="page-link">&rarr;</a>
                             </li>
                         </ul>
@@ -196,10 +196,10 @@
 
     <div class="input-group mt-3">
         {% if current_path == "/transactions/all" %}
-            <a class="btn btn-success btn-lg btn-block" href="{{ path('transactions') }}">
+            <a class="btn btn-success btn-lg btn-block" href="{{ path('transactions_index') }}">
                 <i class="fas fa-minus-square"></i> Charger les transactions non clôturées</a>
         {% else %}
-            <a class="btn btn-success btn-lg btn-block" href="{{ path('all_transactions') }}">
+            <a class="btn btn-success btn-lg btn-block" href="{{ path('transactions_index_all') }}">
                 <i class="fas fa-plus-square"></i> Charger toutes les transactions</a>
         {% endif %}
     </div>

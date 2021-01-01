@@ -53,7 +53,7 @@
     </div>
 
     <a class="btn btn-success btn-lg btn-block
-       {{ is_granted(expression('"ROLE_ALL" in roles'))==true ? "" : "disabled" }}" href="{{ path('create_account') }}"
+       {{ is_granted(expression('"ROLE_ALL" in roles'))==true ? "" : "disabled" }}" href="{{ path('accounts_new') }}"
     ><i class="fas fa-plus-circle"></i> Créer un compte</a>
 
     <div class="table-responsive pb-3 mt-3">
@@ -80,7 +80,7 @@
                     <td>{{ account.firstName }}</td>
                     <td>{{ account.lastName }}</td>
                     <td>
-                        <a href="{{ path('show_account', {'id': account.id}) }}">
+                        <a href="{{ path('accounts_show', {'id': account.id}) }}">
                             <i class="fas fa-info-circle"></i></a>
                         {{ account.pseudo }}
                     </td>
@@ -92,10 +92,10 @@
                         <div class="d-flex">
                             <div class="input-group justify-content-around mx-auto">
                                 <a class="btn btn-secondary mt-1"
-                                   href="{{ path('modify_account', { 'id':account.id }) }}"
+                                   href="{{ path('accounts_edit', { 'id':account.id }) }}"
                                 ><i class="fas fa-edit"></i> Modif.</a>
                                 <a class="btn btn-success mt-1"
-                                   href="{{ path('refill_account', {'id':account.id}) }}"
+                                   href="{{ path('accounts_refill', {'id':account.id}) }}"
                                 ><i class="fas fa-gas-pump"></i> Rech.</a>
                             </div>
                         </div>

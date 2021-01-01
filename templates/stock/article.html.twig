@@ -43,16 +43,16 @@
         <div class="collapse" id="volume-row" aria-expanded="false">
             {{ form_row(form.volume) }}
         </div>
-        {% endif %}
-        {{ form_rest(form) }}
+    {% endif %}
+    {{ form_rest(form) }}
 
-        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
-            <button type="submit" class="btn btn-success btn-lg col-md-8">
-                {{ form_mode == 'new_article' ? '<i class="fas fa-plus-circle"></i> Ajouter' : '<i class="fas fa-save"></i> Modifier' }}</button>
-    {{ form_end(form) }}
+    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Action sur la page">
+        <button type="submit" class="btn btn-success btn-lg col-md-8">
+            {{ form_mode == 'new_article' ? '<i class="fas fa-plus-circle"></i> Ajouter' : '<i class="fas fa-save"></i> Modifier' }}</button>
+        {{ form_end(form) }}
 
-            <a class="btn btn-danger btn-lg col-md-3" href="{{path('stock')}}">
-                <i class="fas fa-times"></i> {{ form_mode == 'new_article' ? 'Annuler l\'ajout' : 'Annuler la modification' }}
-            </a>
-        </div>
+        <a class="btn btn-danger btn-lg col-md-3" href="{{ path('articles_index') }}">
+            <i class="fas fa-times"></i> {{ form_mode == 'new_article' ? 'Annuler l\'ajout' : 'Annuler la modification' }}
+        </a>
+    </div>
 {% endblock %}

@@ -28,7 +28,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserController extends BasicController
 {
     /**
-     * @Route("", name="users")
+     * @Route("", name="users_index", methods={"GET"})
      **/
     public function index(): Response
     {
@@ -42,7 +42,7 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/new", name="add_user")
+     * @Route("/new", name="users_new", methods={"GET","POST"})
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @param MailerInterface $mailer
@@ -84,7 +84,7 @@ class UserController extends BasicController
 
             $this->addFlash('info', $user->getusername() . ', votre compte a bien été créé. Connectez-vous dès maintenant.');
 
-            return $this->redirectToRoute('add_user');
+            return $this->redirectToRoute('users_new');
         }
 
         $this->data['form'] = $form->createView();
@@ -96,7 +96,7 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/{id}/edit", name="modify_user", requirements={"id"="\d+"})
+     * @Route("/{id}/edit", name="users_edit", requirements={"id"="\d+"}, methods={"GET","POST"})
      * @param Request $request
      * @param $user
      * @param UserPasswordEncoderInterface $passwordEncoder
@@ -181,7 +181,7 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/{id}/toggle", name="toggle_user", requirements={"id"="\d+"})
+     * @Route("/{id}/toggle", name="users_toggle", requirements={"id"="\d+"}, methods={"GET"})
      * @param $user
      * @return RedirectResponse
      */
@@ -201,6 +201,6 @@ class UserController extends BasicController
         $em->persist($user);
         $em->flush();
 
-        return $this->redirectToRoute('users');
+        return $this->redirectToRoute('users_index');
     }
 }

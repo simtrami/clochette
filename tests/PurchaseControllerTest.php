@@ -32,7 +32,7 @@ class PurchaseControllerTest extends WebTestCase
         self::createClient([], [
             'PHP_AUTH_USER' => 'bureau-user@example.com',
             'PHP_AUTH_PW' => 'secret',
-        ])->request('GET', '/purchase/open');
+        ])->request('GET', '/purchase/open-drawer');
         $this->assertResponseRedirects('/purchase', 302);
     }
 
@@ -40,8 +40,8 @@ class PurchaseControllerTest extends WebTestCase
     {
         return [
             ['/purchase'],
-            ['/purchase/validation'],
-            ['/purchase/open'],
+            ['/purchase/submit'],
+            ['/purchase/open-drawer'],
         ];
     }
 }

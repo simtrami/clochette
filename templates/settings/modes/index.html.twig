@@ -52,7 +52,7 @@
             $('#toggle1')[0].parentElement.addEventListener('click', function () {
                 $('#toggle1spinner')[0].removeAttribute("hidden");
                 $.ajax({
-                    url: '{{ path('toggle_mode') }}',
+                    url: '{{ path('modes_toggle') }}',
                     type: 'POST',
                     timeout: 30000, // 30s
                     dataType: 'json',

@@ -10,17 +10,18 @@
 {% endblock %}
 
 {% block body %}
-    <form action="{{ path('purchaseValidation') }}" method="post">
-        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseDrafts" aria-expanded="true" aria-controls="collapseDrafts">
+    <form action="{{ path('purchase_submit') }}" method="post">
+        <button type="button" class="alert alert-secondary h4" data-toggle="collapse" data-target="#collapseDrafts"
+                aria-expanded="true" aria-controls="collapseDrafts">
             <i class="fas fa-beer"></i> Pressions
         </button>
 
         <div class="collapse show" id="collapseDrafts">
-        {% for article in selected_drafts %}
-            {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
-                <div class="card-columns mb-1">
-            {% elseif ((loop.index-1)%3==0 and loop.revindex<=3) %}
-                <div class="card-columns mb-2">
+            {% for article in selected_drafts %}
+                {% if ((loop.index-1)%3==0 and loop.revindex>3) %}
+                    <div class="card-columns mb-1">
+                {% elseif ((loop.index-1)%3==0 and loop.revindex<=3) %}
+                    <div class="card-columns mb-2">
             {% endif %}
             <div class="card">
                 <div class="card-body">
@@ -214,22 +215,22 @@
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" required>
 
                 <!-- Boutons de validation -->
-                    {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
+                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                     <div class="btn-group d-flex justify-content-center">
                         <button type="submit" class="btn btn-dark btn-md"><i class="fas fa-check"></i>
                             <span class="d-none d-sm-none d-md-inline">Valider la commande</span>
                         </button>
                         <span class="btn btn-light btn-md ml-lg-1"
-                              onclick="window.location.href='{{ path('openCashier') }}'">
+                              onclick="window.location.href='{{ path('purchase_open_drawer') }}'">
                             <i class="fas fa-lock-open"></i>
                             <span class="d-none d-sm-none d-md-inline">Ouvrir la caisse</span>
                         </span>
                     </div>
-                    {% else %}
-                        <button type="submit" class="btn btn-dark btn-md btn-block">
-                            <span class="d-none d-sm-none d-md-inline">Payer</span>
-                        </button>
-                    {% endif %}
+                {% else %}
+                    <button type="submit" class="btn btn-dark btn-md btn-block">
+                        <span class="d-none d-sm-none d-md-inline">Payer</span>
+                    </button>
+                {% endif %}
             </div>
         </div>
     </form>

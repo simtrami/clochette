@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TreasuryController extends BasicController
 {
     /**
-     * @Route("")
+     * @Route("", name="treasury_index", methods={"GET"})
      */
     public function index(): Response
     {

@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ModeController extends BasicController
 {
     /**
-     * @Route("", name="modes")
+     * @Route("", name="modes_index", methods={"GET"})
      * @return Response
      */
     public function index(): Response
@@ -31,7 +31,7 @@ class ModeController extends BasicController
     }
 
     /**
-     * @Route("/toggle", name="toggle_mode")
+     * @Route("/toggle", name="modes_toggle", methods={"GET"})
      * @param Request $request
      * @return JsonResponse|RedirectResponse
      */
@@ -82,6 +82,6 @@ class ModeController extends BasicController
             }
         }
 
-        return $this->redirectToRoute('modes');
+        return $this->redirectToRoute('modes_index');
     }
 }

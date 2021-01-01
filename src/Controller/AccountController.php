@@ -32,7 +32,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("", name="accounts", methods={"GET"})
+     * @Route("", name="accounts_index", methods={"GET"})
      * @return Response
      */
     public function index(): Response
@@ -50,7 +50,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/new", name="create_account", methods={"GET","POST"})
+     * @Route("/new", name="accounts_new", methods={"GET","POST"})
      * @param Request $request
      * @return RedirectResponse|Response
      * @throws Exception
@@ -76,11 +76,11 @@ class AccountController extends BasicController
 
             $this->addFlash('info', 'Un nouveau compte a été créé.');
 
-            return $this->redirectToRoute('create_account');
+            return $this->redirectToRoute('accounts_new');
         }
 
         $this->data['form'] = $form->createView();
-        $this->data['form_mode'] = 'new_account';
+        $this->data['form_mode'] = 'new';
         return $this->render(
             'accounts/account.html.twig',
             $this->data
@@ -88,7 +88,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/{id}", name="show_account", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/{id}", name="accounts_show", requirements={"id"="\d+"}, methods={"GET"})
      * @param Account $account
      * @return Response
      */
@@ -103,7 +103,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/{id}/edit", name="modify_account", requirements={"id"="\d+"}, methods={"GET","POST"})
+     * @Route("/{id}/edit", name="accounts_edit", requirements={"id"="\d+"}, methods={"GET","POST"})
      * @param Request $request
      * @param $account
      * @return RedirectResponse|Response
@@ -116,9 +116,6 @@ class AccountController extends BasicController
         }
         $this->getModes();
 
-//        $repo_account = $this->getDoctrine()->getRepository(Account::class);
-//        $account = $repo_account->find($id);
-
         $form = $this->createForm(AccountType::class, $account);
 
         $form->handleRequest($request);
@@ -127,10 +124,10 @@ class AccountController extends BasicController
             $em->persist($account);
             $em->flush();
             $this->addFlash('info', "Le compte de {$account->getFirstName()} {$account->getLastName()} a bien été modifié.");
-            return $this->redirectToRoute('accounts');
+            return $this->redirectToRoute('accounts_index');
         }
         $this->data['form'] = $form->createView();
-        $this->data['form_mode'] = 'modify_account';
+        $this->data['form_mode'] = 'edit';
         $this->data['firstName'] = $account->getFirstName();
         $this->data['lastName'] = $account->getLastName();
         return $this->render(
@@ -140,7 +137,7 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/{id}/refill", name="refill_account", requirements={"id"="\d+"}, methods={"GET","POST"})
+     * @Route("/{id}/refill", name="accounts_refill", requirements={"id"="\d+"}, methods={"GET","POST"})
      * @param Request $request
      * @param $account
      * @return RedirectResponse|Response
@@ -152,8 +149,6 @@ class AccountController extends BasicController
             throw $this->createAccessDeniedException();
         }
         $this->getModes();
-
-//        $account = $this->getDoctrine()->getManager()->getRepository('AppBundle:Account')->find($id);
 
         $amount = array('message' => 'Montant du rechargement');
         $form = $this->createFormBuilder($amount)
@@ -172,7 +167,7 @@ class AccountController extends BasicController
                     'error',
                     "La méthode de paiement est inconnue !"
                 );
-                return $this->redirectToRoute('show_account', ['id' => $account]);
+                return $this->redirectToRoute('accounts_show', ['id' => $account]);
             }
 
             $transaction = new Transactions();
@@ -184,10 +179,8 @@ class AccountController extends BasicController
             $transaction->setType(3);
 
             $em = $this->getDoctrine()->getManager();
-//            $repo_account = $em->getRepository(Account::class);
             $repo_users = $em->getRepository(Users::class);
 
-//            $account = $repo_account->find($account);
             $user = $repo_users->find($this->getUser());
 
             $amount = $form->getData()['amount'];
@@ -228,7 +221,7 @@ class AccountController extends BasicController
                 }
             }
 
-            return $this->redirectToRoute('show_account', ['id' => $account->getId()]);
+            return $this->redirectToRoute('accounts_show', ['id' => $account->getId()]);
         }
 
         $this->data['form'] = $form->createView();

@@ -51,45 +51,47 @@
                     </li>
 
                     <li class="nav-item {{ "purchase" in current_path ? "active" : "" }}">
-                        <a class="nav-link" href="{{ path('purchase') }}">
+                        <a class="nav-link" href="{{ path('purchase_index') }}">
                             <i class="fa fa-money-bill-wave"></i> Caisse</a>
                     </li>
 
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item {{ "accounts" in current_path ? "active" : "" }}">
-                            <a class="nav-link" href="{{ path('accounts') }}">
+                            <a class="nav-link" href="{{ path('accounts_index') }}">
                                 <i class="fa fa-id-badge" aria-hidden="true"></i> Comptes</a>
                         </li>
                     {% endif %}
 
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item {{ "management" in current_path ? "active" : "" }}">
-                            <a class="nav-link" href="{{ path('manage-sells') }}">
+                            <a class="nav-link" href="{{ path('management_index') }}">
                                 <i class="fa fa-check-double" aria-hidden="true"></i> Gestion</a>
                         </li>
                     {% endif %}
 
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item {{ "stock" in current_path ? "active" : "" }}">
-                            <a class="nav-link" href="{{ path('stock') }}">
+                            <a class="nav-link" href="{{ path('articles_index') }}">
                                 <i class="fa fa-boxes" aria-hidden="true"></i> Stock</a>
                         </li>
                     {% endif %}
 
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item dropdown {{ "/transactions" in current_path or "/settings" in current_path ? "active" : "" }}">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-plus" aria-hidden="true"></i><span class="d-inline d-md-none d-lg-none d-sm-inline"> Autres</span>
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-plus" aria-hidden="true"></i><span
+                                        class="d-inline d-md-none d-lg-none d-sm-inline"> Autres</span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="{{ path('transactions') }}">
+                                <a class="dropdown-item" href="{{ path('transactions_index') }}">
                                     <i class="far fa-clock"></i> Transactions non clôturées</a>
-                                <a class="dropdown-item" href="{{ path('all_transactions') }}">
+                                <a class="dropdown-item" href="{{ path('transactions_index_all') }}">
                                     <i class="fa fa-history"></i> Toutes les transactions</a>
                                 {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
-                                    <a class="dropdown-item" href="{{ path('users') }}">
+                                    <a class="dropdown-item" href="{{ path('users_index') }}">
                                         <i class="fa fa-users-cog"></i> Gestion des utilisateurs</a>
-                                    <a class="dropdown-item" href="{{ path('settings') }}">
+                                    <a class="dropdown-item" href="{{ path('settings_index') }}">
                                         <i class="fa fa-cog"></i> Paramètres de l'application</a>
                                 {% endif %}
                             </div>
@@ -100,21 +102,22 @@
                 <ul class="navbar-nav ml-auto d-none d-flex">
                     {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
                         <li class="nav-item dropdown {{ "users" in current_path ? "active" : "" }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-user" aria-hidden="true"></i> {{ app.user.username }}
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="{{ path('modify_user', {id : app.user.id}) }}">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user" aria-hidden="true"></i> {{ app.user.username }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{{ path('users_edit', {id : app.user.id}) }}">
                                     <i class="fa fa-user-cog"></i> Paramètres</a>
                                 <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ path('app_logout') }}">
-                                <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
-                        </div>
-                    </li>
+                                <a class="dropdown-item" href="{{ path('app_logout') }}">
+                                    <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
+                            </div>
+                        </li>
                     {% elseif is_granted(expression('"ROLE_INTRO" in roles')) %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_logout') }}">
-                            <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_logout') }}">
+                                <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
                     </li>
                     {% else %}
                         <li class="nav-item {{ "/login"==current_path ? "active" : "" }}">

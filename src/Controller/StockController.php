@@ -7,6 +7,8 @@ use App\Entity\StockMarketData;
 use App\Entity\Stocks;
 use App\Entity\TypeStocks;
 use App\Form\StocksType;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,8 +22,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class StockController extends BasicController
 {
     /**
-     * @Route("", name="stock")
-     **/
+     * @Route("", name="articles_index", methods={"GET"})
+     * @return Response
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
     public function index(): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
@@ -45,7 +50,43 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/{id}/edit", name="modif_article", requirements={"id"="\d+"})
+     * @Route("/new", name="articles_new", methods={"GET","POST"})
+     * @param Request $request
+     * @return RedirectResponse|Response
+     */
+    public function new(Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        $this->getModes();
+
+        if (in_array("stockmarket", $this->data['activeModes'], true)) {
+            $this->addFlash('error', "Cette action n'est pas autorisée en mode Stock Market !");
+            return $this->redirectToRoute('articles_index');
+        }
+
+        $article = new Stocks();
+        $form = $this->createForm(StocksType::class, $article);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($article);
+            $em->flush();
+
+            $this->addFlash('info', 'Un nouvel article a été ajouté.');
+
+            return $this->redirectToRoute('articles_index');
+        }
+
+        $this->data['form'] = $form->createView();
+        $this->data['form_mode'] = 'new_article';
+        return $this->render(
+            'stock/article.html.twig',
+            $this->data
+        );
+    }
+
+    /**
+     * @Route("/{id}/edit", name="articles_edit", requirements={"id"="\d+"}, methods={"GET","POST"})
      * @param Request $request
      * @param $article
      * @return RedirectResponse|Response
@@ -57,7 +98,7 @@ class StockController extends BasicController
 
         if (in_array("stockmarket", $this->data['activeModes'], true)) {
             $this->addFlash('error', "Cette action n'est pas autorisée en mode Stock Market !");
-            return $this->redirectToRoute('stock');
+            return $this->redirectToRoute('articles_index');
         }
 
 //        $article = $this->getDoctrine()->getRepository(Stocks::class)->find($id);
@@ -70,7 +111,7 @@ class StockController extends BasicController
 
             $this->addFlash('info', "l'article {$article->getName()} ({$article->getType()->getName()}) a bien été modifié.");
 
-            return $this->redirectToRoute('stock');
+            return $this->redirectToRoute('articles_index');
         }
 
         $this->data['form'] = $form->createView();
@@ -84,65 +125,23 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/new", name="ajout_article")
-     * @param Request $request
-     * @return RedirectResponse|Response
-     */
-    public function new(Request $request)
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
-        $this->getModes();
-
-        if (in_array("stockmarket", $this->data['activeModes'], true)) {
-            $this->addFlash('error', "Cette action n'est pas autorisée en mode Stock Market !");
-            return $this->redirectToRoute('stock');
-        }
-
-        $article = new Stocks();
-        $form = $this->createForm(StocksType::class, $article);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($article);
-            $em->flush();
-
-            $this->addFlash('info', 'Un nouvel article a été ajouté.');
-
-            return $this->redirectToRoute('ajout_article');
-        }
-
-        $this->data['form'] = $form->createView();
-        $this->data['form_mode'] = 'new_article';
-        return $this->render(
-            'stock/article.html.twig',
-            $this->data
-        );
-    }
-
-    /**
-     * @Route("/{id}/delete", name="suppr_article")
+     * @Route("/{id}/delete", name="articles_delete", methods={"GET"})
      * @param Stocks $article
      * @return RedirectResponse
      */
-    public function deleteArticleAction(Stocks $article): RedirectResponse
+    public function delete(Stocks $article): RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $this->getModes();
 
         if (in_array("stockmarket", $this->data['activeModes'], true)) {
             $this->addFlash('error', "Cette action n'est pas autorisée en mode Stock Market !");
-            return $this->redirectToRoute('stock');
+            return $this->redirectToRoute('articles_index');
         }
 
-//        $idArticle = $request->query->get('idarticle');
         $em = $this->getDoctrine()->getManager();
-//        $article = $em->getRepository(Stocks::class)->find($idArticle);
-//
-//        if (!$article) {
-//            throw $this->createNotFoundException("Article non trouvé pour l'id " . $idArticle);
-//        }
-
         $transactions = $em->getRepository(DetailsTransactions::class)->findBy(['article' => $article]);
+
         if (isset($transactions)) {
             foreach ($transactions as $detail) {
                 $em->remove($detail);
@@ -161,6 +160,6 @@ class StockController extends BasicController
             'info', "l'article " . $article->getName() . " a bien été supprimé."
         );
 
-        return $this->redirectToRoute('stock');
+        return $this->redirectToRoute('articles_index');
     }
 }

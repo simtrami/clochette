@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends BasicController
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route("/", name="homepage", methods={"GET"})
      * @return Response
      */
     public function index(): Response
