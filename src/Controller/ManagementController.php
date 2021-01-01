@@ -455,10 +455,8 @@ class ManagementController extends BasicController
      */
     public function runsIndex(): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
-
+        // TODO: rewrite with pagination
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $zreports = $this->getDoctrine()->getRepository(Zreport::class)->findAll();

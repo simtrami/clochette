@@ -37,9 +37,8 @@ class AccountController extends BasicController
      */
     public function index(): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        // TODO: rewrite with pagination
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         $this->getModes();
 
@@ -57,9 +56,7 @@ class AccountController extends BasicController
      */
     public function new(Request $request)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         $this->getModes();
 
@@ -94,9 +91,8 @@ class AccountController extends BasicController
      */
     public function show(Account $account): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        // TODO: rewrite with pagination
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
         $this->data['account'] = $account;
         return $this->render("accounts/show.html.twig", $this->data);
@@ -111,9 +107,7 @@ class AccountController extends BasicController
      */
     public function edit(Request $request, Account $account)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $form = $this->createForm(AccountType::class, $account);
@@ -145,9 +139,7 @@ class AccountController extends BasicController
      */
     public function refill(Request $request, Account $account)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $amount = array('message' => 'Montant du rechargement');

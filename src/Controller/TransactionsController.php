@@ -20,6 +20,7 @@ class TransactionsController extends BasicController
      */
     public function index(): Response
     {
+        // TODO: rewrite with pagination
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
