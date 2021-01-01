@@ -17,6 +17,18 @@
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
     },
+    "dama/doctrine-test-bundle": {
+        "version": "4.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "4.0",
+            "ref": "56eaa387b5e48ebcc7c95a893b47dfa1ad51449c"
+        },
+        "files": [
+            "./config/packages/test/dama_doctrine_test_bundle.yaml"
+        ]
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -186,6 +198,9 @@
     "symfony/asset": {
         "version": "v4.4.18"
     },
+    "symfony/browser-kit": {
+        "version": "v4.4.18"
+    },
     "symfony/cache": {
         "version": "v4.4.18"
     },
@@ -208,6 +223,9 @@
             "./config/bootstrap.php"
         ]
     },
+    "symfony/css-selector": {
+        "version": "v4.4.18"
+    },
     "symfony/debug": {
         "version": "v4.4.18"
     },
@@ -218,6 +236,9 @@
         "version": "v2.2.0"
     },
     "symfony/doctrine-bridge": {
+        "version": "v4.4.18"
+    },
+    "symfony/dom-crawler": {
         "version": "v4.4.18"
     },
     "symfony/dotenv": {
@@ -416,6 +437,9 @@
     },
     "symfony/stopwatch": {
         "version": "v4.4.18"
+    },
+    "symfony/test-pack": {
+        "version": "v1.0.7"
     },
     "symfony/translation-contracts": {
         "version": "v2.3.0"

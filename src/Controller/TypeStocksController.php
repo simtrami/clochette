@@ -5,18 +5,19 @@ namespace App\Controller;
 use App\Entity\TypeStocks;
 use App\Form\TypeStocksType;
 use App\Repository\TypeStocksRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Class TypeStocksController
+ * @package App\Controller
  * @Route("/type-stocks")
  */
 class TypeStocksController extends BasicController
 {
     /**
-     * @Route("/", name="type_stocks_index", methods={"GET"})
+     * @Route("", name="type_stocks_index", methods={"GET"})
      * @param TypeStocksRepository $typeStocksRepository
      * @return Response
      */
@@ -103,7 +104,9 @@ class TypeStocksController extends BasicController
      */
     public function delete(Request $request, TypeStocks $typeStock): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$typeStock->getId(), $request->request->get('_token'))) {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+        if ($this->isCsrfTokenValid('delete' . $typeStock->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($typeStock);
             $entityManager->flush();

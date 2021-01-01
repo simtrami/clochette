@@ -7,22 +7,24 @@ use App\Entity\StockMarketData;
 use App\Entity\Stocks;
 use App\Entity\TypeStocks;
 use App\Form\StocksType;
-use App\Repository\StocksRepository;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class StockController
+ * @package App\Controller
+ * @Route("/stock")
+ */
 class StockController extends BasicController
 {
     /**
-    * @Route("/stock", name="stock")
-    **/
-    public function showIndex(): Response
+     * @Route("", name="stock")
+     **/
+    public function index(): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $repo_stocks = $this->getDoctrine()->getRepository(Stocks::class);
@@ -43,16 +45,14 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/stock/{id}/edit", name="modif_article", requirements={"id"="\d+"})
+     * @Route("/{id}/edit", name="modif_article", requirements={"id"="\d+"})
      * @param Request $request
      * @param $article
      * @return RedirectResponse|Response
      */
-    public function editArticleAction(Request $request, $article)
+    public function edit(Request $request, $article)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         if (in_array("stockmarket", $this->data['activeModes'], true)) {
@@ -84,14 +84,13 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/stock/create", name="ajout_article")
+     * @Route("/new", name="ajout_article")
      * @param Request $request
      * @return RedirectResponse|Response
      */
-    public function createArticleAction(Request $request){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+    public function new(Request $request)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         if (in_array("stockmarket", $this->data['activeModes'], true)) {
@@ -121,15 +120,13 @@ class StockController extends BasicController
     }
 
     /**
-     * @Route("/stock/{id}/delete", name="suppr_article")
+     * @Route("/{id}/delete", name="suppr_article")
      * @param Stocks $article
      * @return RedirectResponse
      */
     public function deleteArticleAction(Stocks $article): RedirectResponse
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $this->getModes();
 
         if (in_array("stockmarket", $this->data['activeModes'], true)) {

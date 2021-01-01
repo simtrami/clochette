@@ -6,8 +6,6 @@ use App\Entity\Users;
 use App\Form\SuperUserType;
 use App\Form\UserType;
 use Exception;
-use Swift_Image;
-use Swift_Message;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -22,23 +20,19 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * Class UserController
+ * @package App\Controller
+ * @Route("/users")
+ */
 class UserController extends BasicController
 {
-    protected $sendingAddress;
-
-    public function __construct()
-    {
-        $this->sendingAddress = getenv('MAILER_USER');
-    }
-
     /**
-     * @Route("/users", name="users")
-    **/
-    public function indexAction(): Response
+     * @Route("", name="users")
+     **/
+    public function index(): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $users = $this->getDoctrine()->getManager()->getRepository(Users::class)->findAll();
@@ -48,13 +42,67 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/users/{id}/edit", name="modify_user", requirements={"id"="\d+"})
+     * @Route("/new", name="add_user")
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param MailerInterface $mailer
+     * @return RedirectResponse|Response
+     * @throws TransportExceptionInterface
+     */
+    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder, MailerInterface $mailer)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->getModes();
+
+        $user = new Users();
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')) {
+            $form = $this->createForm(SuperUserType::class, $user);
+        } else {
+            $form = $this->createForm(UserType::class, $user);
+        }
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $passwordEncoder->encodePassword($user, $user->getPassword());
+            $user->setPassword($password);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            // Génération du mail
+            $this->data['username'] = $user->getUsername();
+            $this->data['roles'] = $user->getRoles();
+            // TODO: Write it in Markdown
+            $message = (new TemplatedEmail())
+                ->from($this->getParameter('app.mail.sender_address'))
+                ->to($user->getEmail())
+                ->subject('Confirmation de création du compte utilisateur')
+                ->htmlTemplate('emails/newUser.html.twig')
+                ->context($this->data);
+            $mailer->send($message);
+
+            $this->addFlash('info', $user->getusername() . ', votre compte a bien été créé. Connectez-vous dès maintenant.');
+
+            return $this->redirectToRoute('add_user');
+        }
+
+        $this->data['form'] = $form->createView();
+
+        return $this->render(
+            'users/add.html.twig',
+            $this->data
+        );
+    }
+
+    /**
+     * @Route("/{id}/edit", name="modify_user", requirements={"id"="\d+"})
      * @param Request $request
      * @param $user
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return RedirectResponse|Response
      */
-    public function modifyAction(Request $request, Users $user, UserPasswordEncoderInterface $passwordEncoder)
+    public function edit(Request $request, Users $user, UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $this->getModes();
@@ -133,69 +181,13 @@ class UserController extends BasicController
     }
 
     /**
-     * @Route("/users/create", name="add_user")
-     * @param Request $request
-     * @param UserPasswordEncoderInterface $passwordEncoder
-     * @param MailerInterface $mailer
-     * @return RedirectResponse|Response
-     * @throws TransportExceptionInterface
-     */
-    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, MailerInterface $mailer)
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $this->getModes();
-
-        $user = new Users();
-        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')) {
-            $form = $this->createForm(SuperUserType::class, $user);
-        } else {
-            $form = $this->createForm(UserType::class, $user);
-        }
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $password = $passwordEncoder->encodePassword($user, $user->getPassword());
-            $user->setPassword($password);
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            // Génération du mail
-            $this->data['username'] = $user->getUsername();
-            $this->data['roles'] = $user->getRoles();
-            // TODO: Write it in Markdown
-            $message = (new TemplatedEmail())
-                ->from($this->sendingAddress)
-                ->to($user->getEmail())
-                ->subject('Confirmation de création du compte utilisateur')
-                ->htmlTemplate('emails/newUser.html.twig')
-                ->context($this->data);
-            $mailer->send($message);
-
-            $this->addFlash('info', $user->getusername().', votre compte a bien été créé. Connectez-vous dès maintenant.');
-
-            return $this->redirectToRoute('add_user');
-        }
-
-        $this->data['form'] = $form->createView();
-
-        return $this->render(
-            'users/add.html.twig',
-            $this->data
-        );
-    }
-
-    /**
-     * @Route("/users/{id}/toggle", name="toggle_user", requirements={"id"="\d+"})
+     * @Route("/{id}/toggle", name="toggle_user", requirements={"id"="\d+"})
      * @param $user
      * @return RedirectResponse
      */
-    public function disableAction(Users $user): RedirectResponse
+    public function toggle(Users $user): RedirectResponse
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
 //        $user = $this->getDoctrine()->getRepository(Users::class)->find($users);
 

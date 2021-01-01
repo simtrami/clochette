@@ -23,33 +23,30 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class ManagementController
+ * @package App\Controller
+ * @Route("/management")
+ */
 class ManagementController extends BasicController
 {
-    protected $escposPrinterIP, $escposPrinterPort;
-    protected $mailingListAddress, $sendingAddress, $mailer;
+    protected $mailer;
 
     public function __construct(MailerInterface $mailer)
     {
-        $this->escposPrinterIP = getenv('ESCPOS_PRINTER_IP');
-        $this->escposPrinterPort = getenv('ESCPOS_PRINTER_PORT');
-        $this->mailingListAddress = getenv('MAILING_LIST_ADDRESS');
-        $this->sendingAddress = getenv('MAILER_USER');
         $this->mailer = $mailer;
     }
 
     /**
-     * @Route("/management", name="manage-sells")
+     * @Route("", name="manage-sells")
      * @param Request $request
      * @return RedirectResponse|Response
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function manageSells(Request $request)
+    public function index(Request $request)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
-
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $em = $this->getDoctrine()->getManager();
@@ -101,18 +98,18 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/processing", name="processing-run")
+     * @Route("/runs/new", name="processing-run")
      * @param Request $request
      * @return RedirectResponse
      * @throws NonUniqueResultException|TransportExceptionInterface
      * @throws Exception
      */
-    public function registerRun(Request $request): RedirectResponse
+    public function newRun(Request $request): RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         // By default, the app is not offline, meaning the cash register is connected
-        $offline = $request->get('offline') ?: false ;
+        $offline = $request->get('offline') ?: false;
 
         $repo_z = $this->getDoctrine()->getRepository(Zreport::class);
         $lastZ = $repo_z->returnLastZTimestamp();
@@ -122,10 +119,10 @@ class ManagementController extends BasicController
 
         $repo_transactions = $this->getDoctrine()->getRepository(Transactions::class);
 
-        if (!$offline && !getenv('NO_PRINTER')) {
+        if (!$offline && !$this->getParameter('app.printer.disable')) {
             // Trying to open the cash-drawer before doing anything
             try {
-                $printer = new Printer(new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort));
+                $printer = new Printer(new NetworkPrintConnector($this->getParameter('app.printer.ip'), $this->getParameter('app.printer.port')));
                 try {
                     $printer->pulse();
                     $this->addFlash(
@@ -142,7 +139,7 @@ class ManagementController extends BasicController
                 );
                 return $this->redirectToRoute('manage-sells');
             }
-        } else if (getenv('NO_PRINTER')) {
+        } else {
             $this->addFlash('info', 'The printer is disabled.');
         }
 
@@ -417,12 +414,12 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/{id}/fill", name="register-treasury")
+     * @Route("/runs/{id}/treasury/new", name="register-treasury")
      * @param Request $request
      * @param $treasury
      * @return RedirectResponse|Response
      */
-    public function registerTreasury(Request $request, Treasury $treasury)
+    public function newRunTreasury(Request $request, Treasury $treasury)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
@@ -457,9 +454,9 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/history", name="runs-history")
+     * @Route("/runs", name="runs-history")
      */
-    public function runsHistory(): Response
+    public function indexRuns(): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -475,12 +472,12 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/{id}/edit", name="modify-treasury")
+     * @Route("/runs/{id}/treasury/edit", name="modify-treasury")
      * @param Request $request
      * @param $treasury
      * @return RedirectResponse|Response
      */
-    public function modifyTreasury(Request $request, Treasury $treasury)
+    public function editRunTreasury(Request $request, Treasury $treasury)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
@@ -508,11 +505,11 @@ class ManagementController extends BasicController
     }
 
     /**
-     * @Route("/management/runs/{id}", name="run-details")
+     * @Route("/runs/{id}", name="run-details")
      * @param $zreport
      * @return Response
      */
-    public function runDetails(Zreport $zreport): Response
+    public function showRun(Zreport $zreport): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
@@ -534,8 +531,8 @@ class ManagementController extends BasicController
         // Génération du mail
         // TODO: Write it in Markdown - https://symfony.com/doc/4.4/mailer.html#rendering-markdown-content
         $email = (new TemplatedEmail())
-            ->from($this->sendingAddress)
-            ->to($this->mailingListAddress)
+            ->from($this->getParameter('app.mail.sender_address'))
+            ->to($this->getParameter('app.mail.list_address'))
             ->subject("Ticket Z du {$data['date']} à {$data['time']}")
             ->htmlTemplate('emails/z.html.twig')
             ->context($data);
@@ -563,13 +560,12 @@ class ManagementController extends BasicController
      */
     protected function printZ(array $data): void
     {
-        if (getenv('NO_PRINTER')) {
+        if ($this->getParameter('app.printer.disable')) {
             $this->addFlash('info', 'The printer is disabled.');
             return;
         }
 
-        $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
-        $printer = new Printer($connector);
+        $printer = new Printer(new NetworkPrintConnector($this->getParameter('app.printer.ip'), $this->getParameter('app.printer.port')));
         try {
             // En-tete
             $printer->feed(3);

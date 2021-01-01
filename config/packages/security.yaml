@@ -38,19 +38,21 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/accounts, roles: ROLE_BUREAU }
-        - { path: ^/accounts/(edit|create)$, roles: ROLE_ALL }
-        - { path: ^/management/runs/edit, roles: ROLE_TRESO }
-        - { path: ^/management, roles: ROLE_BUREAU }
-        - { path: ^/purchase/open, roles: ROLE_BUREAU }
-        - { path: ^/purchase, roles: ROLE_INTRO }
-        - { path: ^/settings, roles: ROLE_ADMIN }
-        - { path: ^/stock/, roles: [ ROLE_STOCK, ROLE_TRESO ] }
-        - { path: ^/stock$, roles: ROLE_BUREAU }
-        - { path: ^/transactions, roles: ROLE_BUREAU }
-        - { path: ^/users/edit, roles: ROLE_BUREAU }
-        - { path: ^/users$, roles: ROLE_ADMIN }
-        - { path: ^/type-stocks, roles: ROLE_STOCK }
+        - { path: '^/accounts/new$', roles: ROLE_ALL }
+        - { path: '^/accounts/\d+/edit$', roles: ROLE_ALL }
+        - { path: '^/accounts', roles: ROLE_BUREAU }
+        - { path: '^/management/runs/\d+/treasury/edit$', roles: ROLE_TRESO }
+        - { path: '^/management', roles: ROLE_BUREAU }
+        - { path: '^/purchase/open$', roles: ROLE_BUREAU }
+        - { path: '^/purchase', roles: ROLE_INTRO }
+        - { path: '^/settings', roles: ROLE_ADMIN }
+        - { path: '^/stock/', roles: [ ROLE_STOCK, ROLE_TRESO ] }
+        - { path: '^/stock$', roles: ROLE_BUREAU }
+        - { path: '^/transactions', roles: ROLE_BUREAU }
+        - { path: '^/treasury', roles: ROLE_TRESO }
+        - { path: '^/type-stocks', roles: ROLE_SUPER_ADMIN }
+        - { path: '^/users/\d+\edit$', roles: ROLE_BUREAU }
+        - { path: '^/users', roles: ROLE_ADMIN }
 
     role_hierarchy:
         ROLE_ACTIF: ROLE_INTRO

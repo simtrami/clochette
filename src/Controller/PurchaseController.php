@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Algolia\SearchBundle\SearchService;
 use App\Entity\Account;
 use App\Entity\DetailsTransactions;
 use App\Entity\StockMarketData;
@@ -10,7 +9,6 @@ use App\Entity\Stocks;
 use App\Entity\Transactions;
 use App\Entity\TypeStocks;
 use App\Entity\Users;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Exception;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
@@ -21,27 +19,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
+/**
+ * Class PurchaseController
+ * @package App\Controller
+ * @Route("/purchase")
+ */
 class PurchaseController extends BasicController
 {
-    protected $searchService, $algoliaAppId, $algoliaApiSearchKey, $algoliaIndex;
-    protected $escposPrinterIP, $escposPrinterPort;
     protected $security;
 
     public function __construct(Security $security)
     {
-        $this->algoliaAppId = getenv('ALGOLIA_APP_ID');
-        $this->algoliaApiSearchKey = getenv('ALGOLIA_API_SEARCH_KEY');
-        $this->algoliaIndex = getenv('ALGOLIA_INDEX');
-        $this->searchService = SearchService::class;
-        $this->escposPrinterIP = getenv('ESCPOS_PRINTER_IP');
-        $this->escposPrinterPort = getenv('ESCPOS_PRINTER_PORT');
         $this->security = $security;
     }
 
     /**
-     * @Route("/purchase", name="purchase")
+     * @Route("", name="purchase")
      **/
-    public function showIndex(): Response
+    public function index(): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
@@ -72,19 +67,19 @@ class PurchaseController extends BasicController
         try {
             $draft = $repo_typeStocks->returnType('Fût');
         } catch (NoResultException $e) {
-            throw $this->createNotFoundException("Not type named 'Fût'");
+            throw $this->createNotFoundException("No type named 'Fût'");
         }
         $selected_drafts = $repo_stocks->loadStocksForSaleByType($draft);
         try {
             $bottle = $repo_typeStocks->returnType('Bouteille');
         } catch (NoResultException $e) {
-            throw $this->createNotFoundException("Not type named 'Bouteille'");
+            throw $this->createNotFoundException("No type named 'Bouteille'");
         }
         $selected_bottles = $repo_stocks->loadStocksForSaleByType($bottle);
         try {
             $article = $repo_typeStocks->returnType('Nourriture ou autre');
         } catch (NoResultException $e) {
-            throw $this->createNotFoundException("Not type named 'Nourriture ou autre'");
+            throw $this->createNotFoundException("No type named 'Nourriture ou autre'");
         }
         $selected_articles = $repo_stocks->loadStocksForSaleByType($article);
 
@@ -92,24 +87,22 @@ class PurchaseController extends BasicController
         $this->data['selected_bottles'] = $selected_bottles;
         $this->data['selected_articles'] = $selected_articles;
 
-        $this->data['algoliaAppId'] = $this->algoliaAppId;
-        $this->data['algoliaApiSearchKey'] = $this->algoliaApiSearchKey;
-        $this->data['algoliaIndex'] = $this->algoliaIndex;
+        $this->data['algoliaAppId'] = $this->getParameter('app.algolia.app_id');
+        $this->data['algoliaApiSearchKey'] = $this->getParameter('app.algolia.api_search_key');
+        $this->data['algoliaIndex'] = $this->getParameter('app.algolia.index');
 
         return $this->render("purchase/index.html.twig", $this->data);
     }
 
     /**
-     * @Route("/purchase/validation", name="purchaseValidation")
+     * @Route("/validation", name="purchaseValidation")
      * @param Request $request
      * @return RedirectResponse
      * @throws Exception
      */
-    public function validateTransaction(Request $request): RedirectResponse
+    public function validation(Request $request): RedirectResponse
     {
-        if (!$this->get('security.authorization_checker')->isGranted('ROLE_INTRO')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         if (in_array("stockmarket", $this->data['activeModes'], true)) {
@@ -282,10 +275,10 @@ class PurchaseController extends BasicController
                 $em->persist($account);
             }
         } elseif ($form['methode'] === "cash") { // Paiement par cash : Contrôle de la caisse
-            if (getenv('NO_PRINTER')) {
+            if ($this->getParameter('app.printer.disable')) {
                 $this->addFlash('info', 'The printer is disabled.');
             } else {
-                $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+                $connector = new NetworkPrintConnector($this->getParameter('app.printer.ip'), $this->getParameter('app.printer.port'));
                 $printer = new Printer($connector);
                 try {
                     $printer->pulse();
@@ -386,19 +379,19 @@ class PurchaseController extends BasicController
     }
 
     /**
-     * @Route("/purchase/open", name="openCashier")
+     * @Route("/open", name="openCashier")
      * @return RedirectResponse
      * @throws Exception
      */
-    public function openCashier(): RedirectResponse
+    public function openDrawer(): RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
-        if (getenv('NO_PRINTER')) {
+        if ($this->getParameter('app.printer.disable')) {
             $this->addFlash('info', 'The printer is disabled.');
             return $this->redirectToRoute('purchase');
         }
-        $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
+        $connector = new NetworkPrintConnector($this->getParameter('app.printer.ip'), $this->getParameter('app.printer.port'));
         $printer = new Printer($connector);
         try {
             $printer->pulse();

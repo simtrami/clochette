@@ -17,24 +17,25 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 
+/**
+ * Class AccountController
+ * @package App\Controller
+ * @Route("/accounts")
+ */
 class AccountController extends BasicController
 {
-
-    protected $escposPrinterPort, $escposPrinterIP;
     protected $searchService;
 
     public function __construct(SearchService $searchService)
     {
         $this->searchService = $searchService;
-        $this->escposPrinterIP = getenv('ESCPOS_PRINTER_IP');
-        $this->escposPrinterPort = getenv('ESCPOS_PRINTER_PORT');
     }
 
     /**
-     * @Route("/accounts", name="accounts")
+     * @Route("", name="accounts", methods={"GET"})
      * @return Response
      */
-    public function showIndex(): Response
+    public function index(): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -49,12 +50,12 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/create", name="create_account")
+     * @Route("/new", name="create_account", methods={"GET","POST"})
      * @param Request $request
      * @return RedirectResponse|Response
      * @throws Exception
      */
-    public function createAccount(Request $request)
+    public function new(Request $request)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -87,11 +88,11 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/{id}", name="show_account", requirements={"id"="\d+"})
+     * @Route("/{id}", name="show_account", requirements={"id"="\d+"}, methods={"GET"})
      * @param Account $account
      * @return Response
      */
-    public function showAccount(Account $account): Response
+    public function show(Account $account): Response
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -102,13 +103,13 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/{id}/modify", name="modify_account", requirements={"id"="\d+"})
+     * @Route("/{id}/edit", name="modify_account", requirements={"id"="\d+"}, methods={"GET","POST"})
      * @param Request $request
      * @param $account
      * @return RedirectResponse|Response
      * @throws Exception
      */
-    public function modifyAccount(Request $request, Account $account)
+    public function edit(Request $request, Account $account)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -139,13 +140,13 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/accounts/{id}/refill", name="refill_account", requirements={"id"="\d+"})
+     * @Route("/{id}/refill", name="refill_account", requirements={"id"="\d+"}, methods={"GET","POST"})
      * @param Request $request
      * @param $account
      * @return RedirectResponse|Response
      * @throws Exception
      */
-    public function refillAccount(Request $request, Account $account)
+    public function refill(Request $request, Account $account)
     {
         if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw $this->createAccessDeniedException();
@@ -211,11 +212,10 @@ class AccountController extends BasicController
             );
 
             if ($methode === 'cash') {
-                if (getenv('NO_PRINTER')) {
+                if ($this->getParameter('app.printer.disable')) {
                     $this->addFlash('info', 'The printer is disabled.');
                 } else {
-                    $connector = new NetworkPrintConnector($this->escposPrinterIP, $this->escposPrinterPort);
-                    $printer = new Printer($connector);
+                    $printer = new Printer(new NetworkPrintConnector($this->getParameter('app.printer.ip'), $this->getParameter('app.printer.port')));
                     try {
                         $printer->pulse();
                         $this->addFlash(

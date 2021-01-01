@@ -11,32 +11,34 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class ModeController
+ * @package App\Controller
+ * @Route("/settings/modes")
+ */
 class ModeController extends BasicController
 {
     /**
-     * @Route("/settings/modes", name="modes")
+     * @Route("", name="modes")
      * @return Response
      */
-    public function indexAction(): Response
+    public function index(): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
         $this->data['modes'] = $this->getDoctrine()->getRepository(Settings::class)->findBy(['type' => 'mode']);
         return $this->render('settings/modes/index.html.twig', $this->data);
     }
 
     /**
-     * @Route("/settings/modes/toggle_mode", name="toggle_mode")
+     * @Route("/toggle", name="toggle_mode")
      * @param Request $request
      * @return JsonResponse|RedirectResponse
      */
-    public function toggleModeAction(Request $request)
+    public function toggle(Request $request)
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
         if ($request->request->get('id')) {
             $id = $request->request->get('id');
             $mode = $this->getDoctrine()->getRepository(Settings::class)->find($id);

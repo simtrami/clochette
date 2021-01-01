@@ -8,16 +8,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class TransactionsController
+ * @package App\Controller
+ * @Route("/transactions")
+ */
 class TransactionsController extends BasicController
 {
     /**
-     * @Route("/transactions", name="transactions")
+     * @Route("", name="transactions")
      */
-    public function showNotRegistered(): Response
+    public function index(): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $repo_transactions = $this->getDoctrine()->getRepository(Transactions::class)->notRegistered();
@@ -27,16 +30,14 @@ class TransactionsController extends BasicController
     }
 
     /**
-     * @Route("/transactions/all", name="all_transactions")
+     * @Route("/all", name="all_transactions")
      * @param Request $request
      * @return Response
      * @throws Exception
      */
-    public function showAll(Request $request): Response
+    public function indexAll(Request $request): Response
     {
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
         $page = $request->query->get('page', 1);

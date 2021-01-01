@@ -4,6 +4,14 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    app.algolia.app_id: '%env(ALGOLIA_APP_ID)%'
+    app.algolia.api_search_key: '%env(ALGOLIA_API_SEARCH_KEY)%'
+    app.algolia.index: '%env(ALGOLIA_INDEX)%'
+    app.mail.sender_address: '%env(MAILER_USER)%'
+    app.mail.list_address: '%env(MAILING_LIST_ADDRESS)%'
+    app.printer.ip: '%env(ESCPOS_PRINTER_IP)%'
+    app.printer.port: '%env(ESCPOS_PRINTER_PORT)%'
+    app.printer.disable: '%env(NO_PRINTER)%'
 
 services:
     # default configuration for services in *this* file
