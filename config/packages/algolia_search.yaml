@@ -2,3 +2,7 @@
 # https://www.algolia.com/doc/api-client/symfony/configuration/
 algolia_search:
     prefix: '%env(APP_ENV)%_'
+    indices:
+        - name: accounts
+          class: App\Entity\Account
+          enable_serializer_groups: true

@@ -6,6 +6,7 @@ use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -21,16 +22,19 @@ class Account
     private $id;
 
     /**
+     * @Groups({"searchable"})
      * @ORM\Column(type="string", length=255)
      */
     private $firstName;
 
     /**
+     * @Groups({"searchable"})
      * @ORM\Column(type="string", length=255)
      */
     private $lastName;
 
     /**
+     * @Groups({"searchable"})
      * @ORM\Column(type="string", length=30, unique=true)
      * @Assert\Length(
      *      min = 2,
@@ -53,6 +57,7 @@ class Account
     private $year;
 
     /**
+     * @Groups({"searchable"})
      * @ORM\Column(type="string", length=30, nullable=true)
      * @Assert\Length(
      *      min = 2,
