@@ -11,6 +11,7 @@
         "doctrine/common": "^2.13",
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^2.2",
+        "doctrine/orm":  "^2.6",
         "mike42/escpos-php": "^v3.0",
         "roave/better-reflection": "^4.12",
         "sensio/framework-extra-bundle": "^5.6",
