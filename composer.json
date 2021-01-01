@@ -6,7 +6,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
-        "ext-libsodium": "*",
         "algolia/search-bundle": "^4.1",
         "composer/package-versions-deprecated": "1.11.99.1",
         "doctrine/common": "^2.13",
@@ -26,6 +25,7 @@
         "symfony/twig-bundle": "4.4.*",
         "symfony/validator": "4.4.*",
         "symfony/yaml": "4.4.*",
+        "symfonycasts/reset-password-bundle": "^1.2",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
     },
@@ -40,8 +40,7 @@
         "symfony/maker-bundle": "^1.26",
         "symfony/phpunit-bridge": "^5.2",
         "symfony/stopwatch": "^4.4",
-        "symfony/web-profiler-bundle": "^4.4",
-        "symfony/web-server-bundle": "4.4.*"
+        "symfony/web-profiler-bundle": "^4.4"
     },
     "config": {
         "preferred-install": {
