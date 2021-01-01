@@ -1,3 +1,0 @@
-framework:
-  # Trust Clever Cloud's reverse proxies
-  trusted_proxies: '%env(CC_REVERSE_PROXY_IPS)%'
