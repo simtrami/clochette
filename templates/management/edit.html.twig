@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la clôture{% endblock %}
+
+{% block body %}
+    <div class="alert alert-light">
+        <h1 class="display-4">Modifier clôture du bar</h1>
+    </div>
+
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_rest(form) }}
+    <button type="submit" class="btn btn-warning btn-lg btn-block">Modifier</button>
+    {{ form_end(form) }}
+{% endblock %}

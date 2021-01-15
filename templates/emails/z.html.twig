@@ -1,17 +1,18 @@
 <div style="font-family: Tahoma, Geneva, sans-serif; width:100%">
-<div style="width: 85%; margin: 0 auto">
-    <p style="text-align: center; margin: 0"><a href="{{ absolute_url(path('app_login')) }}" target="_blank"><img src="{{ absolute_url(asset('images/logo.ico')) }}" width="140" alt="Logo"></a></p>
-    <h1 style="text-align: center; margin-top: 0">Ticket Z <small>by Clochette</small></h1>
-    <p style="text-align: center">
-        Récapitulatif de tenue du {{ date }}<br/>
-        Émis à {{ time }} par {{ user }}
-    </p>
+    <div style="width: 85%; margin: 0 auto">
+        <p style="text-align: center; margin: 0"><a href="{{ absolute_url(path('app_login')) }}" target="_blank"><img
+                        src="{{ absolute_url(asset('build/images/logo.ico')) }}" width="140" alt="Logo"></a></p>
+        <h1 style="text-align: center; margin-top: 0">Ticket Z <small>by Clochette</small></h1>
+        <p style="text-align: center">
+            Récapitulatif de tenue du {{ date }}<br/>
+            Émis à {{ time }} par {{ user }}
+        </p>
 
-    <hr/>
+        <hr/>
 
-    <h2>Entrées d'argent</h2>
+        <h2>Entrées d'argent</h2>
 
-    <h3>Commandes</h3>
+        <h3>Commandes</h3>
 
     <h4>Liquide</h4>
     <table style="width:100%; border:1px solid black; border-collapse: collapse; margin-bottom: 1rem">

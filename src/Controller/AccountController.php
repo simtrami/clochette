@@ -79,7 +79,7 @@ class AccountController extends BasicController
         $this->data['form'] = $form->createView();
         $this->data['form_mode'] = 'new';
         return $this->render(
-            'accounts/account.html.twig',
+            'accounts/edit.html.twig',
             $this->data
         );
     }
@@ -125,7 +125,7 @@ class AccountController extends BasicController
         $this->data['firstName'] = $account->getFirstName();
         $this->data['lastName'] = $account->getLastName();
         return $this->render(
-            'accounts/account.html.twig',
+            'accounts/edit.html.twig',
             $this->data
         );
     }

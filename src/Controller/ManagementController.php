@@ -493,7 +493,7 @@ class ManagementController extends BasicController
 
         $this->data['form'] = $form->createView();
 
-        return $this->render('management/modify.html.twig', $this->data);
+        return $this->render('management/edit.html.twig', $this->data);
     }
 
     /**

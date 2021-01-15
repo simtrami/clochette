@@ -3,22 +3,18 @@
 {% block title %}Tenue du {{ zreport.timestamp|date('d/m/Y H:i:s') }}{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.css') }}">
+    {{ parent() }}
+    {{ encore_entry_link_tags('management_details') }}
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('js/activateTooltips.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('lib/moment.min.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/datetime-moment.js') }}"></script>
-    <script src="{{ asset('js/orderTableTransactions.js') }}"></script>
+    {{ parent() }}
+    {{ encore_entry_script_tags('management_details') }}
 {% endblock %}
 
 {% block body %}
     <div class="alert alert-light">
-        <h1 class="display-4">Détails de la tenue : {{ zreport.timestamp|date('d/m/Y H:i:s') }}</h1>
+        <h1 class="display-4">Tenue du {{ zreport.timestamp|date('d/m/Y H:i:s') }}</h1>
     </div>
 
     <h2>Bilan de la tenue</h2>
@@ -39,26 +35,26 @@
             </tr>
             </thead>
             <tbody>
-                <tr>
-                    <th scope="row">{{ zreport.id }}</th>
-                    <td>{{ zreport.staff.username }}</td>
-                    <td>{{ zreport.totalCommand }}€</td>
-                    <td>{{ zreport.totalRefill }}€</td>
-                    <td>{{ zreport.totalRefund }}€</td>
-                    <td>{{ zreport.total }}€</td>
-                    <td>{{ zreport.treasury.cashRegister }}€</td>
-                    <td>{{ zreport.treasury.safe }}€</td>
-                    <td>{{ zreport.transactions|length }}</td>
-                    <td class="table-actions">
-                        <div class="d-flex">
-                            <div class="input-group justify-content-around mx-auto">
-                                <a class="btn btn-secondary mt-1"
-                                   href="{{ path('management_runs_treasury_edit', { 'id': zreport.treasury.id }) }}">
-                                    <i class="fas fa-edit"></i> Trésorerie</a>
-                            </div>
+            <tr>
+                <th scope="row">{{ zreport.id }}</th>
+                <td>{{ zreport.staff.username }}</td>
+                <td>{{ zreport.totalCommand }}€</td>
+                <td>{{ zreport.totalRefill }}€</td>
+                <td>{{ zreport.totalRefund }}€</td>
+                <td>{{ zreport.total }}€</td>
+                <td>{{ zreport.treasury.cashRegister }}€</td>
+                <td>{{ zreport.treasury.safe }}€</td>
+                <td>{{ zreport.transactions|length }}</td>
+                <td class="table-actions">
+                    <div class="d-flex">
+                        <div class="input-group justify-content-around mx-auto">
+                            <a class="btn btn-secondary mt-1"
+                               href="{{ path('management_runs_treasury_edit', { 'id': zreport.treasury.id }) }}">
+                                <i class="fas fa-edit"></i> Trésorerie</a>
                         </div>
-                    </td>
-                </tr>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -110,7 +106,8 @@
                         <div class="d-flex justify-content-center">
                             {% if transaction.type == 1 %}
                                 <div class="btn-group dropleft">
-                                    <button type="button" class="btn btn-secondary dropdown-toggle no-arrow" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle no-arrow"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fas fa-info-circle" aria-hidden="true"></i>
                                     </button>
                                     <div class="dropdown-menu">
@@ -127,7 +124,8 @@
                             {% elseif transaction.type == 2 %}
                                 {% if transaction.details is not empty %}
                                     <div class="btn-group dropleft">
-                                        <button type="button" class="btn btn-secondary dropdown-toggle no-arrow" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button type="button" class="btn btn-secondary dropdown-toggle no-arrow"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-minus" aria-hidden="true"></i>
                                         </button>
                                         <div class="dropdown-menu">
@@ -139,20 +137,23 @@
                                     </div>
                                 {% else %}
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Reboursement">
+                                        <button type="button" class="btn btn-secondary" data-toggle="tooltip"
+                                                data-placement="left" title="Reboursement">
                                             <i class="fas fa-minus" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                 {% endif %}
                             {% elseif transaction.type == 3 %}
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Rechargement">
+                                    <button type="button" class="btn btn-secondary" data-toggle="tooltip"
+                                            data-placement="left" title="Rechargement">
                                         <i class="fas fa-gas-pump" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             {% else %}
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="left" title="Type de transaction inconnue">
+                                    <button type="button" class="btn btn-danger" data-toggle="tooltip"
+                                            data-placement="left" title="Type de transaction inconnue">
                                         <i class="fa fa-times" aria-hidden="true"></i>
                                     </button>
                                 </div>

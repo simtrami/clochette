@@ -3,48 +3,13 @@
 {% block title %}Utilisateurs{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.css') }}">
+    {{ parent() }}
+    {{ encore_entry_link_tags('users') }}
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('js/activateTooltips.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            $('#table').DataTable( {
-                "language": {
-                    "decimal":        ".",
-                    "emptyTable":     "Aucune donnée disponible dans le tableau",
-                    "info": "Page _PAGE_ sur _PAGES_",
-                    "infoEmpty":      "Aucune entrée disponible",
-                    "infoFiltered":   "(d'après les _MAX_ entrées)",
-                    "infoPostFix":    "",
-                    "thousands":      ",",
-                    "lengthMenu":     "Afficher _MENU_ entrées par page",
-                    "loadingRecords": "Chargement...",
-                    "processing":     "En traitement...",
-                    "search":         "Rechercher:",
-                    "zeroRecords":    "Aucune entrée correspondante trouvée",
-                    "paginate": {
-                        "first":      "Début",
-                        "last":       "Fin",
-                        "next":       "Suivante",
-                        "previous":   "Précédente"
-                    },
-                    "aria": {
-                        "sortAscending":  ": activer pour trier dans l'ordre croissant",
-                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
-                    }
-                },
-                "columnDefs": [
-                    { "orderable": false, "targets": 4 }
-                ]
-            } );
-        } );
-    </script>
+    {{ parent() }}
+    {{ encore_entry_script_tags('users') }}
 {% endblock %}
 
 {% block body %}
@@ -64,38 +29,38 @@
                 <th>Email</th>
                 <th>Rôle</th>
                 <th class="table-actions"></th>
-                </tr>
+            </tr>
             </thead>
 
             <tbody>
-                {% for user in users %}
-                    <tr>
-                        <th scope="row">{{ user.id }}</th>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>
-                            {% for roles in user.roles %}
-                                {{ roles }}{% if not loop.last %}, {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td class="table-actions">
-                            <div class="d-flex">
-                                <div class="input-group justify-content-around mx-auto">
-                                    <a class="btn btn-secondary mt-1 {{ is_granted(expression('"ROLE_SUPER_ADMIN" in roles'))==true ? "" : "disabled" }}"
-                                       href="{{ path( 'users_edit', {'id' :user.id} ) }}" data-toggle="tooltip"
-                                       data-placement="left" title="Editer {{ user.username }}">
-                                        <i class="fa fa-user-cog"></i></a>
-                                    <a class="btn btn-warning mt-1 {{ is_granted(expression('"ROLE_SUPER_ADMIN" in roles'))==true ? "" : "disabled" }}"
-                                       href="{{ path( 'users_toggle', {'id' :user.id} ) }}" data-toggle="tooltip"
-                                       data-placement="left"
-                                       title="{{ user.isActive==1 ? 'Désactiver' : 'Activer' }} {{ user.username }}"
-                                       onclick="return confirm('Êtes-vous sûr de vouloir effectuer cette action ?')">
-                                        {{ user.isActive==1 ? '<i class="fas fa-ban"></i>' : '<i class="far fa-arrow-alt-circle-up"></i>' }}</a>
-                                </div>
+            {% for user in users %}
+                <tr>
+                    <th scope="row">{{ user.id }}</th>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% for role in user.roles %}
+                            {{ role != 'ROLE_USER' ? role|trim('ROLE_', 'left')|replace({'_': ' '})|capitalize : '' }}{% if not loop.last %} {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="table-actions">
+                        <div class="d-flex">
+                            <div class="input-group justify-content-around mx-auto">
+                                <a class="btn btn-secondary mt-1 {{ is_granted(expression('"ROLE_SUPER_ADMIN" in roles'))==true ? "" : "disabled" }}"
+                                   href="{{ path( 'users_edit', {'id' :user.id} ) }}" data-toggle="tooltip"
+                                   data-placement="left" title="Editer {{ user.username }}">
+                                    <i class="fa fa-user-cog"></i></a>
+                                <a class="btn btn-warning mt-1 {{ is_granted(expression('"ROLE_SUPER_ADMIN" in roles'))==true ? "" : "disabled" }}"
+                                   href="{{ path( 'users_toggle', {'id' :user.id} ) }}" data-toggle="tooltip"
+                                   data-placement="left"
+                                   title="{{ user.isActive==1 ? 'Désactiver' : 'Activer' }} {{ user.username }}"
+                                   onclick="return confirm('Êtes-vous sûr de vouloir effectuer cette action ?')">
+                                    {{ user.isActive==1 ? '<i class="fas fa-ban"></i>' : '<i class="far fa-arrow-alt-circle-up"></i>' }}</a>
                             </div>
-                        </td>
-                    </tr>
-                {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

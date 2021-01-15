@@ -1,0 +1,13 @@
+.card {
+  border: none;
+  background-color: $light;
+}
+
+.list-elt {
+  text-decoration: none !important;
+}
+
+.list-elt:hover {
+  text-decoration: none;
+  color: $dark !important;
+}

@@ -1,0 +1,104 @@
+.btn-success {
+  background-color: $success;
+  border-color: $success;
+}
+
+.btn-success:hover {
+  background-color: $green-dark;
+  border-color: $green-dark;
+}
+
+.btn-outline-success {
+  color: $success;
+  background: transparent none;
+  border-color: $success;
+}
+
+.btn-outline-success:hover, .btn-outline-success:not(:disabled):not(.disabled).active {
+  color: $white;
+  background-color: $success;
+  border-color: $success;
+}
+
+.btn-success.active:not(:disabled):not(.disabled) {
+  background-color: $green-dark;
+  border-color: $green-dark;
+}
+
+.btn-success.active:not(:disabled):not(.disabled):hover {
+  background-color: $green-dark;
+  border-color: $green-darker;
+}
+
+.btn-danger {
+  background-color: $danger;
+  border-color: $danger;
+}
+
+.btn-danger:hover {
+  background-color: $red-dark;
+  border-color: $red-dark;
+}
+
+.btn-outline-danger {
+  color: $danger;
+  background: transparent none;
+  border-color: $danger;
+}
+
+.btn-outline-danger:hover {
+  color: $white;
+  background-color: $danger;
+  border-color: $danger;
+}
+
+.btn-warning {
+  background-color: $warning;
+  border-color: $warning;
+  color: $white;
+}
+
+.btn-warning:hover {
+  background-color: $yellow-dark;
+  border-color: $yellow-dark;
+  color: $white;
+}
+
+.btn-warning:active {
+  color: $white;
+}
+
+.btn-outline-warning {
+  color: $warning;
+  background: transparent none;
+  border-color: $warning;
+}
+
+.btn-outline-warning:hover {
+  color: $white;
+  background-color: $warning;
+  border-color: $warning;
+}
+
+.btn-gray-lighter {
+  background-color: $gray-lighter;
+  border-color: $gray-lighter;
+  color: $black;
+}
+
+.btn-gray-lighter:hover {
+  background-color: $gray-light;
+  border-color: $gray-light;
+}
+
+.btn-outline-gray-lighter {
+  color: $gray-lighter;
+  background: transparent none;
+  border-color: $gray-lighter;
+}
+
+.btn-outline-gray-lighter:hover {
+  color: $black;
+  background-color: $gray-lighter;
+  border-color: $gray-lighter;
+}

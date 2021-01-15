@@ -1,0 +1,15 @@
+.alert-danger {
+  background-color: $red-light;
+}
+
+.alert-light {
+  background-color: $light;
+}
+
+.heading-actions {
+  align-self: center;
+}
+
+.heading-actions > .btn {
+  height: max-content;
+}

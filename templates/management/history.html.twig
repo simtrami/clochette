@@ -3,51 +3,13 @@
 {% block title %}Historique des tenues{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    {{ parent() }}
+    {{ encore_entry_link_tags('management_history') }}
 {% endblock %}
 
 {% block javascripts %}
-    <script src=" https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-    <script src="{{ asset('lib/moment.min.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/datetime-moment.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            $.fn.dataTable.moment( 'HH:mm:ss DD/MM/YYYY' );
-
-            $('#table').DataTable( {
-                "language": {
-                    "decimal":        ".",
-                    "emptyTable":     "Aucune donnée disponible dans le tableau",
-                    "info": "Page _PAGE_ sur _PAGES_",
-                    "infoEmpty":      "Aucune entrée disponible",
-                    "infoFiltered":   "(d'après les _MAX_ entrées)",
-                    "infoPostFix":    "",
-                    "thousands":      ",",
-                    "lengthMenu":     "Afficher _MENU_ entrées par page",
-                    "loadingRecords": "Chargement...",
-                    "processing":     "En traitement...",
-                    "search":         "Rechercher:",
-                    "zeroRecords":    "Aucune entrée correspondante trouvée",
-                    "paginate": {
-                        "first":      "Début",
-                        "last":       "Fin",
-                        "next":       "Suivante",
-                        "previous":   "Précédente"
-                    },
-                    "aria": {
-                        "sortAscending":  ": activer pour trier dans l'ordre croissant",
-                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
-                    }
-                },
-                "order": [[9, 'desc']],
-                "columnDefs": [
-                    { "orderable": false, "targets": 10 }
-                ]
-            } );
-        } );
-    </script>
+    {{ parent() }}
+    {{ encore_entry_script_tags('management_history') }}
 {% endblock %}
 
 {% block body %}

@@ -2,28 +2,22 @@
 
 {% block title %}Nouvel utilisateur{% endblock %}
 
-{% block stylesheet %}
-{% endblock %}
-
-{% block javascripts %}
-{% endblock %}
-
 {% block body %}
     <div class="alert alert-light">
         <h1 class="display-4">Ajouter un nouvel utilisateur</h1>
     </div>
-  
+
     {{ form_start(form) }}
-        {{ form_errors(form) }}
+    {{ form_errors(form) }}
 
-        {{ form_row(form.username) }}
-        {{ form_row(form.email) }}
-        {{ form_row(form.password.first) }}
-        {{ form_row(form.password.second) }}
-        {{ form_row(form.roles) }}
+    {{ form_row(form.username) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.password.first) }}
+    {{ form_row(form.password.second) }}
+    {{ form_row(form.roles) }}
 
-        <div class="input-group">
-            <button class="btn btn-success btn-block btn-lg" type="submit"><i class="fas fa-plus-circle"></i> Créer</button>
-        </div>
+    <div class="input-group">
+        <button class="btn btn-success btn-block btn-lg" type="submit"><i class="fas fa-plus-circle"></i> Créer</button>
+    </div>
     {{ form_end(form) }}
 {% endblock %}

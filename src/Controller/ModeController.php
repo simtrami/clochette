@@ -31,7 +31,7 @@ class ModeController extends BasicController
     }
 
     /**
-     * @Route("/toggle", name="modes_toggle", methods={"GET"})
+     * @Route("/toggle", name="modes_toggle", methods={"POST"})
      * @param Request $request
      * @return JsonResponse|RedirectResponse
      */

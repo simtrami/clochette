@@ -1,0 +1,27 @@
+.spacer {
+  flex: 1;
+}
+
+footer {
+  height: 50px;
+  width: 85%;
+  border-top: 1px solid $gray-light;
+  display: block;
+}
+
+footer #copyright {
+  text-align: center;
+}
+
+footer a, footer .badge-light[href] {
+  color: $green;
+  transition: all 0.15s ease 0s;
+}
+
+footer a:hover, footer .badge-light[href]:hover, footer .badge-light[href]:focus {
+  color: $green-dark;
+}
+
+footer a:hover {
+  text-decoration: none;
+}

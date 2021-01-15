@@ -8,8 +8,6 @@ use App\Form\UserType;
 use Exception;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -132,26 +130,10 @@ class UserController extends BasicController
             ->getForm()
         ;
 
-        $form_pw = $this->createFormBuilder()
-            ->add('password', RepeatedType::class, array(
-                'type' => PasswordType::class,
-                'first_options'  => array('label' => 'Mot de passe'),
-                'second_options' => array('label' => 'Confirmer le mot de passe')
-            ))
-            ->add('save', SubmitType::class, array(
-                'label' => 'Modifier'
-            ))
-            ->getForm()
-        ;
-
-        if ($request->isMethod('POST') && ($form->handleRequest($request)->isValid() || $form_pw->handleRequest($request)->isValid())){
-            if ($form->isValid()){
+        if ($request->isMethod('POST') && $form->handleRequest($request)->isValid()) {
+            if ($form->isValid()) {
                 $user->setEmail($form['email']->getData());
                 $user->setUsername($form['username']->getData());
-            }
-            if ($form_pw->isValid()){
-                $password = $passwordEncoder->encodePassword($user, $form_pw['plainPassword']->getData());
-                $user->setPassword($password);
             }
 
             try {
@@ -174,10 +156,9 @@ class UserController extends BasicController
         }
 
         $this->data['form'] = $form->createView();
-        $this->data['form_pw'] = $form_pw->createView();
         $this->data['user'] = $user;
 
-        return $this->render('users/modify.html.twig', $this->data);
+        return $this->render('users/edit.html.twig', $this->data);
     }
 
     /**
@@ -188,8 +169,6 @@ class UserController extends BasicController
     public function toggle(Users $user): RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-//        $user = $this->getDoctrine()->getRepository(Users::class)->find($users);
 
         if ($user->getIsActive()) {
             $user->setIsActive(false);

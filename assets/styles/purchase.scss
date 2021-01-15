@@ -1,0 +1,123 @@
+@import "./datatable";
+
+@import "./components/card";
+@import "./components/autocomplete";
+
+button.alert {
+  width: 100%;
+  text-align: left;
+}
+
+.affichage-articles {
+  margin-bottom: 16px;
+}
+
+.btn-outline-success {
+  color: var(--success);
+  background: var(--white) none;
+  border-color: var(--gray-light);
+}
+
+.btn-outline-danger {
+  color: var(--danger);
+  background: var(--white) none;
+  border-color: var(--gray-light);
+}
+
+.input-prix {
+  margin-bottom: 0.5rem;
+}
+
+.mb-5, .my-5 {
+  margin-bottom: 1rem !important;
+}
+
+.algolia-autocomplete {
+  width: 100%;
+}
+
+.algolia-autocomplete span {
+  top: 80% !important;
+  width: 100%;
+}
+
+.algolia-autocomplete span div {
+  width: 100%;
+}
+
+.aa-dropdown-menu::after {
+
+}
+
+#algolia-brand {
+  text-align: right;
+  opacity: 0.2;
+  transition: all 0.1s ease-in;
+}
+
+#algolia-brand:hover {
+  opacity: 1;
+}
+
+.input-group-prepend .custom-select, .input-group-append .custom-select {
+  color: var(--gray);
+  text-align: left;
+  white-space: nowrap;
+  background-color: var(--gray-light);
+}
+
+.custom-select-sm {
+  padding: .25rem 1.75rem .25rem .75rem;
+  font-size: .875rem;
+  line-height: 1.5;
+  border-radius: .2rem;
+}
+
+.rounded-left {
+  border-bottom-right-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+a.dropdown-item {
+  color: inherit;
+}
+
+#modalAccount .modal-footer {
+  justify-content: space-between;
+}
+
+#totalTxt {
+  color: var(--white);
+}
+
+#totalTxt:after {
+  content: "€";
+}
+
+body {
+  padding-bottom: 65px;
+}
+
+#paymentContainer {
+  z-index: 3;
+  width: 100%;
+  padding: 0.5rem calc(7.5% + 15px);
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+body.default #paymentContainer {
+  background-color: var(--default-theme);
+}
+
+body.stockmarket #paymentContainer {
+  background-color: var(--stockmarket-theme);
+}
+
+@media (max-width: 800px), (max-device-width: 800px) {
+  #paymentContainer {
+    padding: 0.5rem 15px;
+  }
+}

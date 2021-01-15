@@ -1,0 +1,23 @@
+@import "helper/variables";
+
+@import '~bootstrap';
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
+/* Loading */
+@import "./components/spinner";
+/* Buttons */
+@import "./components/button";
+/* Dropdowns */
+@import "./components/dropdown";
+/* Alerts */
+@import "./components/alert";
+/* Cards - only in purchase and settings */
+//@import "./components/card";
+/* Tables */
+@import "./components/table";
+/* Header */
+@import "./layout/header";
+/* Content */
+@import "layout/content";
+/* Footer */
+@import "./layout/footer";

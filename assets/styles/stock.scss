@@ -1,0 +1,14 @@
+@import './datatable';
+
+.tableau-article a {
+    text-decoration: none;
+    color: black;
+}
+
+/*.table-actions {
+    width: 12.5rem !important;
+}*/
+
+td.table-actions {
+    padding-top: 0.5rem;
+}

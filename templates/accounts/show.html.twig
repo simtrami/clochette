@@ -3,53 +3,13 @@
 {% block title %}Compte - {{ account.pseudo }}{% endblock %}
 
 {% block stylesheet %}
-    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/accounts.css') }}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    {{ parent() }}
+    {{ encore_entry_link_tags('accounts_show') }}
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('js/activateTooltips.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('lib/moment.min.js') }}"></script>
-    <script src="{{ asset('lib/DataTables-1.10.19/datetime-moment.js') }}"></script>
-    <script>
-        $(document).ready(function () {
-            $.fn.dataTable.moment('HH:mm:ss DD/MM/YYYY');
-
-            $('#table').DataTable({
-                "language": {
-                    "decimal": ".",
-                    "emptyTable": "Aucune donnée disponible dans le tableau",
-                    "info": "Page _PAGE_ sur _PAGES_",
-                    "infoEmpty": "Aucune entrée disponible",
-                    "infoFiltered": "(d'après les _MAX_ entrées)",
-                    "infoPostFix": "",
-                    "thousands": ",",
-                    "lengthMenu": "Afficher _MENU_ entrées par page",
-                    "loadingRecords": "Chargement...",
-                    "processing": "En traitement...",
-                    "search": "Rechercher:",
-                    "zeroRecords": "Aucune entrée correspondante trouvée",
-                    "paginate": {
-                        "first": "Début",
-                        "last": "Fin",
-                        "next": "Suivante",
-                        "previous": "Précédente"
-                    },
-                    "aria": {
-                        "sortAscending": ": activer pour trier dans l'ordre croissant",
-                        "sortDescending": ": activer pour trier dans l'ordre décroissant"
-                    }
-                },
-                "order": [[4, 'desc']],
-                "columnDefs": [
-                    {"orderable": false, "targets": 6}
-                ]
-            });
-        });
-    </script>
+    {{ parent() }}
+    {{ encore_entry_script_tags('accounts_show') }}
 {% endblock %}
 
 {% block body %}
@@ -57,13 +17,13 @@
         <div class="row px-2">
             <h1 class="display-4">{{ account.pseudo }}</h1>
             <div class="spacer"></div>
-            <div class="btn-group" role="group" style="align-self: center">
-                <a class="btn btn-outline-success my-2" href="{{ path('accounts_edit', {'id': account.id}) }}"
-                   style="height: max-content">
-                    <i class="fas fa-edit"></i>&nbsp;Modifier</a>
-                <a class="btn btn-outline-success my-2" href="{{ path('accounts_refill', {'id': account.id}) }}"
-                   style="height: max-content">
-                    <i class="fas fa-gas-pump"></i>&nbsp;Recharger</a>
+            <div class="btn-group heading-actions" role="group">
+                <a class="btn btn-outline-success my-2" href="{{ path('accounts_edit', {'id': account.id}) }}">
+                    <i class="fas fa-edit"></i>&nbsp;Modifier
+                </a>
+                <a class="btn btn-outline-warning my-2" href="{{ path('accounts_refill', {'id': account.id}) }}">
+                    <i class="fas fa-gas-pump"></i>&nbsp;Recharger
+                </a>
             </div>
         </div>
     </div>
@@ -173,23 +133,20 @@
                                         </div>
                                     {% else %}
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-secondary" data-toggle="tooltip"
-                                                    data-placement="left" title="Reboursement">
+                                            <button type="button" class="btn btn-secondary">
                                                 <i class="fas fa-minus" aria-hidden="true"></i>
                                             </button>
                                         </div>
                                     {% endif %}
                                 {% elseif transaction.type == 3 %}
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-secondary" data-toggle="tooltip"
-                                                data-placement="left" title="Rechargement">
+                                        <button type="button" class="btn btn-secondary">
                                             <i class="fas fa-gas-pump" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                 {% else %}
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-danger" data-toggle="tooltip"
-                                                data-placement="left" title="Type de transaction inconnue">
+                                        <button type="button" class="btn btn-danger">
                                             <i class="fa fa-times" aria-hidden="true"></i>
                                         </button>
                                     </div>

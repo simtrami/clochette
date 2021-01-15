@@ -6,23 +6,19 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ModeControllerTest extends WebTestCase
 {
-    /**
-     * @dataProvider provideUrls
-     * @param $url
-     */
-    public function testPageIsRedirection($url): void
+    public function testGetIndexIsRedirection(): void
     {
         $client = self::createClient();
-        $client->request('GET', $url);
+        $client->request('GET', '/settings/modes');
 
         $this->assertTrue($client->getResponse()->isRedirection());
     }
 
-    public function provideUrls(): array
+    public function testPostToggleIsRedirection(): void
     {
-        return [
-            ['/settings/modes'],
-            ['/settings/modes/toggle'],
-        ];
+        $client = self::createClient();
+        $client->request('POST', '/settings/modes/toggle');
+
+        $this->assertTrue($client->getResponse()->isRedirection());
     }
 }

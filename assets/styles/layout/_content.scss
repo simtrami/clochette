@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.default header {
+  background-color: $default-theme !important;
+}
+
+body.stockmarket header {
+  background-color: $stockmarket-theme !important;
+}
+
+.container-fluid {
+  padding-bottom: 1rem;
+  width: 85%;
+}
+
+@media (max-width: 800px), (max-device-width: 800px) {
+  .container-fluid {
+    width: 100%;
+  }
+}

@@ -81,7 +81,7 @@ class StockController extends BasicController
         $this->data['form'] = $form->createView();
         $this->data['form_mode'] = 'new_article';
         return $this->render(
-            'stock/article.html.twig',
+            'stock/edit.html.twig',
             $this->data
         );
     }
@@ -120,7 +120,7 @@ class StockController extends BasicController
         $this->data['nom'] = $article->getName();
         $this->data['type'] = $article->getType()->getName();
         return $this->render(
-            'stock/article.html.twig',
+            'stock/edit.html.twig',
             $this->data
         );
     }
