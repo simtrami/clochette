@@ -1,15 +1,3 @@
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
-
-module.exports = {
-    plugins: [
-        // To strip all locales except “en” and “fr”
-        // (“en” is built into Moment and can’t be removed)
-        new MomentLocalesPlugin({
-            localesToKeep: ['fr'],
-        }),
-    ],
-};
-
 var Encore = require('@symfony/webpack-encore');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
@@ -47,7 +35,7 @@ Encore
     .addEntry('users', './assets/users.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
-    .enableStimulusBridge('./assets/controllers.json')
+    // .enableStimulusBridge('./assets/controllers.json')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

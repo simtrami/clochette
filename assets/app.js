@@ -12,8 +12,6 @@ import $ from 'jquery';
 //global.$ = $;
 import 'bootstrap'; // adds functions to jQuery
 // import '@fortawesome/fontawesome-free/js/all';
-// start the Stimulus application
-import './bootstrap';
 
 window.onbeforeunload = function () {
     $('#loading').show();

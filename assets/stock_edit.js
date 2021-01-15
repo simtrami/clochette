@@ -1,5 +1,6 @@
 import './styles/stock.scss';
 import $ from 'jquery';
+import 'bootstrap';
 
 $("#stocks_type").change(function () {
     const volumeRow = $("#volume-row");
