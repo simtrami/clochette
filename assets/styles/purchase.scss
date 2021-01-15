@@ -13,15 +13,15 @@ button.alert {
 }
 
 .btn-outline-success {
-  color: var(--success);
-  background: var(--white) none;
-  border-color: var(--gray-light);
+  color: $success;
+  background: $white none;
+  border-color: $gray-light;
 }
 
 .btn-outline-danger {
-  color: var(--danger);
-  background: var(--white) none;
-  border-color: var(--gray-light);
+  color: $danger;
+  background: $white none;
+  border-color: $gray-light;
 }
 
 .input-prix {
@@ -60,10 +60,10 @@ button.alert {
 }
 
 .input-group-prepend .custom-select, .input-group-append .custom-select {
-  color: var(--gray);
+  color: $gray;
   text-align: left;
   white-space: nowrap;
-  background-color: var(--gray-light);
+  background-color: $gray-light;
 }
 
 .custom-select-sm {
@@ -87,7 +87,7 @@ a.dropdown-item {
 }
 
 #totalTxt {
-  color: var(--white);
+  color: $white;
 }
 
 #totalTxt:after {
@@ -109,11 +109,11 @@ body {
 }
 
 body.default #paymentContainer {
-  background-color: var(--default-theme);
+  background-color: $default-theme;
 }
 
 body.stockmarket #paymentContainer {
-  background-color: var(--stockmarket-theme);
+  background-color: $stockmarket-theme;
 }
 
 @media (max-width: 800px), (max-device-width: 800px) {

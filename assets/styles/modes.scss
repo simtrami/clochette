@@ -1,3 +1,4 @@
+@import 'helper/variables';
 @import 'components/bootstrap-toggle';
 
 .mode-status[shown=false] {
@@ -11,13 +12,13 @@
 }
 
 .mode-status[success=false] {
-    color: var(--danger);
+    color: $danger;
 }
 
 .mode-status[success=true] {
-    color: var(--success);
+    color: $success;
 }
 
 .mode-status[success=undefined] {
-    color: var(--warning);
+    color: $warning;
 }
