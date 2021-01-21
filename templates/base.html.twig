@@ -29,137 +29,25 @@
 <div id="loading">
     <img id="loading-image" src="{{ asset('build/images/ripple.svg') }}" alt="Chargement..."/>
 </div>
-<header class="mb-3">
-    <nav class="navbar navbar-expand-lg navbar-dark mx-auto">
-        <a class="navbar-brand" href="{{ path('homepage') }}">
-            <img id="logo" src="{{ asset('build/images/' ~ logo) }}" alt="Clochette logo">
-        </a>
 
-        <button id="header-toggler" class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbarNavDropdown"
-                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-                <li class="nav-item {{ current_path=="/" ? "active" : "" }}">
-                    <a class="nav-link" href="{{ url('homepage') }}">
-                        <i class="fa fa-home" aria-hidden="true"></i>
-                        Accueil</a>
-                </li>
-
-                <li class="nav-item {{ "purchase" in current_path ? "active" : "" }}">
-                    <a class="nav-link" href="{{ path('purchase_index') }}">
-                        <i class="fa fa-money-bill-wave"></i> Caisse</a>
-                </li>
-
-                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item {{ "accounts" in current_path ? "active" : "" }}">
-                        <a class="nav-link" href="{{ path('accounts_index') }}">
-                            <i class="fa fa-id-badge" aria-hidden="true"></i> Comptes</a>
-                    </li>
-                {% endif %}
-
-                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item {{ "management" in current_path ? "active" : "" }}">
-                        <a class="nav-link" href="{{ path('management_index') }}">
-                            <i class="fa fa-check-double" aria-hidden="true"></i> Gestion</a>
-                    </li>
-                {% endif %}
-
-                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item {{ "stock" in current_path ? "active" : "" }}">
-                        <a class="nav-link" href="{{ path('articles_index') }}">
-                            <i class="fa fa-boxes" aria-hidden="true"></i> Stock</a>
-                    </li>
-                {% endif %}
-
-                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item dropdown {{ "/transactions" in current_path or "/settings" in current_path ? "active" : "" }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-plus" aria-hidden="true"></i><span
-                                    class="d-inline d-md-none d-lg-none d-sm-inline"> Autres</span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{{ path('transactions_index') }}">
-                                <i class="far fa-clock"></i> Transactions non clôturées</a>
-                            <a class="dropdown-item" href="{{ path('transactions_index_all') }}">
-                                <i class="fa fa-history"></i> Toutes les transactions</a>
-                            {% if is_granted(expression('"ROLE_ADMIN" in roles')) %}
-                                <a class="dropdown-item" href="{{ path('users_index') }}">
-                                    <i class="fa fa-users-cog"></i> Gestion des utilisateurs</a>
-                                <a class="dropdown-item" href="{{ path('settings_index') }}">
-                                    <i class="fa fa-cog"></i> Paramètres de l'application</a>
-                            {% endif %}
-                        </div>
-                    </li>
-                {% endif %}
-            </ul>
-
-            <ul class="navbar-nav ml-auto d-none d-flex">
-                {% if is_granted(expression('"ROLE_BUREAU" in roles')) %}
-                    <li class="nav-item dropdown {{ "users" in current_path ? "active" : "" }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-user" aria-hidden="true"></i> {{ app.user.username }}
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{{ path('users_edit', {id : app.user.id}) }}">
-                                <i class="fa fa-user-cog"></i> Paramètres</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ path('app_logout') }}">
-                                <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
-                        </div>
-                    </li>
-                {% elseif is_granted(expression('"ROLE_INTRO" in roles')) %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_logout') }}">
-                            <i class="fa fa-sign-out-alt" aria-hidden="true"></i> Se déconnecter</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item {{ "/login"==current_path ? "active" : "" }}">
-                        <a class="nav-link" href="{{ path('app_login') }}">
-                            <i class="fa fa-sign-in-alt" aria-hidden="true"></i> Se connecter</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
-</header>
+{% block header %}
+    {{ include('layout/_header.html.twig') }}
+{% endblock %}
 
 <div class="container-fluid">
-    {% for message in app.session.flashbag.get('info') %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-save"></i> Information : {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            {{ include('components/_alert.html.twig', {type: label, message: message}) }}
+        {% endfor %}
     {% endfor %}
 
-    {% for message in app.session.flashbag.get('error') %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fa fa-times-circle"></i> Erreur : {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endfor %}
     {% block body %}{% endblock %}
 </div>
 
 <div class="spacer"></div>
-<footer class="mx-auto mt-4">
-    <div id="copyright" class="mt-2">
-        <p>&copy; {{ date('Y')|date('Y') }} <a href="{{ developer_url }}"
-                                               target="_blank">{{ developer_username }}</a> &centerdot; Clochette <a
-                    href="{{ project_url }}/tree/{{ project_version }}" target="_blank"
-                    class="badge badge-light">v{{ project_version }}</a></p>
-    </div>
-    {% block footer %}{% endblock %}
-</footer>
+{% block footer %}
+    {{ include('layout/_footer.html.twig') }}
+{% endblock %}
 
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}

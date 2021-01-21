@@ -17,6 +17,11 @@ class DefaultController extends BasicController
      */
     public function index(): Response
     {
+        // Redirect to Purchase if authenticated
+        if ($this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('purchase_index');
+        }
+
         $this->getModes();
         return $this->render('home/index.html.twig', $this->data);
     }
