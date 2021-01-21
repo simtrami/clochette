@@ -1,3 +1,12 @@
 @import "helper/variables";
-@import "components/datatable";
 @import "~datatables.net-bs4";
+@import "components/datatable";
+
+.datatable-loading-text .fa {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
