@@ -1,0 +1,11 @@
+{# Used in AccountTableType #}
+<div class="d-flex">
+    <div class="input-group justify-content-around mx-auto">
+        <a class="btn btn-secondary mt-1"
+           href="{{ path('accounts_show', {'id':row.id}) }}"
+        ><i class="fas fa-eye"></i> Voir</a>
+        <a class="btn btn-success mt-1"
+           href="{{ path('accounts_refill', {'id':row.id}) }}"
+        ><i class="fas fa-gas-pump"></i> Rech.</a>
+    </div>
+</div>

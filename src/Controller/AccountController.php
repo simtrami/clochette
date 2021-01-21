@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use Algolia\SearchBundle\SearchService;
+use App\DataTableType\AccountTableType;
+use App\DataTableType\TransactionTableType;
 use App\Entity\Account;
 use App\Entity\Transactions;
 use App\Entity\Users;
@@ -10,6 +12,7 @@ use App\Form\AccountType;
 use Exception;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\Printer;
+use Omines\DataTablesBundle\DataTableFactory;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,18 +35,26 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("", name="accounts_index", methods={"GET"})
+     * @Route("", name="accounts_index", methods={"GET", "POST"})
+     * @param Request $request
+     * @param DataTableFactory $dataTableFactory
      * @return Response
      */
-    public function index(): Response
+    public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
-        // TODO: rewrite with pagination
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
-
         $this->getModes();
 
-        $accounts = $this->getDoctrine()->getRepository(Account::class)->findAll();
-        $this->data['accounts'] = $accounts;
+        // TODO: add search
+        $table = $dataTableFactory->createFromType(AccountTableType::class, [],
+            ['order' => [[0, 'desc']],]
+        )->setName('accounts-table')->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
+        $this->data['datatable'] = $table;
 
         return $this->render("accounts/index.html.twig", $this->data);
     }
@@ -85,16 +96,30 @@ class AccountController extends BasicController
     }
 
     /**
-     * @Route("/{id}", name="accounts_show", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/{id}", name="accounts_show", requirements={"id"="\d+"}, methods={"GET","POST"})
      * @param Account $account
+     * @param Request $request
+     * @param DataTableFactory $dataTableFactory
      * @return Response
      */
-    public function show(Account $account): Response
+    public function show(Account $account, Request $request, DataTableFactory $dataTableFactory): Response
     {
-        // TODO: rewrite with pagination
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
+
         $this->data['account'] = $account;
+
+        $table = $dataTableFactory->createFromType(TransactionTableType::class, [
+            'account' => $account->getPseudo()
+        ], ['order' => [[0, 'desc']]]
+        )->setName('transactions-table')->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
+        $this->data['datatable'] = $table;
+
         return $this->render("accounts/show.html.twig", $this->data);
     }
 

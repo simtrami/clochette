@@ -21,53 +21,5 @@
        {{ is_granted(expression('"ROLE_ALL" in roles'))==true ? "" : "disabled" }}" href="{{ path('accounts_new') }}"
     ><i class="fas fa-plus-circle"></i> Créer un compte</a>
 
-    <div class="table-responsive pb-3 mt-3">
-        <table id="table" class="table table-striped table-bordered">
-            <thead class="thead-dark">
-            <tr>
-                <th>#</th>
-                <th>Prénom</th>
-                <th>Nom</th>
-                <th>Surnom</th>
-                <th>Solde</th>
-                <th>Année</th>
-                <th>Nom de Staff</th>
-                <th>Intronisé</th>
-                <th class="table-actions"></th>
-
-            </tr>
-            </thead>
-
-            <tbody>
-            {% for account in accounts %}
-                <tr>
-                    <th>{{ account.id }}</th>
-                    <td>{{ account.firstName }}</td>
-                    <td>{{ account.lastName }}</td>
-                    <td>
-                        <a href="{{ path('accounts_show', {'id': account.id}) }}">
-                            <i class="fas fa-info-circle"></i></a>
-                        {{ account.pseudo }}
-                    </td>
-                    <td>{{ account.balance }}€</td>
-                    <td>{{ account.year }}</td>
-                    <td>{{ account.staffName ? account.staffName : '-' }}</td>
-                    <td>{{ account.isInducted == 1 ? 'Oui' : 'Non' }}</td>
-                    <td class="table-actions">
-                        <div class="d-flex">
-                            <div class="input-group justify-content-around mx-auto">
-                                <a class="btn btn-secondary mt-1"
-                                   href="{{ path('accounts_edit', { 'id':account.id }) }}"
-                                ><i class="fas fa-edit"></i> Modif.</a>
-                                <a class="btn btn-success mt-1"
-                                   href="{{ path('accounts_refill', {'id':account.id}) }}"
-                                ><i class="fas fa-gas-pump"></i> Rech.</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {{ include('components/_datatable.htmls.twig', {datatable: datatable}) }}
 {% endblock %}

@@ -1,4 +1,4 @@
 import './styles/accounts.scss';
-import dtInit from './components/datatable-options';
+import dtAjax from './components/datatable-ajax';
 
-dtInit('#table', [[0, 'desc']], [{"orderable": false, "targets": 8}]);
+dtAjax('#accounts-table');
