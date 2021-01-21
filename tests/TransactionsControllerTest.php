@@ -22,7 +22,7 @@ class TransactionsControllerTest extends WebTestCase
     {
         return [
             ['/transactions'],
-            ['/transactions/all'],
+            ['/transactions/unregistered'],
         ];
     }
 }

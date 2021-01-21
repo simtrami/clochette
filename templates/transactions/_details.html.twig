@@ -1,0 +1,57 @@
+{# Used in TransactionsTableType #}
+<div class="d-flex justify-content-center">
+    {% if value == 1 %}
+        <div class="btn-group dropleft">
+            <button type="button" class="btn btn-secondary dropdown-toggle no-arrow"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+            </button>
+            <div class="dropdown-menu">
+                <h6 class="dropdown-header">Articles achetés</h6>
+                {% if row.details is not empty %}
+                    {% for detail in row.details %}
+                        <span class="dropdown-item">{{ detail.article.name }} : {{ detail.quantity }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="dropdown-item">Articles supprimés</span>
+                {% endif %}
+            </div>
+        </div>
+    {% elseif value == 2 %}
+        {% if row.details is not empty %}
+            <div class="btn-group dropleft">
+                <button type="button" class="btn btn-secondary dropdown-toggle no-arrow"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-minus" aria-hidden="true"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <h6 class="dropdown-header">Articles retournés</h6>
+                    {% for detail in row.details %}
+                        <span class="dropdown-item">{{ detail.article.name }} : {{ detail.quantity }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" data-toggle="tooltip"
+                        data-placement="left" title="Reboursement">
+                    <i class="fas fa-minus" aria-hidden="true"></i>
+                </button>
+            </div>
+        {% endif %}
+    {% elseif value == 3 %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary" data-toggle="tooltip"
+                    data-placement="left" title="Rechargement">
+                <i class="fas fa-gas-pump" aria-hidden="true"></i>
+            </button>
+        </div>
+    {% else %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-danger" data-toggle="tooltip"
+                    data-placement="left" title="Type de transaction inconnue">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+    {% endif %}
+</div>

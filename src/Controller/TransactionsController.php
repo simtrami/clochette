@@ -2,8 +2,8 @@
 // src/AppBundle/Controller/TransactionsController.php
 namespace App\Controller;
 
-use App\Entity\Transactions;
-use Exception;
+use App\DataTableType\TransactionTableType;
+use Omines\DataTablesBundle\DataTableFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,42 +16,50 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsController extends BasicController
 {
     /**
-     * @Route("", name="transactions_index", methods={"GET"})
+     * @Route("", name="transactions_index", methods={"GET", "POST"})
+     * @param Request $request
+     * @param DataTableFactory $dataTableFactory
+     * @return Response
      */
-    public function index(): Response
+    public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
-        // TODO: rewrite with pagination
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
-        $repo_transactions = $this->getDoctrine()->getRepository(Transactions::class)->notRegistered();
-        $this->data['transactions'] = $repo_transactions;
+        $table = $dataTableFactory->createFromType(TransactionTableType::class, [],
+            ['order' => [[0, 'desc']],]
+        )->setName('transactions-table')->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
+        $this->data['datatable'] = $table;
 
         return $this->render("transactions/index.html.twig", $this->data);
     }
 
     /**
-     * @Route("/all", name="transactions_index_all", methods={"GET"})
+     * @Route("/unregistered", name="transactions_index_unregistered", methods={"GET", "POST"})
      * @param Request $request
+     * @param DataTableFactory $dataTableFactory
      * @return Response
-     * @throws Exception
      */
-    public function indexAll(Request $request): Response
+    public function indexUnregistered(Request $request, DataTableFactory $dataTableFactory): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         $this->getModes();
 
-        $page = $request->query->get('page', 1);
-        $limit = $request->query->get('limit', 10);
+        $table = $dataTableFactory->createFromType(TransactionTableType::class,
+            ['registration' => 'unregistered'],
+            ['order' => [[0, 'desc']]]
+        )->setName('transactions-table')->handleRequest($request);
 
-        $allTransactions = $this->getDoctrine()->getRepository(Transactions::class)->findAllPaginated($page, $limit);
-        $transactions = $allTransactions->getIterator();
-        $this->data['page'] = $page;
-        $this->data['limit'] = $limit;
-        $this->data['transactions'] = $transactions;
-        $this->data['count'] = $transactions->count();
-        $this->data['total'] = $allTransactions->count();
-        $this->data['maxPage'] = ceil($this->data['total'] / $limit);
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
+        $this->data['datatable'] = $table;
 
         return $this->render("transactions/index.html.twig", $this->data);
     }

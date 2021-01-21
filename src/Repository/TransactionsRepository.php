@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Transactions;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -69,18 +68,6 @@ class TransactionsRepository extends ServiceEntityRepository
             ->where('t.timestamp > :timestamp')
             ->setParameter('timestamp', $timestamp)
             ->orderBy('t.timestamp', 'DESC');
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @return EntityManagerInterface|int|mixed|string
-     */
-    public function notRegistered(){
-        $qb = $this->createQueryBuilder('t');
-
-        $qb
-            ->where('t.zreport IS NULL');
 
         return $qb->getQuery()->getResult();
     }
