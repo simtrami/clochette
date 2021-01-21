@@ -9,7 +9,7 @@
 import './styles/app.scss';
 import $ from 'jquery';
 // Uncomment to support legacy code:
-//global.$ = $;
+// global.$ = $;
 import 'bootstrap'; // adds functions to jQuery
 // import '@fortawesome/fontawesome-free/js/all';
 
